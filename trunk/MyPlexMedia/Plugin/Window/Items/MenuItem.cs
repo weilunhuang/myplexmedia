@@ -37,6 +37,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         public virtual void OnSelected() {
+
         }       
         
         #endregion

@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
+using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     class PlexItemVideo : PlexItem {
@@ -15,7 +16,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public PlexItemVideo(IMenuItem parentItem, string title, Uri path, MediaContainerVideo video)
             : base(parentItem, title, path) {
             Video = video;
-            base.SetIcons(MediaRetrieval.GetArtWork(Video.thumb));
+            base.SetIcons(MediaRetrieval.GetArtWork(Video.thumb ?? Video.art ?? Settings.PLEX_ICON_DEFAULT));
             BackgroundImage = MediaRetrieval.GetArtWork(Video.art ?? Video.thumb);
         }     
 

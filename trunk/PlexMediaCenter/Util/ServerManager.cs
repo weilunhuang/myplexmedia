@@ -20,7 +20,8 @@ namespace PlexMediaCenter.Util {
                 throw new Exception();
             }
             ServerXmlFile = serverXmlFile;
-            PlexServers = LoadPlexServers();           
+            PlexServers = LoadPlexServers();
+            PlexServerCurrent = PlexServers[1];
             BonjourDiscovery.OnBonjourServer += new BonjourDiscovery.OnBonjourServerEventHandler(BonjourDiscovery_OnBonjourServer);            
         }
 
@@ -62,6 +63,9 @@ namespace PlexMediaCenter.Util {
                 return;
             }
             try {
+                if (File.Exists(ServerXmlFile)) {
+                    File.Delete(ServerXmlFile);
+                }
                 Serialization.Serialize(ServerXmlFile, plexServers);
             } catch (Exception e){
                 throw e;

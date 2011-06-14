@@ -6,6 +6,7 @@ using MyPlexMedia.Plugin.Config;
 using MyPlexMedia.Plugin.Window.Items;
 using WindowPlugins;
 using PlexMediaCenter.Plex;
+using PlexMediaCenter.Util;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main : WindowPluginBase {
@@ -21,12 +22,14 @@ namespace MyPlexMedia.Plugin.Window {
         #endregion
 
         #region Enums
-               
+
         #endregion
 
 
         #region Skin Controls
-               
+
+        [SkinControlAttribute(2011)]
+        protected GUIImage ctrlBackgroundImage = null;
 
         #endregion
 
@@ -38,18 +41,21 @@ namespace MyPlexMedia.Plugin.Window {
             }
         }
 
-
         public override bool Init() {
             LoadSettings();
             PlexInterface.OnPlexError += new PlexInterface.OnPlexErrorEventHandler(PlexInterface_OnPlexError);
-            PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_ROOT_PATH);            
+            MediaRetrieval.OnArtWorkRetrieved += new MediaRetrieval.OnArtWorkRetrievedEventHandler(MediaRetrieval_OnArtWorkRetrieved);
+            PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_ROOT_PATH);
             return Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.xml");
         }
 
-       
-           
+        void MediaRetrieval_OnArtWorkRetrieved(string artWork) {
+            if (facadeLayout.NeedRefresh()) {
+                facadeLayout.DoUpdate();
+            }
+        }
 
-        public override void DeInit() {         
+        public override void DeInit() {
             base.DeInit();
         }
 
@@ -60,9 +66,9 @@ namespace MyPlexMedia.Plugin.Window {
         protected override void OnPageLoad() {
             base.OnPageLoad();
             Navigation.OnMenuItemsFetched += new Navigation.OnMenuItemsFetchedEventHandler(Navigation_OnMenuItemsFetched);
-            Navigation.CreateStartupMenu();            
+            Navigation.CreateStartupMenu();
             CurrentLayout = GUIFacadeControl.Layout.CoverFlow;
-            SwitchLayout();           
+            SwitchLayout();
         }
 
         protected override void OnPageDestroy(int new_windowId) {
@@ -82,6 +88,7 @@ namespace MyPlexMedia.Plugin.Window {
                 case GUIFacadeControl.Layout.List:
                 case GUIFacadeControl.Layout.SmallIcons:
                     return true;
+
                 default:
                     return false;
             }
@@ -92,20 +99,23 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         public override void OnAction(MediaPortal.GUI.Library.Action action) {
-            if (action.wID == MediaPortal.GUI.Library.Action.ActionType.ACTION_PREVIOUS_MENU) {
-                Navigation.FetchPreviousMenu(Navigation.CurrentItem);
-            } else {
-                base.OnAction(action);
+            switch (action.wID) {
+                case MediaPortal.GUI.Library.Action.ActionType.ACTION_PREVIOUS_MENU:
+                    Navigation.FetchPreviousMenu(Navigation.CurrentItem);
+                    break;
+                default:
+                    base.OnAction(action);
+                    break;
             }
         }
 
         protected override void OnClicked(int controlId, GUIControl control, MediaPortal.GUI.Library.Action.ActionType actionType) {
-            switch (controlId) {               
+            switch (controlId) {
                 case (int)Buttons.BtnBrowseLatestCheez:
-                    GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME + " (online mode)");                    
+                    GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME + " (online mode)");
                     break;
                 case (int)Buttons.BtnBrowseLocalCheez:
-                    GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME + " (local mode)");                    
+                    GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME + " (local mode)");
                     break;
                 default:
                     break;
@@ -115,68 +125,73 @@ namespace MyPlexMedia.Plugin.Window {
 
         protected override void OnClick(int iItem) {
             if (facadeLayout[iItem] is IMenuItem) {
+                ctrlBackgroundImage.SetFileName(((IMenuItem)facadeLayout[iItem]).BackgroundImage);
+                ctrlBackgroundImage.DoUpdate();
+                ctrlBackgroundImage.Refresh();
+
+
                 ((IMenuItem)facadeLayout[iItem]).OnClicked(this, null);
             } else {
                 base.OnClick(iItem);
             }
-        }            
+        }
 
-        //protected override void OnShowContextMenu() {
-        //    switch (Dialogs.ShowContextMenu()) {
-        //        case Buttons.BtnCheezSitesOverview:
-        //            DisplayCheezSitesOverview();
-        //            break;
-        //        case Buttons.BtnSwitchLayout:
-        //            OnShowLayouts();
-        //            break;
-        //        case Buttons.BtnBrowseLatestCheez:
+        protected override void OnShowContextMenu() {
+            //    switch (Dialogs.ShowContextMenu()) {
+            //        case Buttons.BtnCheezSitesOverview:
+            //            DisplayCheezSitesOverview();
+            //            break;
+            //        case Buttons.BtnSwitchLayout:
+            //            OnShowLayouts();
+            //            break;
+            //        case Buttons.BtnBrowseLatestCheez:
 
-        //            break;
-        //        case Buttons.BtnBrowseLocalCheez:
+            //            break;
+            //        case Buttons.BtnBrowseLocalCheez:
 
-        //            break;
-        //        case Buttons.BtnBrowseRandomCheez:
+            //            break;
+            //        case Buttons.BtnBrowseRandomCheez:
 
-        //            break;
-        //        case Buttons.BtnBrowseMore:
+            //            break;
+            //        case Buttons.BtnBrowseMore:
 
-        //            break;
-        //        case Buttons.BtnSortAsc:
-        //            if (facadeLayout != null) {
-        //                facadeLayout.Sort(new CheezComparerDateAsc());
-        //                this.Process();
-        //            }
-        //            break;
-        //        case Buttons.BtnSortDesc:
-        //            if (facadeLayout != null) {
-        //                facadeLayout.Sort(new CheezComparerDateDesc());
-        //                this.Process();
-        //            }
-        //            break;
-        //        case Buttons.BtnShowSlideShowAllLocal:
-        //            OnSlideShowAllLocal();
-        //            break;
-        //        case Buttons.BtnShowSlideShowCurrent:
-                    
-        //            OnSlideShowCurrent();
-        //            break;
-        //        case Buttons.BtnCancelAllDownloads:
-                    
-        //            break;
-        //        case Buttons.BtnDeleteLocalCheez:
-                    
-        //            break;
-        //        case Buttons.NothingSelected:
-        //        default:
-        //            //throw new ArgumentOutOfRangeException();
-        //            return;
-        //    }
-        //}
+            //            break;
+            //        case Buttons.BtnSortAsc:
+            //            if (facadeLayout != null) {
+            //                facadeLayout.Sort(new CheezComparerDateAsc());
+            //                this.Process();
+            //            }
+            //            break;
+            //        case Buttons.BtnSortDesc:
+            //            if (facadeLayout != null) {
+            //                facadeLayout.Sort(new CheezComparerDateDesc());
+            //                this.Process();
+            //            }
+            //            break;
+            //        case Buttons.BtnShowSlideShowAllLocal:
+            //            OnSlideShowAllLocal();
+            //            break;
+            //        case Buttons.BtnShowSlideShowCurrent:
+
+            //            OnSlideShowCurrent();
+            //            break;
+            //        case Buttons.BtnCancelAllDownloads:
+
+            //            break;
+            //        case Buttons.BtnDeleteLocalCheez:
+
+            //            break;
+            //        case Buttons.NothingSelected:
+            //        default:
+            //            //throw new ArgumentOutOfRangeException();
+            //            return;
+            //    }
+        }
 
         #endregion
 
-        #region Private Methods       
-              
+        #region Private Methods
+
         #endregion
 
         #region Plugin Event Handlers
@@ -193,7 +208,7 @@ namespace MyPlexMedia.Plugin.Window {
                 }
             }
             facadeLayout.DoUpdate();
-        }        
+        }
 
         #endregion
     }

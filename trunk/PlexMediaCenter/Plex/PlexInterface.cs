@@ -28,7 +28,7 @@ namespace PlexMediaCenter.Plex {
         }               
 
        public static void Init(string serverListXmlPath, string defaultIconPath){
-           ServerManager = new ServerManager(serverListXmlPath);
+           ServerManager = new ServerManager(serverListXmlPath);          
            MediaRetrieval.DefaulIconPath = defaultIconPath;
        }
 

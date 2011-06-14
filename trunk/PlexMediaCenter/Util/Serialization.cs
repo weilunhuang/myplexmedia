@@ -1,11 +1,11 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Xml.Serialization;
 using System.IO;
-using System.Xml;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml.Serialization;
+using System.Xml;
 
 namespace PlexMediaCenter.Util {
     public static class Serialization {
@@ -15,7 +15,7 @@ namespace PlexMediaCenter.Util {
         }
 
         public static void Serialize(string fileName, object objectToSerialize) {
-            using (FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate)) {
+            using (FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate )) {
                 Serialize(fs, objectToSerialize);
                 fs.Close();
             }
@@ -47,6 +47,7 @@ namespace PlexMediaCenter.Util {
         public static T DeSerialize<T>(string fileName) {
             using (FileStream fs = new FileStream(fileName, FileMode.Open)) {
                 return DeSerialize<T>(fs);
+                fs.Close();
             }
         }
 
@@ -89,6 +90,7 @@ namespace PlexMediaCenter.Util {
             using (xmlStream) {
                 XmlSerializer xmlSerializer = new XmlSerializer(objectToSerialize.GetType());
                 xmlSerializer.Serialize(xmlStream, objectToSerialize);
+                xmlStream.Close();
             }
         }
 
