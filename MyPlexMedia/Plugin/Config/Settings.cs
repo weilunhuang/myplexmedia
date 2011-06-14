@@ -11,12 +11,16 @@ namespace MyPlexMedia.Plugin.Config {
         public const string PLUGIN_NAME = "MyPlexMedia";
         public const string PLUGIN_AUTHOR = "Anthrax";
         public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin that allows you browse PlexMediaCenter.";
+        
         public const int PLUGIN_WINDOW_ID = 20110614;
+        public static string SKIN_FOLDER_MEDIA = Path.Combine(GUIGraphicsContext.Skin, @"Media\" + PLUGIN_NAME);
         public static string PLUGIN_MEDIA_HOVER = @"hover_MyPlexMedia.png";
-        public static string PLEX_ICON_DEFAULT_BONJOUR = "";
-        public static string PLEX_ICON_DEFAULT_BACK;
-        public static string PLEX_ICON_DEFAULT_OFFLINE;
-        public static string PLEX_SERVER_LIST_XML =Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs), PLUGIN_NAME);
+        public static string PLEX_ICON_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "icon_default.jpg");
+        public static string PLEX_ICON_DEFAULT_BONJOUR = Path.Combine(SKIN_FOLDER_MEDIA, "icon_bonjour.jpg");
+        public static string PLEX_ICON_DEFAULT_BACK = Path.Combine(SKIN_FOLDER_MEDIA, "icon_back.jpg");
+        public static string PLEX_ICON_DEFAULT_ONLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.jpg");
+        public static string PLEX_ICON_DEFAULT_OFFLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_offline.jpg");
+        public static string PLEX_SERVER_LIST_XML = @"C:\Program Files (x86)\Team MediaPortal\MediaPortal\plugins\Windows\PlexServers.xml";
         public static string PLEX_ARTWORK_ROOT_PATH = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs), PLUGIN_NAME);
 
         static Settings() {

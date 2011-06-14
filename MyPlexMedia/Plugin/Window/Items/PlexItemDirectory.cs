@@ -6,6 +6,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
+using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     class PlexItemDirectory : PlexItem{
@@ -14,13 +15,11 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public PlexItemDirectory(IMenuItem parentItem, string title, Uri path, MediaContainerDirectory directory) : base(parentItem, title, path) {
             Directory = directory;
-            base.SetIcons(MediaRetrieval.GetArtWork(Directory.thumb));
+            IsFolder = true;
+            base.SetIcons(MediaRetrieval.GetArtWork(Directory.thumb ?? Directory.art ?? Settings.PLEX_ICON_DEFAULT));
             BackgroundImage = MediaRetrieval.GetArtWork(Directory.art ?? Directory.thumb);
         }
        
-        public override void OnSelected() {           
-        }
-
-      
+            
     }
 }

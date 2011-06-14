@@ -14,7 +14,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (path != null) {
                 UriPath = path.AbsoluteUri.Contains("?") ? path : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");
             }
-            base.SetIcons(MediaRetrieval.GetArtWork(UriPath.AbsoluteUri));
+            //base.SetIcons(MediaRetrieval.GetArtWork(UriPath.AbsoluteUri));
         }
        
 

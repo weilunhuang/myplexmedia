@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <window>
-  <id>300382</id>
+  <id>20110614</id>
   <defaultcontrol>50</defaultcontrol>
   <allowoverlay>yes</allowoverlay>
   <disabletopbar>yes</disabletopbar>
   <autohidetopbar>yes</autohidetopbar>
   <controls>
     <control>
-      <id>1</id>
+      <id>2011</id>
       <description>Background</description>
       <type>image</type>
       <width>1280</width>
@@ -292,14 +292,6 @@
       <font>font14</font>
       <label>#selecteditem2</label>
       <animation effect="Fade" reversible="FALSE" time="70">Visible</animation>
-    </control>
-    <control>
-      <type>label</type>
-      <visible>yes</visible>
-      <posX>342</posX>
-      <posY>697</posY>
-      <font>font10</font>
-      <label>“All Content provided by license from the Cheezburger Network—this application is not offered nor endorsed by Cheezburger, Inc.”</label>
     </control>
   </controls>
 </window>
