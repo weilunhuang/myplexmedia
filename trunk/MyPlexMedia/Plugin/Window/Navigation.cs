@@ -5,7 +5,9 @@ using PlexMediaCenter.Plex;
 using PlexMediaCenter.Plex.Connection;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
+using System.Linq;
 using MyPlexMedia.Plugin.Config;
+using MediaPortal.GUI.Library;
 
 namespace MyPlexMedia.Plugin.Window {
     public static class Navigation {
@@ -76,7 +78,7 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         internal static void ShowCurrentMenu(IMenuItem parentItem) {
-            if (parentItem.ChildItems.Count > 0) {
+            if (parentItem.ChildItems.Count > 0) {                
                 CurrentItem = parentItem;
                 OnMenuItemsFetched(parentItem.ChildItems);
             } else {
@@ -85,8 +87,15 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         internal static List<IMenuItem> GetSubMenuItems(PlexItem parentItem, MediaContainer plexResponseConatiner) {
+            if (Settings.PreferredLayouts.ContainsKey(plexResponseConatiner.viewGroup)) {
+                parentItem.PreferredLayout = Settings.PreferredLayouts[plexResponseConatiner.viewGroup];
+            } else {
+                parentItem.PreferredLayout = Settings.DefaultLayout;
+            }
+            parentItem.SetItemInfos(plexResponseConatiner);
             //Add ActionItems
             List<IMenuItem> tmpList = new List<IMenuItem>();
+            tmpList.AddRange(      plexResponseConatiner.Directory..Where(dir => !String.IsNullOrEmpty(dir.prompt).ConvertAll<IMenuItem>(search => new PlexItemSearch(parentItem, search.title, new Uri(parentItem.UriPath, search.key), search)));
             tmpList.AddRange(plexResponseConatiner.Directory.ConvertAll<IMenuItem>(dir => new PlexItemDirectory(parentItem, dir.title, new Uri(parentItem.UriPath, dir.key), dir)));
             tmpList.AddRange(plexResponseConatiner.Video.ConvertAll<IMenuItem>(vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));
             return tmpList;

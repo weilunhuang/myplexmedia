@@ -9,17 +9,24 @@ using PlexMediaCenter.Util;
 using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    class PlexItemDirectory : PlexItem{
+    class PlexItemDirectory : PlexItem{        
 
         MediaContainerDirectory Directory { get; set; }
 
         public PlexItemDirectory(IMenuItem parentItem, string title, Uri path, MediaContainerDirectory directory) : base(parentItem, title, path) {
             Directory = directory;
             IsFolder = true;
-            base.SetIcons(MediaRetrieval.GetArtWork(Directory.thumb ?? Directory.art ?? Settings.PLEX_ICON_DEFAULT));
-            BackgroundImage = MediaRetrieval.GetArtWork(Directory.art ?? Directory.thumb);
-        }
-       
+            IconImage = MediaRetrieval.GetArtWork(Directory.thumb);
+            IconImageBig = MediaRetrieval.GetArtWork(Directory.art);
+            ThumbnailImage = MediaRetrieval.GetArtWork(Directory.thumb);
+            BackgroundImage = !String.IsNullOrEmpty(Directory.art) ? MediaRetrieval.GetArtWork(Directory.art) : string.Empty;
+            
+            int duration;
+            if(int.TryParse(Directory.duration, out duration)){
+                base.Duration = duration;
+            }
+            Label2 += String.Format(" [{0}/{1}]", Directory.viewedLeafCount, Directory.leafCount);            
+        }               
             
     }
 }

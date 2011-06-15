@@ -5,26 +5,63 @@ using System.Text;
 using System.Web;
 using PlexMediaCenter.Util;
 using PlexMediaCenter.Plex;
+using MediaPortal.GUI.Library;
+using PlexMediaCenter.Plex.Data.Types;
 
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    class PlexItem : MenuItem {        
+    class PlexItem : MenuItem {
+
+        public static event OnPreferredLayoutEventHandler OnPreferredLayout;
+        public delegate void OnPreferredLayoutEventHandler(GUIFacadeControl.Layout preferredLayout);
+
+        public static event OnHasBackgroundEventHandler OnHasBackground;
+        public delegate void OnHasBackgroundEventHandler(string imagePath);
+
+        public static event OnItemDetailsUpdatedEventHandler OnItemDetailsUpdated;
+        public delegate void OnItemDetailsUpdatedEventHandler(MediaContainer itemDetails);
+
+        public GUIFacadeControl.Layout PreferredLayout { get; set; }
+        public MediaContainer ItemDetails { get; set; } 
 
         public PlexItem(IMenuItem parentItem, string title, Uri path) : base(parentItem, title) {
             if (path != null) {
                 UriPath = path.AbsoluteUri.Contains("?") ? path : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");
-            }
+            }            
             //base.SetIcons(MediaRetrieval.GetArtWork(UriPath.AbsoluteUri));
+        }
+
+        public virtual void SetItemInfos(MediaContainer infoContainer) {
+            int year;
+            if (int.TryParse(infoContainer.parentYear, out year)) {
+                base.Year = year;
+            }
+            base.Label2 = infoContainer.title1;
+            base.Label3 = infoContainer.title2;
+            ItemDetails = infoContainer;
+            OnItemDetailsUpdated(ItemDetails);
         }
        
 
         public override void OnClicked(object sender, EventArgs e) {
             try {
-                SetChildItems(Navigation.GetSubMenuItems(this, PlexInterface.RequestPlexItems(UriPath)));
+                if (ChildItems == null || ChildItems.Count < 1) {
+                    SetChildItems(Navigation.GetSubMenuItems(this, PlexInterface.RequestPlexItems(UriPath)));
+                }
+                OnPreferredLayout(PreferredLayout);
                 Navigation.ShowCurrentMenu(this);
             } catch {
               
             }            
         }
+
+        public override void OnSelected() {
+            if (!String.IsNullOrEmpty(BackgroundImage)) {
+                OnHasBackground(BackgroundImage);
+            }    
+            base.OnSelected();
+        }
+
+        
     }
 }

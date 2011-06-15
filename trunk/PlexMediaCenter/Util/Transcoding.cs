@@ -120,10 +120,9 @@ namespace PlexMediaCenter.Util {
 
 
         public static void PlayBackMedia(MediaContainerVideo video) {
-
             BufferMedia(video.Media[0].Part[0].key);
         }
-
+        
         internal static void BufferMedia(string partKey,int offset = 0) {
             BufferMediaAsync(GetM3U8PlaylistItems(PlexInterface.PlexServerCurrent, partKey));
         }
@@ -144,7 +143,7 @@ namespace PlexMediaCenter.Util {
             }
         }
 
-        static Uri GetM3U8PlaylistUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = false) {
+       public static Uri GetM3U8PlaylistUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = false) {
             string transcodePath = "/video/:/transcode/segmented/start.m3u8?";
             transcodePath += "identifier=com.plexapp.plugins.library";
             transcodePath += "&offset=" + offset;

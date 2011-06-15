@@ -63,13 +63,17 @@
     </Compile>
     <Compile Include="Plugin\Config\Settings.cs" />
     <Compile Include="Plugin\Window\Dialogs.cs" />
+    <Compile Include="Plugin\Window\GuiFacadeControlEx.cs" />
     <Compile Include="Plugin\Window\Items\ActionItem.cs" />
     <Compile Include="Plugin\Window\Items\IMenuItem.cs" />
     <Compile Include="Plugin\Window\Items\MenuItem.cs" />
     <Compile Include="Plugin\Window\Items\PlexItem.cs" />
     <Compile Include="Plugin\Window\Items\PlexItemDirectory.cs" />
+    <Compile Include="Plugin\Window\Items\PlexItemSearch.cs" />
+    <Compile Include="Plugin\Window\Items\PlexItemTrack.cs" />
     <Compile Include="Plugin\Window\Items\PlexItemVideo.cs" />
     <Compile Include="Plugin\Window\Main.cs" />
+    <Compile Include="Plugin\Window\Main.GuiUpdate.cs" />
     <Compile Include="Plugin\Window\Navigation.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Plugin\Config\ConfigurationForm.resx">

@@ -27,9 +27,10 @@ namespace PlexMediaCenter.Plex {
             _webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(_webClient_DownloadProgressChanged);
         }               
 
-       public static void Init(string serverListXmlPath, string defaultIconPath){
+       public static void Init(string serverListXmlPath, string defaultBasePath, string defaultImage){
            ServerManager = new ServerManager(serverListXmlPath);          
-           MediaRetrieval.DefaulIconPath = defaultIconPath;
+           MediaRetrieval.ImageBasePath = defaultBasePath;
+           MediaRetrieval.DefaultImagePath = defaultImage;
        }
 
         static void _webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
