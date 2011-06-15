@@ -25,7 +25,14 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if(int.TryParse(Directory.duration, out duration)){
                 base.Duration = duration;
             }
-            Label2 += String.Format(" [{0}/{1}]", Directory.viewedLeafCount, Directory.leafCount);            
+            if (!String.IsNullOrEmpty(Directory.viewedLeafCount) && !String.IsNullOrEmpty(Directory.leafCount)) {
+                Label2 += String.Format(" [{0}/{1}]", Directory.viewedLeafCount, Directory.leafCount);
+            }
+            Label3 = Directory.summary;
+            FileInfo = new MediaPortal.Util.FileInformation();
+            if (!String.IsNullOrEmpty(Directory.originallyAvailableAt)) {
+                FileInfo.CreationTime = DateTime.Parse(Directory.originallyAvailableAt);
+            }
         }               
             
     }

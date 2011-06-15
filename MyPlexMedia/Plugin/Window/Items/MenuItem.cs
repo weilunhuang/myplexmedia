@@ -18,7 +18,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             OnItemSelected += new ItemSelectedHandler(MenuItem_OnItemSelected);
             IconImage = Settings.PLEX_ICON_DEFAULT;
             IconImageBig = Settings.PLEX_ICON_DEFAULT;
-            ThumbnailImage = Settings.PLEX_ICON_DEFAULT;                   
+            ThumbnailImage = Settings.PLEX_ICON_DEFAULT;           
         }
 
         void MenuItem_OnItemSelected(GUIListItem item, GUIControl parent) {                        
@@ -30,13 +30,13 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public string BackgroundImage { get; set; }
         public IMenuItem Parent { get; set; }
         public Uri UriPath { get; set; }
-        
+        public int LastSelectedChildIndex { get; set; }
+
         public List<IMenuItem> ChildItems { get; set; }
 
-        public virtual void OnClicked(object sender, EventArgs e) {            
-            //TODO: Handle Search Items!!!
+        public virtual void OnClicked(object sender, EventArgs e) {           
             if (ChildItems != null && ChildItems.Count > 0) {
-                Navigation.ShowCurrentMenu(this);
+                Navigation.ShowCurrentMenu(this, 0);
             }
         }
 
@@ -52,10 +52,13 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public void SetChildItems(List<IMenuItem> childItems) {
             childItems.ForEach(ch => ch.Parent = this);
-            if (Parent != null) {
-                childItems.Add(new ActionItem(Parent, "Back", Settings.PLEX_ICON_DEFAULT_BACK, () => Navigation.FetchPreviousMenu(this)));
-            }
+            //if (Parent != null) {
+            //    childItems.Add(new ActionItem(Parent, "Back", Settings.PLEX_ICON_DEFAULT_BACK, () => Navigation.FetchPreviousMenu(this)));
+            //}
             ChildItems = childItems;
         }
+
+
+        
     }
 }

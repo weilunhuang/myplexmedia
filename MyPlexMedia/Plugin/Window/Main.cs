@@ -46,7 +46,7 @@ namespace MyPlexMedia.Plugin.Window {
             LoadSettings();
             GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME);
             PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH, Settings.PLEX_ICON_DEFAULT);
-            return Load(Settings.SKINFILE_MAIN_WINDOW);            
+            return Load(Settings.SKINFILE_MAIN_WINDOW);
         }
 
         public override void DeInit() {
@@ -59,10 +59,16 @@ namespace MyPlexMedia.Plugin.Window {
 
         protected override void OnPageLoad() {
             base.OnPageLoad();
+            facadeLayout.Clear();
             RegisterEventHandlers();
-            Navigation.CreateStartupMenu();
-            CurrentLayout = Settings.DefaultLayout;
-            SwitchLayout();
+            if (Navigation.CurrentItem == null) {
+                facadeLayout.Clear();
+                Navigation.CreateStartupMenu();
+                CurrentLayout = Settings.DefaultLayout;
+                SwitchLayout();
+            } else {
+                Navigation.ShowCurrentMenu(Navigation.CurrentItem, 0);
+            }            
         }
 
 
@@ -97,6 +103,10 @@ namespace MyPlexMedia.Plugin.Window {
         public override void OnAction(MediaPortal.GUI.Library.Action action) {
             switch (action.wID) {
                 case MediaPortal.GUI.Library.Action.ActionType.ACTION_PREVIOUS_MENU:
+                    if (Navigation.CurrentItem == Navigation.RootItem) {
+                        base.OnAction(action);
+                        return;
+                    }
                     Navigation.FetchPreviousMenu(Navigation.CurrentItem);
                     break;
                 default:
@@ -107,7 +117,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         protected override void OnClicked(int controlId, GUIControl control, MediaPortal.GUI.Library.Action.ActionType actionType) {
             switch (controlId) {
-                
+
                 default:
                     break;
             }
@@ -116,6 +126,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         protected override void OnClick(int iItem) {
             if (facadeLayout[iItem] is IMenuItem) {
+                ((IMenuItem)facadeLayout[iItem]).Parent.LastSelectedChildIndex = iItem;
                 ((IMenuItem)facadeLayout[iItem]).OnClicked(this, null);
             } else {
                 base.OnClick(iItem);
@@ -124,21 +135,15 @@ namespace MyPlexMedia.Plugin.Window {
 
         protected override void OnShowContextMenu() {
             switch (Dialogs.ShowContextMenu()) {
-                case Buttons.BtnSwitchLayout:
-                    
-                case Buttons.BtnSortAsc:
-                    break;
-                case Buttons.BtnSortDesc:
-                    break;
                 case Buttons.BtnSearch:
                     Dialogs.ShowSearchMenu();
-                    break;
-                case Buttons.NothingSelected:
+
                     break;
                 default:
                     break;
             }
-               
+            UpdateVisibility();
+            facadeLayout.DoUpdate();
         }
 
         #endregion
@@ -153,8 +158,9 @@ namespace MyPlexMedia.Plugin.Window {
             PlexItem.OnPreferredLayout += new PlexItem.OnPreferredLayoutEventHandler(MenuItem_OnPreferredLayout);
             PlexItem.OnItemDetailsUpdated += new PlexItem.OnItemDetailsUpdatedEventHandler(PlexItem_OnItemDetailsUpdated);
             Navigation.OnMenuItemsFetched += new Navigation.OnMenuItemsFetchedEventHandler(Navigation_OnMenuItemsFetched);
+            Navigation.OnErrorOccured += new Navigation.OnErrorOccuredEventHandler(PlexInterface_OnPlexError);
         }
-      
+
         private void UnRegisterEventHandlers() {
             PlexInterface.OnPlexError -= PlexInterface_OnPlexError;
             MediaRetrieval.OnArtWorkRetrieved -= MediaRetrieval_OnArtWorkRetrieved;
@@ -162,7 +168,8 @@ namespace MyPlexMedia.Plugin.Window {
             MenuItem.OnMenuItemSelected -= MenuItem_OnMenuItemSelected;
             PlexItem.OnPreferredLayout -= MenuItem_OnPreferredLayout;
             PlexItem.OnItemDetailsUpdated -= PlexItem_OnItemDetailsUpdated;
-            Navigation.OnMenuItemsFetched -= Navigation_OnMenuItemsFetched;
+            Navigation.OnMenuItemsFetched -= Navigation_OnMenuItemsFetched; 
+            Navigation.OnErrorOccured -= PlexInterface_OnPlexError;
         }
 
         #endregion

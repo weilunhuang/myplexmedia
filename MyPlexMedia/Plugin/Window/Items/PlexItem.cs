@@ -10,7 +10,7 @@ using PlexMediaCenter.Plex.Data.Types;
 
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    class PlexItem : MenuItem {
+    public class PlexItem : MenuItem {
 
         public static event OnPreferredLayoutEventHandler OnPreferredLayout;
         public delegate void OnPreferredLayoutEventHandler(GUIFacadeControl.Layout preferredLayout);
@@ -22,12 +22,13 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public delegate void OnItemDetailsUpdatedEventHandler(MediaContainer itemDetails);
 
         public GUIFacadeControl.Layout PreferredLayout { get; set; }
-        public MediaContainer ItemDetails { get; set; } 
+        public MediaContainer ItemDetails { get; set; }
 
-        public PlexItem(IMenuItem parentItem, string title, Uri path) : base(parentItem, title) {
+        public PlexItem(IMenuItem parentItem, string title, Uri path)
+            : base(parentItem, title) {
             if (path != null) {
                 UriPath = path.AbsoluteUri.Contains("?") ? path : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");
-            }            
+            }
             //base.SetIcons(MediaRetrieval.GetArtWork(UriPath.AbsoluteUri));
         }
 
@@ -36,32 +37,33 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (int.TryParse(infoContainer.parentYear, out year)) {
                 base.Year = year;
             }
-            base.Label2 = infoContainer.title1;
-            base.Label3 = infoContainer.title2;
             ItemDetails = infoContainer;
             OnItemDetailsUpdated(ItemDetails);
         }
-       
+
 
         public override void OnClicked(object sender, EventArgs e) {
-            try {
-                if (ChildItems == null || ChildItems.Count < 1) {
-                    SetChildItems(Navigation.GetSubMenuItems(this, PlexInterface.RequestPlexItems(UriPath)));
-                }
-                OnPreferredLayout(PreferredLayout);
-                Navigation.ShowCurrentMenu(this);
-            } catch {
-              
-            }            
+            if (ChildItems == null || ChildItems.Count < 1) {
+                SetChildItems(Navigation.GetSubMenuItems(this, PlexInterface.RequestPlexItems(UriPath)));
+            }
+            OnPreferredLayout(PreferredLayout);
+            Navigation.ShowCurrentMenu(this, 0);
+        }
+
+        public void SetPreferredLayout() {
+            OnPreferredLayout(PreferredLayout);
+            if (!String.IsNullOrEmpty(BackgroundImage)) {
+                OnHasBackground(BackgroundImage);
+            }
         }
 
         public override void OnSelected() {
             if (!String.IsNullOrEmpty(BackgroundImage)) {
                 OnHasBackground(BackgroundImage);
-            }    
+            }
             base.OnSelected();
         }
 
-        
+
     }
 }

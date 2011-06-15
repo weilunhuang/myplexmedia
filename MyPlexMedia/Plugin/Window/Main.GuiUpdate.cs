@@ -6,34 +6,36 @@ using MyPlexMedia.Plugin.Window.Items;
 using System.IO;
 using MediaPortal.GUI.Library;
 using PlexMediaCenter.Plex.Data.Types;
+using MediaPortal.Util;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main {
 
         void MenuItem_OnHasBackground(string imagePath) {
             if (ctrlBackgroundImage != null && !String.IsNullOrEmpty(imagePath) && File.Exists(imagePath)) {
-                ctrlBackgroundImage.SetFileName(imagePath);
+                ctrlBackgroundImage.SetFileName(imagePath);               
             }
         }
 
         void MediaRetrieval_OnArtWorkRetrieved(string artWork) {
-            if (facadeLayout.NeedRefresh()) {
-                facadeLayout.DoUpdate();
-            }
+            Utils.DoInsertExistingFileIntoCache(artWork);
+            ((IMenuItem)facadeLayout.SelectedListItem).OnSelected();
         }
 
-        void Navigation_OnMenuItemsFetched(List<IMenuItem> fetchedMenuItems) {
+        void Navigation_OnMenuItemsFetched(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex) {
             Dialogs.CurrentSearchItems = new List<PlexItemSearch>();
             facadeLayout.Clear();
             foreach (var item in fetchedMenuItems) {
                 if (item is PlexItemSearch) {
                     Dialogs.CurrentSearchItems.Add(item as PlexItemSearch);
-                    continue;
-                }else if (item is MenuItem) {
+                }
+                if (item is MenuItem) {
                     facadeLayout.Add((MenuItem)item);
                 }
-            }            
-            facadeLayout.DoUpdate();
+            }
+            facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
+            facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
+            //facadeLayout.DoUpdate();
         }
 
         void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {

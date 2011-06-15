@@ -68,8 +68,7 @@ namespace PlexMediaCenter.Util {
 
         static void ArtWorkRetriever_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e) {
             if (e.Error != null || e.Cancelled) {
-                //ToDo handle
-                return;
+                throw e.Error;
             } else {
                 if (e.UserState is string) {
                     string artWorkIndex = (string)e.UserState;
