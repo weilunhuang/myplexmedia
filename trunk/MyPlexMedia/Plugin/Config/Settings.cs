@@ -15,13 +15,13 @@ namespace MyPlexMedia.Plugin.Config {
         public const int PLUGIN_WINDOW_ID = 20110614;
         public static string SKIN_FOLDER_MEDIA = Path.Combine(GUIGraphicsContext.Skin, @"Media\" + PLUGIN_NAME);
         public static string PLUGIN_MEDIA_HOVER = @"hover_MyPlexMedia.png";
-        public static string PLEX_ICON_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "icon_default.jpg");
-        public static string PLEX_ICON_DEFAULT_BONJOUR = Path.Combine(SKIN_FOLDER_MEDIA, "icon_bonjour.jpg");
-        public static string PLEX_ICON_DEFAULT_BACK = Path.Combine(SKIN_FOLDER_MEDIA, "icon_back.jpg");
-        public static string PLEX_ICON_DEFAULT_ONLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.jpg");
-        public static string PLEX_ICON_DEFAULT_OFFLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_offline.jpg");
+        public static string PLEX_ICON_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "icon_default.png");
+        public static string PLEX_ICON_DEFAULT_BONJOUR = Path.Combine(SKIN_FOLDER_MEDIA, "icon_bonjour.png");
+        public static string PLEX_ICON_DEFAULT_BACK = Path.Combine(SKIN_FOLDER_MEDIA, "icon_back.png");
+        public static string PLEX_ICON_DEFAULT_ONLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.png");
+        public static string PLEX_ICON_DEFAULT_OFFLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_offline.png");
         public static string PLEX_SERVER_LIST_XML = @"C:\Program Files (x86)\Team MediaPortal\MediaPortal\plugins\Windows\PlexServers.xml";
-        public static string PLEX_ARTWORK_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "fanart_default.jpg");
+        public static string PLEX_ARTWORK_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "default_fanart.png");
         public static string PLEX_ARTWORK_CACHE_ROOT_PATH = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs), PLUGIN_NAME);
         public static string SKINFILE_MAIN_WINDOW = GUIGraphicsContext.Skin + @"\MyPlexMedia.xml";
         public static string PLEX_ICON_DEFAULT_SEARCH;
@@ -30,10 +30,7 @@ namespace MyPlexMedia.Plugin.Config {
         public static GUIFacadeControl.Layout DefaultLayout { get; private set; }
 
         static Settings() {
-            CreatePreferredLayouts();
-
-            DefaultLayout = GUIFacadeControl.Layout.CoverFlow;
-            
+            DefaultLayout = CreatePreferredLayouts();            
             //Set defaults
             FetchCount = 10;
             CheezRootFolder = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs), PLUGIN_NAME);
@@ -41,17 +38,19 @@ namespace MyPlexMedia.Plugin.Config {
 
         }
 
-        private static void CreatePreferredLayouts() {
+        private static GUIFacadeControl.Layout CreatePreferredLayouts() {
             PreferredLayouts = new Dictionary<string, GUIFacadeControl.Layout>();
-            PreferredLayouts.Add("default", GUIFacadeControl.Layout.CoverFlow);
+            PreferredLayouts.Add("default", GUIFacadeControl.Layout.List);
             PreferredLayouts.Add("secondary", GUIFacadeControl.Layout.List);
             PreferredLayouts.Add("artist", GUIFacadeControl.Layout.LargeIcons);
             PreferredLayouts.Add("album", GUIFacadeControl.Layout.AlbumView);
             PreferredLayouts.Add("show", GUIFacadeControl.Layout.CoverFlow);
-            PreferredLayouts.Add("season", GUIFacadeControl.Layout.Filmstrip);
-            PreferredLayouts.Add("episode", GUIFacadeControl.Layout.AlbumView);
+            PreferredLayouts.Add("season", GUIFacadeControl.Layout.CoverFlow);
+            PreferredLayouts.Add("episode", GUIFacadeControl.Layout.List);
             PreferredLayouts.Add("track", GUIFacadeControl.Layout.Playlist);
             PreferredLayouts.Add("movie", GUIFacadeControl.Layout.CoverFlow);
+
+            return GUIFacadeControl.Layout.List;
         }
 
         public static int FetchCount { get; set; }

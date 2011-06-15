@@ -8,6 +8,7 @@ using System.Windows.Forms;
 namespace MyPlexMedia.Plugin.Window.Items {
     public interface IMenuItem {
         IMenuItem Parent { get; set; }
+        int LastSelectedChildIndex { get; set; }
         Uri UriPath { get; set; }     
         string BackgroundImage { get; } 
         List<IMenuItem> ChildItems { get;}

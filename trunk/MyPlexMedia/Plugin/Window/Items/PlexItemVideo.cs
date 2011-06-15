@@ -22,6 +22,19 @@ namespace MyPlexMedia.Plugin.Window.Items {
             IconImageBig = MediaRetrieval.GetArtWork(Video.thumb);
             ThumbnailImage = MediaRetrieval.GetArtWork(Video.thumb);
             BackgroundImage = !String.IsNullOrEmpty(Video.art) ? MediaRetrieval.GetArtWork(Video.art) : string.Empty;
+
+            int duration;
+            if (int.TryParse(Video.duration, out duration)) {
+                base.Duration = duration;
+            }
+            try {
+                Rating = float.Parse(Video.rating);
+            } catch { }
+            FileInfo = new MediaPortal.Util.FileInformation();
+            if (!String.IsNullOrEmpty(Video.originallyAvailableAt)) {
+                FileInfo.CreationTime = DateTime.Parse(Video.originallyAvailableAt);
+                Label2 = FileInfo.CreationTime.ToShortDateString();
+            }
         }     
 
         public override void OnClicked(object sender, EventArgs e) {

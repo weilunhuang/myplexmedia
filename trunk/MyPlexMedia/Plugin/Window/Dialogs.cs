@@ -16,10 +16,10 @@ using MyPlexMedia.Plugin.Window.Items;
 namespace MyPlexMedia.Plugin.Window {
 
     internal enum Buttons {
+        BtnSearch = 1, 
         BtnSwitchLayout,        
         BtnSortAsc,
-        BtnSortDesc,        
-        BtnSearch,
+        BtnSortDesc,                
         NothingSelected
         
     }
@@ -38,8 +38,9 @@ namespace MyPlexMedia.Plugin.Window {
             return tmpList;
         }
 
-        internal static Buttons ShowContextMenu() {
-            IDialogbox contextMenu = (IDialogbox)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+
+        internal static IDialogbox contextMenu = (IDialogbox)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+        internal static Buttons ShowContextMenu() {           
             if (contextMenu == null) {
                 return Buttons.NothingSelected;
             }
@@ -59,15 +60,19 @@ namespace MyPlexMedia.Plugin.Window {
             }
         }
 
+        internal static IDialogbox search = (IDialogbox)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
         public static List<PlexItemSearch> CurrentSearchItems { get; set; }
         internal static void ShowSearchMenu() {
-            if (CurrentSearchItems != null || CurrentSearchItems.Count > 0) {
-                IDialogbox search = (IDialogbox)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+            if (CurrentSearchItems != null || CurrentSearchItems.Count > 0) {               
                 if (search == null) {
                     return;
                 }
+                search.Reset();
                 CurrentSearchItems.ForEach(item => search.Add(item));
                 search.DoModal(GUIWindowManager.ActiveWindow);
+                if(search.SelectedId > 0){
+                    CurrentSearchItems[search.SelectedId - 1].OnClicked(null, null);
+                }
             }
         }
 
@@ -79,7 +84,7 @@ namespace MyPlexMedia.Plugin.Window {
         public static string GetKeyBoardInput(string defaultText, string labelText) {                   
             if (keyboard == null) {
                 return String.Empty;
-            }  
+            } 
             keyboard.Reset();
             keyboard.Label = labelText;            
             keyboard.IsSearchKeyboard = true;

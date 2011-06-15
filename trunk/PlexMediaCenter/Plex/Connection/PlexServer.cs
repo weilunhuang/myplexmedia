@@ -6,6 +6,7 @@ using PlexMediaCenter.Util;
 using System.Xml.Serialization;
 using System.Net;
 using PlexMediaCenter.Plex.Data.Types;
+using System.Net.NetworkInformation;
 
 namespace PlexMediaCenter.Plex.Connection {
     [Serializable]
@@ -20,6 +21,18 @@ namespace PlexMediaCenter.Plex.Connection {
 
         [XmlIgnore]
         public bool IsBonjour { get; set; }
+        [XmlIgnore]
+        public bool IsOnline {
+            get {
+                try {
+                    Ping ping = new Ping();
+                    PingReply reply = ping.Send(HostAdress);
+                    return reply.Status == IPStatus.Success;
+                } catch {
+                    return false;
+                }
+            }
+        }
 
         const int PlexPort = 32400;
 
@@ -49,7 +62,7 @@ namespace PlexMediaCenter.Plex.Connection {
         }
 
         [XmlIgnore]
-        public Uri UriPlexBase { get { return new UriBuilder("http", HostAdress, PlexPort,"").Uri; } }
+        public Uri UriPlexBase { get { return new UriBuilder("http", HostAdress, PlexPort, "").Uri; } }
 
         public bool Equals(PlexServer other) {
             return HostAdress.Equals(other.HostAdress);
