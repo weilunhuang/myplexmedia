@@ -11,23 +11,17 @@ using MediaPortal.Dialogs;
 using MediaPortal.Configuration;
 using System.Threading;
 using System.Collections;
+using MyPlexMedia.Plugin.Window.Items;
 
 namespace MyPlexMedia.Plugin.Window {
 
     internal enum Buttons {
-        BtnSwitchLayout,
-        BtnCheezSitesOverview,
-        BtnBrowseMore,
+        BtnSwitchLayout,        
         BtnSortAsc,
-        BtnSortDesc,
-        BtnShowSlideShowCurrent = 503,
-        BtnShowSlideShowAllLocal = 504,
-        BtnDeleteLocalCheez = 505,
-        BtnBrowseLatestCheez = 506,
-        BtnBrowseLocalCheez = 507,
-        BtnBrowseRandomCheez,
-        BtnCancelAllDownloads,
+        BtnSortDesc,        
+        BtnSearch,
         NothingSelected
+        
     }
 
     internal static class Dialogs {
@@ -39,37 +33,8 @@ namespace MyPlexMedia.Plugin.Window {
 
         private static List<ContextMenuItem> CreateContextmenuItems() {
             List<ContextMenuItem> tmpList = new List<ContextMenuItem>();
-            tmpList.Add(new ContextMenuItem(Buttons.BtnSwitchLayout,
-                                                        "Switch Layout"));
-
-            tmpList.Add(new ContextMenuItem(Buttons.BtnCheezSitesOverview,
-                                            "show Cheezsites Overview"));
-
-            //tmpList.Add(new ContextMenuItem(ContextMenuButtons.BtnBrowseLatestCheez,
-            //                                "Browse Latest Online Cheez.."));
-
-            //tmpList.Add(new ContextMenuItem(ContextMenuButtons.BtnBrowseRandomCheez,
-            //                                "Browse Random Online Cheez.."));
-
-            //tmpList.Add(new ContextMenuItem(ContextMenuButtons.BtnBrowseLocalCheez,
-            //                                "Browse locally available Cheez.."));
-
-            tmpList.Add(new ContextMenuItem(Buttons.BtnBrowseMore,
-                                            "Gimme more of this Cheez.."));
-
-            tmpList.Add(new ContextMenuItem(Buttons.BtnShowSlideShowCurrent,
-                                           "Start Slideshow (current items)"));
-
-            tmpList.Add(new ContextMenuItem(Buttons.BtnShowSlideShowAllLocal,
-                                           "Start Slideshow (all local items)"));
-            //tmpList.Add(new ContextMenuItem(ContextMenuButtons.BtnCancelAllDownloads,
-            //                               "Cancel Cheez Download(s)!"));
-            tmpList.Add(new ContextMenuItem(Buttons.BtnDeleteLocalCheez,
-                                          "Delete all local Cheez!"));
-            //tmpList.Add(new ContextMenuItem(ContextMenuButtons.BtnSortAsc,
-            //                             "Sort by Cheez creation date/time (Asc)"));
-            //tmpList.Add(new ContextMenuItem(ContextMenuButtons.BtnSortDesc,
-            //                             "Sort by Cheez creation date/time (Desc)"));
+            tmpList.Add(new ContextMenuItem(Buttons.BtnSearch,
+                                                        "Search..."));                        
             return tmpList;
         }
 
@@ -87,18 +52,45 @@ namespace MyPlexMedia.Plugin.Window {
             return (Buttons)contextMenu.SelectedId;
         }
 
-
         private class ContextMenuItem : GUIListItem {
-
             public ContextMenuItem(Buttons itemId, string itemLabel)
                 : base(itemLabel) {
                 base.ItemId = (int)itemId;
             }
         }
 
+        public static List<PlexItemSearch> CurrentSearchItems { get; set; }
+        internal static void ShowSearchMenu() {
+            if (CurrentSearchItems != null || CurrentSearchItems.Count > 0) {
+                IDialogbox search = (IDialogbox)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
+                if (search == null) {
+                    return;
+                }
+                CurrentSearchItems.ForEach(item => search.Add(item));
+                search.DoModal(GUIWindowManager.ActiveWindow);
+            }
+        }
+
         #endregion
 
         #region GUI Helper Methods
+
+        private static VirtualKeyboard keyboard = (VirtualKeyboard)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
+        public static string GetKeyBoardInput(string defaultText, string labelText) {                   
+            if (keyboard == null) {
+                return String.Empty;
+            }  
+            keyboard.Reset();
+            keyboard.Label = labelText;            
+            keyboard.IsSearchKeyboard = true;
+            keyboard.Text = defaultText;
+            keyboard.DoModal(GUIWindowManager.ActiveWindow);
+            if (keyboard.IsConfirmed) {
+                return keyboard.Text;
+            } else {
+                return String.Empty;
+            }
+        }
 
         private static GUIDialogNotify dialogMailNotify = (GUIDialogNotify)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_NOTIFY);
         public static void ShowNotifyDialog(int timeOut, string notifyMessage) {

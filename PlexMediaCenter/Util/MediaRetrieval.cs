@@ -16,29 +16,26 @@ namespace PlexMediaCenter.Util {
 
         private static Dictionary<string, string> ImageCache { get; set; }
 
-        public static string DefaulIconPath { get; set; }
+        
+        public static string ImageBasePath { get; set; }
+        public static string DefaultImagePath { get; set; }
 
         static MediaRetrieval() {
             ImageCache = new Dictionary<string, string>();
-            foreach (string plexType in Enum.GetNames(typeof(EPlexItemTypes))) {
-                try {
-                    ImageCache.Add(plexType, "");
-                } catch {
-                    //throw; 
-                }
-            }
+            ImageBasePath = String.Empty;
+            DefaultImagePath = String.Empty;
         }
 
         private static object sync = new object();
 
         public static string GetArtWork(string imageOnlinePath) {
             if (String.IsNullOrEmpty(imageOnlinePath)) {
-                return string.Empty;
+                return DefaultImagePath;
             }
             if (File.Exists(imageOnlinePath)) {
                 return imageOnlinePath;
             }
-            string localImagePath = DefaulIconPath;
+            string localImagePath = ImageBasePath;
             if (!Directory.Exists(localImagePath)) {
                 Directory.CreateDirectory(localImagePath);
             }

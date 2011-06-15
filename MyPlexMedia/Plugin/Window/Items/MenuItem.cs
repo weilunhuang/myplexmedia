@@ -6,15 +6,22 @@ using System.Windows.Forms;
 using MediaPortal.GUI.Library;
 using MyPlexMedia.Plugin.Config;
 
+
 namespace MyPlexMedia.Plugin.Window.Items {
-    public class MenuItem : GUIListItem, IMenuItem {
+    public class MenuItem : GUIListItem, IMenuItem {               
+
+        public static event OnMenuItemSelectedEventHandler OnMenuItemSelected;
+        public delegate void OnMenuItemSelectedEventHandler(IMenuItem selectedItem);
 
         public MenuItem(IMenuItem parent, string title) : base(title) {
             Parent = parent;
             OnItemSelected += new ItemSelectedHandler(MenuItem_OnItemSelected);
+            IconImage = Settings.PLEX_ICON_DEFAULT;
+            IconImageBig = Settings.PLEX_ICON_DEFAULT;
+            ThumbnailImage = Settings.PLEX_ICON_DEFAULT;                   
         }
 
-        void MenuItem_OnItemSelected(GUIListItem item, GUIControl parent) {
+        void MenuItem_OnItemSelected(GUIListItem item, GUIControl parent) {                        
             OnSelected();
         }
 
@@ -26,7 +33,8 @@ namespace MyPlexMedia.Plugin.Window.Items {
         
         public List<IMenuItem> ChildItems { get; set; }
 
-        public virtual void OnClicked(object sender, EventArgs e) {
+        public virtual void OnClicked(object sender, EventArgs e) {            
+            //TODO: Handle Search Items!!!
             if (ChildItems != null && ChildItems.Count > 0) {
                 Navigation.ShowCurrentMenu(this);
             }
@@ -37,18 +45,10 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         public virtual void OnSelected() {
-
+            OnMenuItemSelected(this);
         }       
         
-        #endregion
-
-        protected void SetIcons(string localImagePath) {
-            IconImage = localImagePath;
-            IconImageBig = localImagePath;
-            ThumbnailImage = localImagePath;
-            RetrieveArt = true;
-            RefreshCoverArt();
-        }
+        #endregion  
 
         public void SetChildItems(List<IMenuItem> childItems) {
             childItems.ForEach(ch => ch.Parent = this);
