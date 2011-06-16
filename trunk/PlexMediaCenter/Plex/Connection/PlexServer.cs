@@ -24,13 +24,8 @@ namespace PlexMediaCenter.Plex.Connection {
         [XmlIgnore]
         public bool IsOnline {
             get {
-                try {
-                    Ping ping = new Ping();
-                    PingReply reply = ping.Send(HostAdress);
-                    return reply.Status == IPStatus.Success;
-                } catch {
-                    return false;
-                }
+                WebClient _client = new WebClient();
+                return Authenticate(ref _client);
             }
         }
 
@@ -42,12 +37,16 @@ namespace PlexMediaCenter.Plex.Connection {
             HostName = hostName;
             HostAdress = hostAdress;
             UserName = userName;
-            UserPass = Encryption.GetSHA1Hash(userName.ToLower() + Encryption.GetSHA1Hash(userPass));
+            EncryptPassword(userName, userPass);
         }
 
         public PlexServer(string hostName, string hostAdress) {
             HostName = hostName;
             HostAdress = hostAdress;
+        }
+
+        public void EncryptPassword(string userName, string userPass) {
+            UserPass = Encryption.GetSHA1Hash(userName.ToLower() + Encryption.GetSHA1Hash(userPass));
         }
 
         public override string ToString() {
@@ -77,8 +76,8 @@ namespace PlexMediaCenter.Plex.Connection {
             webClient.Headers["X-Plex-User"] = this.UserName;
             webClient.Headers["X-Plex-Pass"] = this.UserPass;
             try {
-                string serverXmlResponse = webClient.DownloadString(this.UriPlexBase);
-                SetServerCapabilities(Serialization.DeSerializeXML<MediaContainer>(serverXmlResponse));
+                string serverXmlResponse = webClient.DownloadString(this.UriPlexBase);               
+                ServerCapabilities = GetServerCapabilities(Serialization.DeSerializeXML<MediaContainer>(serverXmlResponse));
                 return ServerCapabilities != null;
             } catch (Exception e) {
                 //Log
@@ -86,8 +85,11 @@ namespace PlexMediaCenter.Plex.Connection {
             }
         }
 
-        private void SetServerCapabilities(MediaContainer serverResponse) {
-            ServerCapabilities = new PlexCapabilitiesServer(serverResponse);
+        private PlexCapabilitiesServer GetServerCapabilities(MediaContainer serverResponse) {
+            if (serverResponse == null) {
+                return null;
+            }
+            return new PlexCapabilitiesServer(serverResponse);
         }
     }
 }

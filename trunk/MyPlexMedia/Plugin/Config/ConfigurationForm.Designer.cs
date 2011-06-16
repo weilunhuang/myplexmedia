@@ -23,83 +23,242 @@ namespace MyPlexMedia.Plugin.Config {
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            this.labelCheezRootFolder = new System.Windows.Forms.Label();
-            this.textBoxCheezRootFolder = new System.Windows.Forms.TextBox();
-            this.button1 = new System.Windows.Forms.Button();
-            this.numericUpDownFetchCount = new System.Windows.Forms.NumericUpDown();
-            this.labelFetchCount = new System.Windows.Forms.Label();
+            this.components = new System.ComponentModel.Container();
+            this.label16 = new System.Windows.Forms.Label();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.checkBoxDeleteOnExit = new System.Windows.Forms.CheckBox();
+            this.labelFetchCount = new System.Windows.Forms.Label();
+            this.numericUpDownFetchCount = new System.Windows.Forms.NumericUpDown();
+            this.button1 = new System.Windows.Forms.Button();
+            this.textBoxCheezRootFolder = new System.Windows.Forms.TextBox();
+            this.labelCheezRootFolder = new System.Windows.Forms.Label();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.buttonRefreshBonjourServers = new System.Windows.Forms.Button();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.hostNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hostAdressDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.userNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.userPassDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.isBonjourDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.plexServerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFetchCount)).BeginInit();
+            this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
-            // labelCheezRootFolder
+            // label16
             // 
-            this.labelCheezRootFolder.AutoSize = true;
-            this.labelCheezRootFolder.Location = new System.Drawing.Point(12, 9);
-            this.labelCheezRootFolder.Name = "labelCheezRootFolder";
-            this.labelCheezRootFolder.Size = new System.Drawing.Size(116, 13);
-            this.labelCheezRootFolder.TabIndex = 0;
-            this.labelCheezRootFolder.Text = "Local Download folder:";
+            this.label16.AutoSize = true;
+            this.label16.BackColor = System.Drawing.Color.Transparent;
+            this.label16.Font = new System.Drawing.Font("Trebuchet MS", 25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label16.ForeColor = System.Drawing.Color.Tomato;
+            this.label16.Location = new System.Drawing.Point(12, 9);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(224, 43);
+            this.label16.TabIndex = 6;
+            this.label16.Text = "MyPlexMedia";
             // 
-            // textBoxCheezRootFolder
+            // tabControl1
             // 
-            this.textBoxCheezRootFolder.Location = new System.Drawing.Point(145, 6);
-            this.textBoxCheezRootFolder.Name = "textBoxCheezRootFolder";
-            this.textBoxCheezRootFolder.Size = new System.Drawing.Size(448, 20);
-            this.textBoxCheezRootFolder.TabIndex = 1;
+            this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+                        | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Location = new System.Drawing.Point(12, 66);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(569, 214);
+            this.tabControl1.TabIndex = 7;
             // 
-            // button1
+            // tabPage1
             // 
-            this.button1.Location = new System.Drawing.Point(599, 4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(35, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "...";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
-            // numericUpDownFetchCount
-            // 
-            this.numericUpDownFetchCount.Location = new System.Drawing.Point(145, 32);
-            this.numericUpDownFetchCount.Name = "numericUpDownFetchCount";
-            this.numericUpDownFetchCount.Size = new System.Drawing.Size(59, 20);
-            this.numericUpDownFetchCount.TabIndex = 3;
-            // 
-            // labelFetchCount
-            // 
-            this.labelFetchCount.AutoSize = true;
-            this.labelFetchCount.Location = new System.Drawing.Point(12, 34);
-            this.labelFetchCount.Name = "labelFetchCount";
-            this.labelFetchCount.Size = new System.Drawing.Size(113, 13);
-            this.labelFetchCount.TabIndex = 4;
-            this.labelFetchCount.Text = "Fetch # items at once:";
+            this.tabPage1.Controls.Add(this.checkBoxDeleteOnExit);
+            this.tabPage1.Controls.Add(this.labelFetchCount);
+            this.tabPage1.Controls.Add(this.numericUpDownFetchCount);
+            this.tabPage1.Controls.Add(this.button1);
+            this.tabPage1.Controls.Add(this.textBoxCheezRootFolder);
+            this.tabPage1.Controls.Add(this.labelCheezRootFolder);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(561, 188);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "General Settings";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // checkBoxDeleteOnExit
             // 
             this.checkBoxDeleteOnExit.AutoSize = true;
             this.checkBoxDeleteOnExit.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBoxDeleteOnExit.Location = new System.Drawing.Point(15, 58);
+            this.checkBoxDeleteOnExit.Location = new System.Drawing.Point(9, 78);
             this.checkBoxDeleteOnExit.Name = "checkBoxDeleteOnExit";
             this.checkBoxDeleteOnExit.Size = new System.Drawing.Size(189, 17);
-            this.checkBoxDeleteOnExit.TabIndex = 5;
+            this.checkBoxDeleteOnExit.TabIndex = 11;
             this.checkBoxDeleteOnExit.Text = "Delete downloaded Images on exit";
             this.checkBoxDeleteOnExit.UseVisualStyleBackColor = true;
+            // 
+            // labelFetchCount
+            // 
+            this.labelFetchCount.AutoSize = true;
+            this.labelFetchCount.Location = new System.Drawing.Point(6, 54);
+            this.labelFetchCount.Name = "labelFetchCount";
+            this.labelFetchCount.Size = new System.Drawing.Size(113, 13);
+            this.labelFetchCount.TabIndex = 10;
+            this.labelFetchCount.Text = "Fetch # items at once:";
+            // 
+            // numericUpDownFetchCount
+            // 
+            this.numericUpDownFetchCount.Location = new System.Drawing.Point(139, 52);
+            this.numericUpDownFetchCount.Name = "numericUpDownFetchCount";
+            this.numericUpDownFetchCount.Size = new System.Drawing.Size(59, 20);
+            this.numericUpDownFetchCount.TabIndex = 9;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(593, 24);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(35, 23);
+            this.button1.TabIndex = 8;
+            this.button1.Text = "...";
+            this.button1.UseVisualStyleBackColor = true;
+            // 
+            // textBoxCheezRootFolder
+            // 
+            this.textBoxCheezRootFolder.Location = new System.Drawing.Point(139, 26);
+            this.textBoxCheezRootFolder.Name = "textBoxCheezRootFolder";
+            this.textBoxCheezRootFolder.Size = new System.Drawing.Size(448, 20);
+            this.textBoxCheezRootFolder.TabIndex = 7;
+            // 
+            // labelCheezRootFolder
+            // 
+            this.labelCheezRootFolder.AutoSize = true;
+            this.labelCheezRootFolder.Location = new System.Drawing.Point(6, 29);
+            this.labelCheezRootFolder.Name = "labelCheezRootFolder";
+            this.labelCheezRootFolder.Size = new System.Drawing.Size(116, 13);
+            this.labelCheezRootFolder.TabIndex = 6;
+            this.labelCheezRootFolder.Text = "Local Download folder:";
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.buttonRefreshBonjourServers);
+            this.tabPage2.Controls.Add(this.dataGridView1);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(561, 188);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Plex Servers";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            this.tabPage2.Enter += new System.EventHandler(this.tabPage2_Enter);
+            // 
+            // buttonRefreshBonjourServers
+            // 
+            this.buttonRefreshBonjourServers.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.buttonRefreshBonjourServers.Location = new System.Drawing.Point(3, 162);
+            this.buttonRefreshBonjourServers.Name = "buttonRefreshBonjourServers";
+            this.buttonRefreshBonjourServers.Size = new System.Drawing.Size(555, 23);
+            this.buttonRefreshBonjourServers.TabIndex = 1;
+            this.buttonRefreshBonjourServers.Text = "Update Online Status && Discover Plex Servers (Bonjour Discovery)";
+            this.buttonRefreshBonjourServers.UseVisualStyleBackColor = true;
+            this.buttonRefreshBonjourServers.Click += new System.EventHandler(this.buttonRefreshBonjourServers_Click);
+            // 
+            // dataGridView1
+            // 
+            this.dataGridView1.AllowUserToResizeColumns = false;
+            this.dataGridView1.AllowUserToResizeRows = false;
+            this.dataGridView1.AutoGenerateColumns = false;
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.hostNameDataGridViewTextBoxColumn,
+            this.hostAdressDataGridViewTextBoxColumn,
+            this.userNameDataGridViewTextBoxColumn,
+            this.userPassDataGridViewTextBoxColumn,
+            this.isBonjourDataGridViewCheckBoxColumn});
+            this.dataGridView1.DataSource = this.plexServerBindingSource;
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.dataGridView1.Location = new System.Drawing.Point(3, 3);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersWidth = 25;
+            this.dataGridView1.Size = new System.Drawing.Size(555, 153);
+            this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
+            this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
+            this.dataGridView1.RowsAdded += new System.Windows.Forms.DataGridViewRowsAddedEventHandler(this.dataGridView1_RowsAdded);
+            // 
+            // hostNameDataGridViewTextBoxColumn
+            // 
+            this.hostNameDataGridViewTextBoxColumn.DataPropertyName = "HostName";
+            this.hostNameDataGridViewTextBoxColumn.HeaderText = "HostName";
+            this.hostNameDataGridViewTextBoxColumn.Name = "hostNameDataGridViewTextBoxColumn";
+            // 
+            // hostAdressDataGridViewTextBoxColumn
+            // 
+            this.hostAdressDataGridViewTextBoxColumn.DataPropertyName = "HostAdress";
+            this.hostAdressDataGridViewTextBoxColumn.HeaderText = "HostAdress";
+            this.hostAdressDataGridViewTextBoxColumn.Name = "hostAdressDataGridViewTextBoxColumn";
+            // 
+            // userNameDataGridViewTextBoxColumn
+            // 
+            this.userNameDataGridViewTextBoxColumn.DataPropertyName = "UserName";
+            this.userNameDataGridViewTextBoxColumn.HeaderText = "UserName";
+            this.userNameDataGridViewTextBoxColumn.Name = "userNameDataGridViewTextBoxColumn";
+            // 
+            // userPassDataGridViewTextBoxColumn
+            // 
+            this.userPassDataGridViewTextBoxColumn.DataPropertyName = "UserPass";
+            this.userPassDataGridViewTextBoxColumn.HeaderText = "UserPass";
+            this.userPassDataGridViewTextBoxColumn.Name = "userPassDataGridViewTextBoxColumn";
+            // 
+            // isBonjourDataGridViewCheckBoxColumn
+            // 
+            this.isBonjourDataGridViewCheckBoxColumn.DataPropertyName = "IsBonjour";
+            this.isBonjourDataGridViewCheckBoxColumn.HeaderText = "IsBonjour";
+            this.isBonjourDataGridViewCheckBoxColumn.Name = "isBonjourDataGridViewCheckBoxColumn";
+            this.isBonjourDataGridViewCheckBoxColumn.ReadOnly = true;
+            // 
+            // plexServerBindingSource
+            // 
+            this.plexServerBindingSource.DataSource = typeof(PlexMediaCenter.Plex.Connection.PlexServer);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.pictureBox1.Image = global::MyPlexMedia.Properties.Resources.icon_default;
+            this.pictureBox1.Location = new System.Drawing.Point(511, 9);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(70, 70);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBox1.TabIndex = 8;
+            this.pictureBox1.TabStop = false;
             // 
             // ConfigurationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(656, 432);
-            this.Controls.Add(this.checkBoxDeleteOnExit);
-            this.Controls.Add(this.labelFetchCount);
-            this.Controls.Add(this.numericUpDownFetchCount);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.textBoxCheezRootFolder);
-            this.Controls.Add(this.labelCheezRootFolder);
+            this.BackgroundImage = global::MyPlexMedia.Properties.Resources.config_ctripes;
+            this.ClientSize = new System.Drawing.Size(593, 292);
+            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.tabControl1);
+            this.Controls.Add(this.label16);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Name = "ConfigurationForm";
             this.Text = "MyPlexMedia - Configuration";
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownFetchCount)).EndInit();
+            this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -107,12 +266,26 @@ namespace MyPlexMedia.Plugin.Config {
 
         #endregion
 
-        private System.Windows.Forms.Label labelCheezRootFolder;
-        private System.Windows.Forms.TextBox textBoxCheezRootFolder;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.NumericUpDown numericUpDownFetchCount;
-        private System.Windows.Forms.Label labelFetchCount;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.CheckBox checkBoxDeleteOnExit;
+        private System.Windows.Forms.Label labelFetchCount;
+        private System.Windows.Forms.NumericUpDown numericUpDownFetchCount;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox textBoxCheezRootFolder;
+        private System.Windows.Forms.Label labelCheezRootFolder;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Button buttonRefreshBonjourServers;
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn hostNameDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn hostAdressDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn userNameDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn userPassDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn isBonjourDataGridViewCheckBoxColumn;
+        private System.Windows.Forms.BindingSource plexServerBindingSource;
+        private System.Windows.Forms.PictureBox pictureBox1;
+
 
     }
 }

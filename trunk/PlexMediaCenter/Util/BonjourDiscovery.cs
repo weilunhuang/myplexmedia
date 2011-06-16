@@ -7,7 +7,7 @@ using System.Net;
 using PlexMediaCenter.Plex.Connection;
 
 namespace PlexMediaCenter.Util {
-    static class BonjourDiscovery {
+    public static class BonjourDiscovery {
 
         private static NetServiceBrowser BonjourBrowser { get; set; }
 
