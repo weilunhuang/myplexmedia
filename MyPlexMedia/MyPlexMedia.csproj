@@ -89,6 +89,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <None Include="app.config" />
+    <None Include="Properties\DataSources\PlexMediaCenter.Plex.Connection.PlexServer.datasource" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -107,10 +108,12 @@
     <Content Include="Resources\dll\WindowPlugins.dll" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_disabled.png" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_enabled.png" />
+    <None Include="Resources\img\config_ctripes.png" />
+    <Content Include="Skin\Media\MyPlexMedia\icon_back.png" />
     <Content Include="Skin\Media\MyPlexMedia\icon_bonjour.png" />
+    <None Include="Skin\Media\MyPlexMedia\icon_default.png" />
     <Content Include="Skin\Media\MyPlexMedia\icon_offline.png" />
     <Content Include="Skin\Media\MyPlexMedia\icon_online.png" />
-    <Content Include="Skin\Media\MyPlexMedia\icon_default.jpg" />
     <Content Include="Skin\MyPlexMedia.xml" />
     <Content Include="Skin\Media\hover_MyPlexMedia.png" />
   </ItemGroup>

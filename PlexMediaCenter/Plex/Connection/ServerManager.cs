@@ -55,10 +55,10 @@ namespace PlexMediaCenter.Plex.Connection {
                     OnServerManangerError(new PlexException(this.GetType(), String.Format("Unable to deserialize '{0}'", ServerXmlFile), e));
                 }
             }
-            return null;
+            return new List<PlexServer>();
         }
 
-        private void SavePlexServers(List<PlexServer> plexServers) {
+        public void SavePlexServers(List<PlexServer> plexServers) {
             if (plexServers == null) {
                 OnServerManangerError(new PlexException(this.GetType(), "Unable to save server list", new ArgumentNullException("plexServers")));
                 return;
