@@ -4,6 +4,7 @@ using System.Net;
 using PlexMediaCenter.Plex.Connection;
 using PlexMediaCenter.Util;
 using PlexMediaCenter.Plex.Data.Types;
+using PlexMediaCenter.Plex.Data;
 
 namespace PlexMediaCenter.Plex {
    public static class PlexInterface {
@@ -17,9 +18,10 @@ namespace PlexMediaCenter.Plex {
         public static event OnResponseReceivedEventHandler OnResponseReceived;
         public delegate void OnResponseReceivedEventHandler(MediaContainer response);
         public static event OnPlexErrorEventHandler OnPlexError;
-        public delegate void OnPlexErrorEventHandler(Exception e);        
+        public delegate void OnPlexErrorEventHandler(PlexException e);        
 
-        private static ServerManager ServerManager { get; set; }
+        public static ServerManager ServerManager { get; private set; }
+        public static ArtworkRetriever ArtworkRetriever { get; private set; }
 
         static PlexInterface() {
             _webClient = new WebClient();
@@ -28,9 +30,18 @@ namespace PlexMediaCenter.Plex {
         }               
 
        public static void Init(string serverListXmlPath, string defaultBasePath, string defaultImage){
-           ServerManager = new ServerManager(serverListXmlPath);          
-           MediaRetrieval.ImageBasePath = defaultBasePath;
-           MediaRetrieval.DefaultImagePath = defaultImage;
+           ServerManager = new ServerManager(serverListXmlPath);
+           ServerManager.OnServerManangerError += new ServerManager.OnServerManangerErrorEventHandler(ServerManager_OnServerManangerError);
+           ArtworkRetriever = new ArtworkRetriever(defaultBasePath, defaultImage);
+           ArtworkRetriever.OnArtworkRetrievalError += new ArtworkRetriever.OnArtworkRetrievalErrorEventHandler(MediaRetrieval_OnArtWorkRetrievalError);
+       }
+
+       static void MediaRetrieval_OnArtWorkRetrievalError(PlexException e) {
+           OnPlexError(e);
+       }
+
+       static void ServerManager_OnServerManangerError(PlexException e) {
+           OnPlexError(e);
        }
 
         static void _webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
@@ -53,28 +64,29 @@ namespace PlexMediaCenter.Plex {
         public static MediaContainer TryGetPlexSections(PlexServer plexServer) {
             if (Login(plexServer)) {
                 try {
-                    ServerManager.SetPlexServer(plexServer);
+                    ServerManager.SetCurrentPlexServer(plexServer);
                     return RequestPlexItems(plexServer.UriPlexSections);
                 } catch (Exception e) {
-                    throw e;
+                    OnPlexError(new PlexException(typeof(PlexInterface), "TryGetPlexSections failed for: " + plexServer.ToString(), e));
                 }
-            } else {                
-                return null;
+            } else {
+                OnPlexError(new PlexException(typeof(PlexInterface),"Unable to login to: " + plexServer.ToString(), null));                
             }
+            return null;
         }
 
         public static MediaContainer TryGetPlexServerRoot(PlexServer plexServer) {
             if (Login(plexServer)) {
                 try {
-                    ServerManager.SetPlexServer(plexServer);
+                    ServerManager.SetCurrentPlexServer(plexServer);
                     return RequestPlexItems(plexServer.UriPlexBase);
                 } catch (Exception e) {
-                    throw e;
+                    OnPlexError(new PlexException(typeof(PlexInterface), "Unable to get root items for: " + plexServer.ToString(),e));
                 }
             } else {
-                OnPlexError(new Exception("Unable to login to:" + plexServer.HostAdress));
-                return null;
+                OnPlexError(new PlexException(typeof(PlexInterface), "Unable to login to: " + plexServer.ToString(), null));                
             }
+            return null;
         }
 
         public static MediaContainer RequestPlexItems(Uri selectedPath) {   
@@ -83,22 +95,11 @@ namespace PlexMediaCenter.Plex {
                 requestedContainer.UriSource = selectedPath;
                 return requestedContainer;
             } catch (Exception e) {
-                OnPlexError(e);
-                throw e;               
+                OnPlexError(new PlexException(typeof(PlexInterface), "Unable to get items from path: " + selectedPath.AbsoluteUri, e));        
             }
+            return null;
         }
-
-        public static MediaContainer RequestPlexItems(string localPath){
-            try {
-                MediaContainer requestedContainer = Serialization.DeSerialize<MediaContainer>(localPath);
-                requestedContainer.UriSource = new Uri(localPath);
-                return requestedContainer;
-            } catch (Exception e) {
-                OnPlexError(e);
-                throw e;
-            }
-        }        
-
+      
         public static bool PlexServersAvailable {
             get {
                 return ServerManager.PlexServers != null

@@ -3,32 +3,37 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-
 using System.Net;
 using System.IO;
-using PlexMediaCenter.Plex;
 
-namespace PlexMediaCenter.Util {
-    public static class MediaRetrieval {
 
-        public static event OnArtWorkRetrievedEventHandler OnArtWorkRetrieved;
+namespace PlexMediaCenter.Plex.Data {
+    public class ArtworkRetriever {
+
+        public event OnArtworkRetrievalErrorEventHandler OnArtworkRetrievalError;
+        public delegate void OnArtworkRetrievalErrorEventHandler(PlexException e);
+
+        public event OnArtworkRetrievalStartedEventHandler OnArtworkRetrievalStarted;
+        public delegate void OnArtworkRetrievalStartedEventHandler(string currentArtworl);
+
+        public event OnArtWorkRetrievedEventHandler OnArtWorkRetrieved;
         public delegate void OnArtWorkRetrievedEventHandler(string artWork);
 
-        private static Dictionary<string, string> ImageCache { get; set; }
+        private Dictionary<string, string> ImageCache { get; set; }
 
         
-        public static string ImageBasePath { get; set; }
-        public static string DefaultImagePath { get; set; }
+        public string ImageBasePath { get; private set; }
+        public string DefaultImagePath { get; private set; }
 
-        static MediaRetrieval() {
+        public ArtworkRetriever(string basePath, string defaultImagePath) {
             ImageCache = new Dictionary<string, string>();
-            ImageBasePath = String.Empty;
-            DefaultImagePath = String.Empty;
+            ImageBasePath = basePath;
+            DefaultImagePath = defaultImagePath;
         }
 
-        private static object sync = new object();
+        private object sync = new object();
 
-        public static string GetArtWork(string imageOnlinePath) {
+        public string GetArtwork(string imageOnlinePath) {
             if (String.IsNullOrEmpty(imageOnlinePath)) {
                 return DefaultImagePath;
             }
@@ -57,16 +62,15 @@ namespace PlexMediaCenter.Util {
             }
         }
 
-        public static void DownloadImage(string imageOnlinePath, string imageLocalPath) {
-            WebClient ArtWorkRetriever = new WebClient();
-            PlexInterface.PlexServerCurrent.AddAuthHeaders(ref ArtWorkRetriever);
-            ArtWorkRetriever.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(ArtWorkRetriever_DownloadFileCompleted);
-            ArtWorkRetriever.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ArtWorkRetriever_DownloadProgressChanged);
-
-            ArtWorkRetriever.DownloadFileAsync(new Uri(PlexInterface.PlexServerCurrent.UriPlexBase, imageOnlinePath), imageLocalPath, imageOnlinePath);
+        public void DownloadImage(string imageOnlinePath, string imageLocalPath) {
+            WebClient ArtworkRetriever = new WebClient();
+            PlexInterface.PlexServerCurrent.AddAuthHeaders(ref ArtworkRetriever);
+            ArtworkRetriever.DownloadFileCompleted += new System.ComponentModel.AsyncCompletedEventHandler(ArtWorkRetriever_DownloadFileCompleted);
+            ArtworkRetriever.DownloadProgressChanged += new DownloadProgressChangedEventHandler(ArtWorkRetriever_DownloadProgressChanged);
+            ArtworkRetriever.DownloadFileAsync(new Uri(PlexInterface.PlexServerCurrent.UriPlexBase, imageOnlinePath), imageLocalPath, imageOnlinePath);
         }
 
-        static void ArtWorkRetriever_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e) {
+        void ArtWorkRetriever_DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e) {
             if (e.Error != null || e.Cancelled) {
                 throw e.Error;
             } else {
@@ -79,11 +83,11 @@ namespace PlexMediaCenter.Util {
             }
         }
 
-        static void ArtWorkRetriever_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
+        void ArtWorkRetriever_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
             //throw new NotImplementedException();
         }
 
-        private static string GetSafeFilenameFromUrl(string url, char replaceChar) {
+        public static string GetSafeFilenameFromUrl(string url, char replaceChar) {
             foreach (char c in System.IO.Path.GetInvalidFileNameChars()) {
                 url = url.Replace(c, replaceChar);
             }

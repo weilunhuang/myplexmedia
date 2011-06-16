@@ -18,7 +18,7 @@ namespace MyPlexMedia.Plugin.Window {
         public static event OnMenuItemsFetchedEventHandler OnMenuItemsFetched;
         public delegate void OnMenuItemsFetchedEventHandler(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex);
 
-        public static PlexItem RootItem { get; set; }
+        public static PlexItemBase RootItem { get; set; }
         static List<IMenuItem> RootMenu { get; set; }
         static MenuItem ServerItem { get; set; }
         static List<IMenuItem> ServerMenu { get; set; }
@@ -27,8 +27,8 @@ namespace MyPlexMedia.Plugin.Window {
 
         static Navigation() {
             PlexInterface.OnPlexError += new PlexInterface.OnPlexErrorEventHandler(PlexInterface_OnPlexError);
-            ServerManager.OnPlexServersChanged += new ServerManager.OnPlexServersChangedEventHandler(ServerManager_OnPlexServersChanged);
-            RootItem = new PlexItem(null, "Root Item", null);
+            PlexInterface.ServerManager.OnPlexServersChanged += new ServerManager.OnPlexServersChangedEventHandler(ServerManager_OnPlexServersChanged);
+            RootItem = new PlexItemBase(null, "Root Item", null);
             ServerItem = new MenuItem(RootItem, "Plex Servers");
             RootMenu = new List<IMenuItem>();
             RootMenu.Add(ServerItem);
@@ -51,11 +51,14 @@ namespace MyPlexMedia.Plugin.Window {
         static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
             ServerMenu = updatedServerList.ConvertAll<IMenuItem>(svr => new ActionItem(ServerItem, svr.HostAdress, svr.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE, () => ShowRootMenu(PlexInterface.TryGetPlexSections(svr))));
             ServerMenu.Add(new ActionItem(null, "Refresh Bonjouor...", Settings.PLEX_ICON_DEFAULT_BONJOUR, () => PlexInterface.RefreshBonjourServers()));
+            ServerMenu.Add(new ActionItem(null, "Add Plex Server...", Settings.PLEX_ICON_DEFAULT_ONLINE, () => AddNewPlexServer()));
             ServerItem.SetChildItems(ServerMenu);
             if (CurrentItem == ServerItem) {
                 ShowCurrentMenu(ServerItem, 0);
             }
         }
+
+
 
         internal static bool CreateStartupMenu() {
             RefreshServerMenu();
@@ -65,7 +68,7 @@ namespace MyPlexMedia.Plugin.Window {
                 if (PlexInterface.PlexServersAvailable) {
                     ShowCurrentMenu(ServerItem, 0);
                 } else {
-
+                    OnErrorOccured(e);
                 }
             }
             return true;
@@ -74,11 +77,11 @@ namespace MyPlexMedia.Plugin.Window {
         internal static void FetchPreviousMenu(IMenuItem currentItem) {
             if (currentItem != null && currentItem.Parent != null) {
                 try {
-                    (currentItem.Parent as PlexItem).SetPreferredLayout();
+                    (currentItem.Parent as PlexItemBase).SetPreferredLayout();
                 } catch {
                 }
                 ShowCurrentMenu(currentItem.Parent, currentItem.Parent.LastSelectedChildIndex);
-            } 
+            }
         }
 
         internal static void ShowCurrentMenu(IMenuItem parentItem, int selectFacadeIndex) {
@@ -90,7 +93,7 @@ namespace MyPlexMedia.Plugin.Window {
             }
         }
 
-        internal static List<IMenuItem> GetSubMenuItems(PlexItem parentItem, MediaContainer plexResponseConatiner) {
+        internal static List<IMenuItem> GetSubMenuItems(PlexItemBase parentItem, MediaContainer plexResponseConatiner) {
             if (!String.IsNullOrEmpty(plexResponseConatiner.viewGroup) && Settings.PreferredLayouts.ContainsKey(plexResponseConatiner.viewGroup)) {
                 parentItem.PreferredLayout = Settings.PreferredLayouts[plexResponseConatiner.viewGroup];
             } else {
@@ -106,6 +109,21 @@ namespace MyPlexMedia.Plugin.Window {
 
         internal static void RefreshServerMenu() {
             PlexInterface.RefreshBonjourServers();
+        }
+
+        internal static void AddNewPlexServer() {
+            PlexServer newServer = new PlexServer();
+            newServer.HostName = Dialogs.GetKeyBoardInput("Friendly name", "HostName");
+            newServer.HostAdress = Dialogs.GetKeyBoardInput("Host Adress", "HostAdress");
+            newServer.UserName = Dialogs.GetKeyBoardInput("Login", "UserName");
+            newServer.UserPass = Dialogs.GetKeyBoardInput("Password", "UserPasse");
+            if (newServer.IsOnline) {
+                PlexInterface.ServerManager.SetCurrentPlexServer(newServer);
+            } else {
+                if (Dialogs.ShowCustomYesNo("PlexServer not found!", "The new PlexServer appears to be offline \nor was misconfigured...", "Try Again!", "Cancel", false)) {
+                    AddNewPlexServer();
+                }
+            }
         }
 
     }

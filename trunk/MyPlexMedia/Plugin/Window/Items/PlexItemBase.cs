@@ -10,7 +10,7 @@ using PlexMediaCenter.Plex.Data.Types;
 
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    public class PlexItem : MenuItem {
+    public class PlexItemBase : MenuItem {
 
         public static event OnPreferredLayoutEventHandler OnPreferredLayout;
         public delegate void OnPreferredLayoutEventHandler(GUIFacadeControl.Layout preferredLayout);
@@ -24,7 +24,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public GUIFacadeControl.Layout PreferredLayout { get; set; }
         public MediaContainer ItemDetails { get; set; }
 
-        public PlexItem(IMenuItem parentItem, string title, Uri path)
+        public PlexItemBase(IMenuItem parentItem, string title, Uri path)
             : base(parentItem, title) {
             if (path != null) {
                 UriPath = path.AbsoluteUri.Contains("?") ? path : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");

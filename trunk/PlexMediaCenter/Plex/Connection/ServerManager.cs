@@ -4,30 +4,32 @@ using System.Linq;
 using System.Text;
 using PlexMediaCenter.Plex;
 using System.IO;
-using PlexMediaCenter.Plex.Connection;
+using PlexMediaCenter.Util;
 
-namespace PlexMediaCenter.Util {
+namespace PlexMediaCenter.Plex.Connection {
 
-    public class ServerManager {       
+    public class ServerManager {
 
-        public static event OnPlexServersChangedEventHandler OnPlexServersChanged;
+        public event OnServerManangerErrorEventHandler OnServerManangerError;
+        public delegate void OnServerManangerErrorEventHandler(PlexException e);
+
+        public event OnPlexServersChangedEventHandler OnPlexServersChanged;
         public delegate void OnPlexServersChangedEventHandler(List<PlexServer> updatedServerList);
 
         private string ServerXmlFile { get; set; }
-       
-        public  ServerManager(string serverXmlFile) {
-            if(string.IsNullOrEmpty(serverXmlFile)){
+
+        public ServerManager(string serverXmlFile) {
+            if (string.IsNullOrEmpty(serverXmlFile)) {
                 throw new Exception();
             }
             ServerXmlFile = serverXmlFile;
             PlexServers = LoadPlexServers();
-            PlexServerCurrent = PlexServers[1];
-            BonjourDiscovery.OnBonjourServer += new BonjourDiscovery.OnBonjourServerEventHandler(BonjourDiscovery_OnBonjourServer);            
+            BonjourDiscovery.OnBonjourServer += new BonjourDiscovery.OnBonjourServerEventHandler(BonjourDiscovery_OnBonjourServer);
         }
 
         ~ServerManager() {
             SavePlexServers(PlexServers);
-        }       
+        }
 
         public List<PlexServer> PlexServers { get; private set; }
 
@@ -39,27 +41,26 @@ namespace PlexMediaCenter.Util {
             private set {
                 _plexServerCurrent = value;
                 if (!PlexServers.Contains(value)) {
-                    PlexServers.Insert(0, value);                    
+                    PlexServers.Insert(0, value);
                 }
-                SavePlexServers(PlexServers);               
+                SavePlexServers(PlexServers);
             }
         }
 
         private List<PlexServer> LoadPlexServers() {
-            List<PlexServer> plexServers = new List<PlexServer>();
             if (File.Exists(ServerXmlFile)) {
                 try {
-                    plexServers = Serialization.DeSerialize<List<PlexServer>>(ServerXmlFile);
+                    return Serialization.DeSerialize<List<PlexServer>>(ServerXmlFile);
                 } catch (Exception e) {
-                    //throw e;
+                    OnServerManangerError(new PlexException(this.GetType(), String.Format("Unable to deserialize '{0}'", ServerXmlFile), e));
                 }
             }
-            return plexServers;
+            return null;
         }
 
         private void SavePlexServers(List<PlexServer> plexServers) {
-            
             if (plexServers == null) {
+                OnServerManangerError(new PlexException(this.GetType(), "Unable to save server list", new ArgumentNullException("plexServers")));
                 return;
             }
             try {
@@ -67,32 +68,32 @@ namespace PlexMediaCenter.Util {
                     File.Delete(ServerXmlFile);
                 }
                 Serialization.Serialize(ServerXmlFile, plexServers);
-            } catch (Exception e){
-                throw e;
+            } catch (Exception e) {
+                OnServerManangerError(new PlexException(this.GetType(), String.Format("Unable to serialize '{0}'", ServerXmlFile), e));
             }
         }
 
 
 
-        public void SetPlexServer(PlexServer server) {
+        public void SetCurrentPlexServer(PlexServer server) {
             PlexServerCurrent = server;
         }
 
         void BonjourDiscovery_OnBonjourServer(PlexServer bonjourDiscoveredServer) {
             if (PlexServers.Contains<PlexServer>(bonjourDiscoveredServer)) {
-                PlexServers.Find(x=> x.Equals(bonjourDiscoveredServer)).IsBonjour = true;
-            }else{
+                PlexServers.Find(x => x.Equals(bonjourDiscoveredServer)).IsBonjour = true;
+            } else {
                 PlexServers.Add(bonjourDiscoveredServer);
                 OnPlexServersChanged(PlexServers);
             }
         }
 
-        public void RefrehBonjourServers() {            
+        public void RefrehBonjourServers() {
             if (PlexServers.Count > 0) {
                 OnPlexServersChanged(PlexServers);
             }
             BonjourDiscovery.RefreshBonjourDiscovery();
-        }               
+        }
 
 
         internal bool Authenticate(ref System.Net.WebClient _webClient, PlexServer plexServer) {

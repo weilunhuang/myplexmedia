@@ -11,17 +11,17 @@ using PlexMediaCenter.Plex;
 using MediaPortal.Player;
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    class PlexItemVideo : PlexItem {
+    class PlexItemVideo : PlexItemBase {
 
         public MediaContainerVideo Video { get; set; }
 
         public PlexItemVideo(IMenuItem parentItem, string title, Uri path, MediaContainerVideo video)
             : base(parentItem, title, path) {
             Video = video;            
-            IconImage = MediaRetrieval.GetArtWork(Video.thumb);
-            IconImageBig = MediaRetrieval.GetArtWork(Video.thumb);
-            ThumbnailImage = MediaRetrieval.GetArtWork(Video.thumb);
-            BackgroundImage = !String.IsNullOrEmpty(Video.art) ? MediaRetrieval.GetArtWork(Video.art) : string.Empty;
+            IconImage = PlexInterface.ArtworkRetriever.GetArtwork(Video.thumb);
+            IconImageBig = PlexInterface.ArtworkRetriever.GetArtwork(Video.thumb);
+            ThumbnailImage = PlexInterface.ArtworkRetriever.GetArtwork(Video.thumb);
+            BackgroundImage = !String.IsNullOrEmpty(Video.art) ? PlexInterface.ArtworkRetriever.GetArtwork(Video.art) : string.Empty;
 
             int duration;
             if (int.TryParse(Video.duration, out duration)) {
@@ -37,8 +37,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             }
         }     
 
-        public override void OnClicked(object sender, EventArgs e) {
-        
+        public override void OnClicked(object sender, EventArgs e) {        
            g_Player.PlayVideoStream(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, PlexInterface.GetAllVideoPartKeys(Video).First()).AbsoluteUri);
            MediaPortal.Player.g_Player.ShowFullScreenWindow();
         }
