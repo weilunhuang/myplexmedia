@@ -9,6 +9,7 @@ using PlexMediaCenter.Plex;
 using PlexMediaCenter.Util;
 using System.IO;
 using MediaPortal.GUI.Video;
+using PlexMediaCenter.Plex.Data;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main : WindowPluginBase {
@@ -152,22 +153,22 @@ namespace MyPlexMedia.Plugin.Window {
 
         private void RegisterEventHandlers() {
             PlexInterface.OnPlexError += new PlexInterface.OnPlexErrorEventHandler(PlexInterface_OnPlexError);
-            MediaRetrieval.OnArtWorkRetrieved += new MediaRetrieval.OnArtWorkRetrievedEventHandler(MediaRetrieval_OnArtWorkRetrieved);
-            PlexItem.OnHasBackground += new PlexItem.OnHasBackgroundEventHandler(MenuItem_OnHasBackground);
+            PlexInterface.ArtworkRetriever.OnArtWorkRetrieved += new ArtworkRetriever.OnArtWorkRetrievedEventHandler(MediaRetrieval_OnArtWorkRetrieved);
+            PlexItemBase.OnHasBackground += new PlexItemBase.OnHasBackgroundEventHandler(MenuItem_OnHasBackground);
             MenuItem.OnMenuItemSelected += new MenuItem.OnMenuItemSelectedEventHandler(MenuItem_OnMenuItemSelected);
-            PlexItem.OnPreferredLayout += new PlexItem.OnPreferredLayoutEventHandler(MenuItem_OnPreferredLayout);
-            PlexItem.OnItemDetailsUpdated += new PlexItem.OnItemDetailsUpdatedEventHandler(PlexItem_OnItemDetailsUpdated);
+            PlexItemBase.OnPreferredLayout += new PlexItemBase.OnPreferredLayoutEventHandler(MenuItem_OnPreferredLayout);
+            PlexItemBase.OnItemDetailsUpdated += new PlexItemBase.OnItemDetailsUpdatedEventHandler(PlexItem_OnItemDetailsUpdated);
             Navigation.OnMenuItemsFetched += new Navigation.OnMenuItemsFetchedEventHandler(Navigation_OnMenuItemsFetched);
             Navigation.OnErrorOccured += new Navigation.OnErrorOccuredEventHandler(PlexInterface_OnPlexError);
         }
 
         private void UnRegisterEventHandlers() {
             PlexInterface.OnPlexError -= PlexInterface_OnPlexError;
-            MediaRetrieval.OnArtWorkRetrieved -= MediaRetrieval_OnArtWorkRetrieved;
-            PlexItem.OnHasBackground -= MenuItem_OnHasBackground;
+            PlexInterface.ArtworkRetriever.OnArtWorkRetrieved -= MediaRetrieval_OnArtWorkRetrieved;
+            PlexItemBase.OnHasBackground -= MenuItem_OnHasBackground;
             MenuItem.OnMenuItemSelected -= MenuItem_OnMenuItemSelected;
-            PlexItem.OnPreferredLayout -= MenuItem_OnPreferredLayout;
-            PlexItem.OnItemDetailsUpdated -= PlexItem_OnItemDetailsUpdated;
+            PlexItemBase.OnPreferredLayout -= MenuItem_OnPreferredLayout;
+            PlexItemBase.OnItemDetailsUpdated -= PlexItem_OnItemDetailsUpdated;
             Navigation.OnMenuItemsFetched -= Navigation_OnMenuItemsFetched; 
             Navigation.OnErrorOccured -= PlexInterface_OnPlexError;
         }
@@ -177,9 +178,9 @@ namespace MyPlexMedia.Plugin.Window {
         #region Plugin Event Handlers
 
         void PlexInterface_OnPlexError(Exception plexError) {
+            Log.Error(plexError);
             Dialogs.ShowNotifyDialog(30, plexError.ToString());
         }
-
 
         #endregion
     }

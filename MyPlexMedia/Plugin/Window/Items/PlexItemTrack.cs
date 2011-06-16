@@ -9,7 +9,7 @@ using PlexMediaCenter.Util;
 using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    class PlexItemTrack : PlexItem {
+    class PlexItemTrack : PlexItemBase {
 
         public MediaContainerTrack Track { get; set; }
 

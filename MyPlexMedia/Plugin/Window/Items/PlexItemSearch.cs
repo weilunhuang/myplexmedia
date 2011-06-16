@@ -5,7 +5,7 @@ using System.Text;
 using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    class PlexItemSearch : PlexItem {
+    class PlexItemSearch : PlexItemBase {
 
         private string Prompt { get; set; }
         
