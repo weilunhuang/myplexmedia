@@ -15,9 +15,9 @@ namespace PlexMediaCenter.Plex.Data.Types
         private System.Collections.Generic.List<object> itemsField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Genre", typeof(Genre), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("Media", typeof(Media), Order=0)]
-        [System.Xml.Serialization.XmlElementAttribute("MediaContainer", typeof(MediaContainer), Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("Genre", typeof(Genre))]
+        [System.Xml.Serialization.XmlElementAttribute("Media", typeof(Media))]
+        [System.Xml.Serialization.XmlElementAttribute("MediaContainer", typeof(MediaContainer))]
         public System.Collections.Generic.List<object> Items
         {
             get

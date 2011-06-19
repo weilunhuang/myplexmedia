@@ -7,27 +7,25 @@ using System.Xml.Serialization;
 using System.Net;
 using PlexMediaCenter.Plex.Data.Types;
 using System.Net.NetworkInformation;
+using System.Net.Sockets;
 
 namespace PlexMediaCenter.Plex.Connection {
     [Serializable]
     public class PlexServer : IEquatable<PlexServer> {
 
+        public String FriendlyName { get { return ServerCapabilities != null ? ServerCapabilities.FriendlyName : String.Empty; } }
         public String HostName { get; set; }
         public String HostAdress { get; set; }
         public String UserName { get; set; }
         public String UserPass { get; set; }
 
+        [XmlIgnore]
         public PlexCapabilitiesServer ServerCapabilities { get; set; }
 
         [XmlIgnore]
         public bool IsBonjour { get; set; }
         [XmlIgnore]
-        public bool IsOnline {
-            get {
-                WebClient _client = new WebClient();
-                return Authenticate(ref _client);
-            }
-        }
+        public bool IsOnline { get; set; }
 
         const int PlexPort = 32400;
 
@@ -72,16 +70,31 @@ namespace PlexMediaCenter.Plex.Connection {
             webClient.Headers["X-Plex-Pass"] = this.UserPass;
         }
 
-        public bool Authenticate(ref WebClient webClient) {
-            webClient.Headers["X-Plex-User"] = this.UserName;
-            webClient.Headers["X-Plex-Pass"] = this.UserPass;
-            try {
-                string serverXmlResponse = webClient.DownloadString(this.UriPlexBase);               
-                ServerCapabilities = GetServerCapabilities(Serialization.DeSerializeXML<MediaContainer>(serverXmlResponse));
-                return ServerCapabilities != null;
-            } catch (Exception e) {
-                //Log
-                return false;
+        internal bool Authenticate(ref WebClient webClient) {
+            if (CheckSocketConnection()) {
+                webClient.Headers["X-Plex-User"] = this.UserName;
+                webClient.Headers["X-Plex-Pass"] = this.UserPass;
+                try {
+                    string serverXmlResponse = webClient.DownloadString(this.UriPlexBase);
+                    ServerCapabilities = GetServerCapabilities(Serialization.DeSerializeXML<MediaContainer>(serverXmlResponse));
+                    IsOnline = true;
+                    return ServerCapabilities != null;
+                } catch (Exception e) {
+                                      
+                }
+            }
+            IsOnline = false;  
+            return false;
+        }
+
+        private bool CheckSocketConnection() {
+            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
+                try {
+                    IAsyncResult result = socket.BeginConnect(HostAdress, PlexPort, null, null);                    
+                    return result.AsyncWaitHandle.WaitOne(2000, true);                   
+                } finally {                    
+                    socket.Close();
+                }
             }
         }
 

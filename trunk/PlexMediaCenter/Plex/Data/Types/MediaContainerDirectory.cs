@@ -66,7 +66,7 @@ namespace PlexMediaCenter.Plex.Data.Types
         private string parentTitleField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Location", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("Location", Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public System.Collections.Generic.List<MediaContainerDirectoryLocation> Location
         {
             get
@@ -80,7 +80,7 @@ namespace PlexMediaCenter.Plex.Data.Types
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Genre", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("Genre")]
         public System.Collections.Generic.List<Genre> Genre
         {
             get

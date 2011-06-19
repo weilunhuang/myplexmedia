@@ -33,6 +33,7 @@ using System.Windows.Forms;
 using PlexMediaCenter.Plex;
 using System.Drawing;
 using System.Net;
+using System.Reflection;
 
 
 namespace MyPlexMedia.Plugin.Config {
@@ -48,12 +49,17 @@ namespace MyPlexMedia.Plugin.Config {
                 FormClosing += new System.Windows.Forms.FormClosingEventHandler(ConfigurationForm_FormClosing);
                 Settings.Load();
                 PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH, Settings.PLEX_ICON_DEFAULT);
+                PlexInterface.ServerManager.OnPlexServersChanged += new ServerManager.OnPlexServersChangedEventHandler(ServerManager_OnPlexServersChanged);
+                PlexInterface.ServerManager.OnServerManangerError += new ServerManager.OnServerManangerErrorEventHandler(ServerManager_OnServerManangerError);
                 BonjourDiscovery.OnBonjourServer += new BonjourDiscovery.OnBonjourServerEventHandler(BonjourDiscovery_OnBonjourServer);
                 PlexServers = PlexInterface.ServerManager.PlexServers;
-
             } catch (Exception ex) {
                 Log.Error(ex);
             }
+        }
+
+        void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
+
         }
 
         void BonjourDiscovery_OnBonjourServer(PlexServer bojourDiscoveredServer) {
@@ -62,6 +68,7 @@ namespace MyPlexMedia.Plugin.Config {
             } else {
                 PlexServers.Add(bojourDiscoveredServer);
             }
+            plexServerBindingSource.ResetBindings(true);
         }
 
         void ServerManager_OnServerManangerError(PlexException e) {
@@ -69,53 +76,38 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         void ConfigurationForm_Load(object sender, EventArgs e) {
-            textBoxCheezRootFolder.Text = Settings.CheezRootFolder;
-            numericUpDownFetchCount.Value = Settings.FetchCount;
-            checkBoxDeleteOnExit.Checked = Settings.DeleteLocalCheezOnExit;
+            this.Text = String.Format("{0} - {1} - Configuration", Settings.PLUGIN_NAME, Settings.PLUGIN_VERSION);
+            textBoxCheezRootFolder.Text = Settings.CacheFolder;
+            checkBoxDeleteOnExit.Checked = Settings.DeleteCacheOnExit;
         }
 
         void ConfigurationForm_FormClosing(object sender, System.Windows.Forms.FormClosingEventArgs e) {
             PlexInterface.ServerManager.SavePlexServers(PlexServers);
-
-            Settings.CheezRootFolder = textBoxCheezRootFolder.Text;
-            Settings.FetchCount = (int)numericUpDownFetchCount.Value;
-            Settings.DeleteLocalCheezOnExit = checkBoxDeleteOnExit.Checked;
+            Settings.CacheFolder = textBoxCheezRootFolder.Text;
+            Settings.DeleteCacheOnExit = checkBoxDeleteOnExit.Checked;
             Settings.Save();
         }
 
         private void button1_Click(object sender, EventArgs e) {
             FolderBrowserDialog dlgFolderBrowser = new FolderBrowserDialog();
             dlgFolderBrowser.Description = "Local download path for cheezy pictures...";
-            dlgFolderBrowser.SelectedPath = Settings.CheezRootFolder;
+            dlgFolderBrowser.SelectedPath = Settings.CacheFolder;
             if (dlgFolderBrowser.ShowDialog(this) == DialogResult.OK) {
-                Settings.CheezRootFolder = dlgFolderBrowser.SelectedPath;
+                Settings.CacheFolder = dlgFolderBrowser.SelectedPath;
             } else {
                 Log.Debug("No folder selected");
             }
         }
 
-
-
         private void buttonRefreshBonjourServers_Click(object sender, EventArgs e) {
-            System.Threading.Thread t1 = new System.Threading.Thread(delegate() {
-                BonjourDiscovery.RefreshBonjourDiscovery();
-            });
-            t1.Start();
-
+            BonjourDiscovery.RefreshBonjourDiscovery();
             RefreshOnlineStatus();
         }
 
         private void RefreshOnlineStatus() {
-            this.Invoke(new MethodInvoker(() => { Application.UseWaitCursor = true; }));
-
-            for (int i = 0; i < PlexServers.Count; i++) {
-                if (PlexServers[i].Authenticate(ref _webClient)) {
-                    dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.LightGreen;
-                } else {
-                    dataGridView1.Rows[i].DefaultCellStyle.BackColor = Color.Tomato;
-                }
-            }
-            this.Invoke(new MethodInvoker(() => { Application.UseWaitCursor = false; }));
+            this.Invoke(new MethodInvoker(() => { this.UseWaitCursor = true; }));
+            PlexServers.ForEach(svr => PlexInterface.Login(svr));
+            this.Invoke(new MethodInvoker(() => { this.UseWaitCursor = false; }));
         }
 
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) {
@@ -126,26 +118,29 @@ namespace MyPlexMedia.Plugin.Config {
 
         private void tabPage2_Enter(object sender, EventArgs e) {
             plexServerBindingSource.DataSource = PlexServers;
+            RefreshOnlineStatus();
+            BonjourDiscovery.StartBonjourDiscovery();
         }
-    
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e) {
-            if (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index) {
-                PlexServers[e.RowIndex].EncryptPassword(PlexServers[e.RowIndex].UserName, dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString());
-            }
-            if (PlexServers[e.RowIndex].Authenticate(ref _webClient)) {
-                dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGreen;
-            } else {
-                dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Tomato;
-            }
+            try {
+                if (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index) {
+                    PlexServers[e.RowIndex].EncryptPassword(PlexServers[e.RowIndex].UserName, dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString());
+                }
+
+                if (e.ColumnIndex == hostAdressDataGridViewTextBoxColumn.Index || !PlexServers[e.RowIndex].IsBonjour && (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index || e.ColumnIndex == userNameDataGridViewTextBoxColumn.Index)) {
+                    PlexInterface.Login(PlexServers[e.RowIndex]);
+                }
+            } catch { }
         }
 
-        private void dataGridView1_RowsAdded(object sender, DataGridViewRowsAddedEventArgs e) {
-            if (PlexServers[e.RowIndex].Authenticate(ref _webClient)) {
-                dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGreen;
-            } else {
-                dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Tomato;
-            }
-        }        
+        private void dataGridView1_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e) {
+            if (e.RowIndex < PlexServers.Count)
+                if (PlexServers[e.RowIndex].IsOnline) {
+                    dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.LightGreen;
+                } else {
+                    dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = Color.Tomato;
+                }
+        }
     }
 }

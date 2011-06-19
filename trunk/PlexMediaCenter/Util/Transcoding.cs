@@ -16,11 +16,11 @@ namespace PlexMediaCenter.Util {
 
         private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
+        public static bool IsBuffering { get; set; }
         public static event OnPlayBufferedMediaEventHandler OnPlayBufferedMedia;
         public delegate void OnPlayBufferedMediaEventHandler(string localBufferPath);
         public static event OnPlayHttpAdaptiveStreamEventHandler OnPlayHttpAdaptiveStream;
         public delegate void OnPlayHttpAdaptiveStreamEventHandler(Uri m3u8Url);
-        private static ManualResetEvent _safeCompletionEvent = new ManualResetEvent(false);
 
         private const string _plexApiPublicKey = "KQMIY6GATPC63AIMC4R2";
         private const string _plexApiSharedSecret = "k3U6GLkZOoNIoSgjDshPErvqMIFdE0xMTx8kgsrhnC0=";
@@ -30,13 +30,12 @@ namespace PlexMediaCenter.Util {
         private static int Quality { get; set; }
         private static int Buffer { get; set; }
         private const string _bufferFile = @"D:\buffer.ts";
-        private const int _defaultBuffer = 3;
+        private const int _defaultBuffer = 15;
         private const int _defaultQuality = 3;
-        private static FileStream _bufferedMedia;
 
         static Transcoding() {
             logger.Info(" started...");
-            ResetMediaBuffer();
+            DeleteBufferFile();
             Buffer = _defaultBuffer;
             Quality = _defaultQuality;
             _mediaFetcher = new WebClient();
@@ -46,18 +45,15 @@ namespace PlexMediaCenter.Util {
             _mediaBufferer.ProgressChanged += new ProgressChangedEventHandler(MediaBufferer_ProgressChanged);
             _mediaBufferer.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_mediaBufferer_RunWorkerCompleted);
             _mediaBufferer.DoWork += new DoWorkEventHandler(MediaBufferer_DoWork);
-            
+
         }
 
-        private static void ResetMediaBuffer() {
+        private static void DeleteBufferFile() {
             try {
-                if (_bufferedMedia != null) {
-                    _bufferedMedia.Dispose();
-                }
                 if (File.Exists(_bufferFile)) {
                     File.Delete(_bufferFile);
                 }
-                _bufferedMedia = new FileStream(_bufferFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Read);               
+
             } catch (Exception e) {
                 logger.FatalException("Unable reset local media buffer!", e);
             }
@@ -66,22 +62,26 @@ namespace PlexMediaCenter.Util {
 
         static void MediaBufferer_DoWork(object sender, DoWorkEventArgs e) {
             logger.Info("BackGroundWorker - Buffering...");
-            _safeCompletionEvent.Reset();
             if (e.Argument is IEnumerable<string>) {
-                int bufferedSegments = 0;
-                foreach (string segment in (IEnumerable<string>)e.Argument) {
-                    if (_mediaBufferer.CancellationPending) {
-                        logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
-                        e.Cancel = true;
-                        _safeCompletionEvent.Set();
-                        return;
-                    }
-                    byte[] data = _mediaFetcher.DownloadData(segment);
-                    _bufferedMedia.Write(data, 0, data.Length);
-                    _bufferedMedia.Flush();
-                    _mediaBufferer.ReportProgress((int)_bufferedMedia.Length);
-                    if (++bufferedSegments == Buffer) {
-                        OnPlayBufferedMedia(_bufferFile);
+                IsBuffering = true;
+                using (FileStream _bufferedMedia = new FileStream(_bufferFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Read)) {
+                    int bufferedSegments = 0;
+                    foreach (string segment in (IEnumerable<string>)e.Argument) {
+                        if (_mediaBufferer.CancellationPending) {
+                            logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
+                            e.Cancel = true;
+                            _bufferedMedia.Close();
+                            return;
+                        }
+
+                        byte[] data = _mediaFetcher.DownloadData(segment);
+                        _bufferedMedia.Write(data, 0, data.Length);
+                        _bufferedMedia.Flush();
+                        _mediaBufferer.ReportProgress((int)_bufferedMedia.Length);
+                        if (++bufferedSegments == Buffer) {
+                            OnPlayBufferedMedia(_bufferFile);
+                        }
+
                     }
                 }
             }
@@ -92,7 +92,6 @@ namespace PlexMediaCenter.Util {
         }
 
         static void _mediaBufferer_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
-           
             if (e.Cancelled) {
                 logger.Warn("BackGroundWorker -Buffering completed and was cancelled");
             } else if (e.Error != null) {
@@ -100,7 +99,8 @@ namespace PlexMediaCenter.Util {
             } else {
                 logger.Info("BackGroundWorker -Buffering completed and was successful");
             }
-            
+            IsBuffering = false;
+            DeleteBufferFile();
         }
 
         private static void BufferMediaAsync(IEnumerable<string> segmentedParts) {
@@ -108,13 +108,11 @@ namespace PlexMediaCenter.Util {
             _mediaBufferer.RunWorkerAsync(segmentedParts);
         }
 
-        internal static void StopBuffering() {            
+        public static void StopBuffering() {
             if (_mediaBufferer.IsBusy) {
                 logger.Info("Request Buffering Cancellation");
                 _mediaBufferer.CancelAsync();
-                _safeCompletionEvent.WaitOne();
             }
-            ResetMediaBuffer();
         }
 
 
@@ -122,12 +120,12 @@ namespace PlexMediaCenter.Util {
         public static void PlayBackMedia(MediaContainerVideo video) {
             BufferMedia(video.Media[0].Part[0].key);
         }
-        
-        internal static void BufferMedia(string partKey,int offset = 0) {
+
+        internal static void BufferMedia(string partKey, int offset = 0) {
             BufferMediaAsync(GetM3U8PlaylistItems(PlexInterface.PlexServerCurrent, partKey));
         }
 
-        static IEnumerable<string> GetM3U8PlaylistItems(PlexServer plexServer, string partKey) {
+        public static IEnumerable<string> GetM3U8PlaylistItems(PlexServer plexServer, string partKey) {
             string response = _mediaFetcher.DownloadString(GetM3U8PlaylistUrl(plexServer, partKey));
             string session = response.Substring(response.IndexOf("session")).Replace("\n", "");
 
@@ -143,7 +141,7 @@ namespace PlexMediaCenter.Util {
             }
         }
 
-       public static Uri GetM3U8PlaylistUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = false) {
+        public static Uri GetM3U8PlaylistUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = false) {
             string transcodePath = "/video/:/transcode/segmented/start.m3u8?";
             transcodePath += "identifier=com.plexapp.plugins.library";
             transcodePath += "&offset=" + offset;
@@ -158,7 +156,7 @@ namespace PlexMediaCenter.Util {
             return new Uri(plexServer.UriPlexBase + transcodePath.Remove(0, 1));
         }
 
-        private static string GetPlexAuthParameters(PlexServer plexServer, string url) {
+        public static string GetPlexAuthParameters(PlexServer plexServer, string url) {
             string time = GetUnixTime();
             string authParameters = string.Empty;
             authParameters += "&X-Plex-User=" + plexServer.UserName;
@@ -193,6 +191,6 @@ namespace PlexMediaCenter.Util {
             string time = Math.Round(dTime / 1000).ToString();
             // the basic url WITH the part key is:
             return time;
-        }        
+        }
     }
 }

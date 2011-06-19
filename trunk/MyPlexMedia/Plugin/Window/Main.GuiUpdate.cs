@@ -13,16 +13,24 @@ namespace MyPlexMedia.Plugin.Window {
 
         void MenuItem_OnHasBackground(string imagePath) {
             if (ctrlBackgroundImage != null && !String.IsNullOrEmpty(imagePath) && File.Exists(imagePath)) {
-                ctrlBackgroundImage.SetFileName(imagePath);               
+                ctrlBackgroundImage.SetFileName(imagePath);
             }
         }
 
         void MediaRetrieval_OnArtWorkRetrieved(string artWork) {
             Utils.DoInsertExistingFileIntoCache(artWork);
-            ((IMenuItem)facadeLayout.SelectedListItem).OnSelected();
+            if (facadeLayout.SelectedListItem != null) {
+                ((IMenuItem)facadeLayout.SelectedListItem).OnSelected();
+            }
         }
 
-        void Navigation_OnMenuItemsFetched(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex) {
+        void Navigation_OnMenuItemsFetchStarted() {            
+            GUIWaitCursor.Init();
+            GUIWaitCursor.Show();
+        }
+
+        void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex) {
+            GUIWaitCursor.Hide();
             Dialogs.CurrentSearchItems = new List<PlexItemSearch>();
             facadeLayout.Clear();
             foreach (var item in fetchedMenuItems) {
@@ -40,7 +48,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {
             UpdateGuiProperties(selectedItem);
-        }       
+        }
 
         void MenuItem_OnPreferredLayout(GUIFacadeControl.Layout preferredLayout) {
             if (CurrentLayout != preferredLayout) {
