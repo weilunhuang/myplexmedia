@@ -11,7 +11,7 @@ namespace MyPlexMedia.Plugin.Config {
         public const string PLUGIN_NAME = "MyPlexMedia";
         public const string PLUGIN_AUTHOR = "Anthrax";
         public const string PLUGIN_VERSION = "0.5.0 (Preview)";
-        public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin that allows you to browse Plex Media Center.";
+        public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin to browse your Plex Media Server(s).";
         
         public const int PLUGIN_WINDOW_ID = 20110614;
         public static string SKIN_FOLDER_MEDIA = Path.Combine(GUIGraphicsContext.Skin, @"Media\" + PLUGIN_NAME);
