@@ -14,7 +14,7 @@ using PlexMediaCenter.Plex.Data.Types;
 namespace PlexMediaCenter.Util {
     public static class Transcoding {
 
-        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+       // private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public static bool IsBuffering { get; set; }
         public static event OnPlayBufferedMediaEventHandler OnPlayBufferedMedia;
@@ -34,7 +34,7 @@ namespace PlexMediaCenter.Util {
         private const int _defaultQuality = 3;
 
         static Transcoding() {
-            logger.Info(" started...");
+            //logger.Info(" started...");
             DeleteBufferFile();
             Buffer = _defaultBuffer;
             Quality = _defaultQuality;
@@ -55,20 +55,20 @@ namespace PlexMediaCenter.Util {
                 }
 
             } catch (Exception e) {
-                logger.FatalException("Unable reset local media buffer!", e);
+                //logger.FatalException("Unable reset local media buffer!", e);
             }
 
         }
 
         static void MediaBufferer_DoWork(object sender, DoWorkEventArgs e) {
-            logger.Info("BackGroundWorker - Buffering...");
+            //logger.Info("BackGroundWorker - Buffering...");
             if (e.Argument is IEnumerable<string>) {
                 IsBuffering = true;
                 using (FileStream _bufferedMedia = new FileStream(_bufferFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Read)) {
                     int bufferedSegments = 0;
                     foreach (string segment in (IEnumerable<string>)e.Argument) {
                         if (_mediaBufferer.CancellationPending) {
-                            logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
+                            //logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
                             e.Cancel = true;
                             _bufferedMedia.Close();
                             return;
@@ -93,11 +93,11 @@ namespace PlexMediaCenter.Util {
 
         static void _mediaBufferer_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
             if (e.Cancelled) {
-                logger.Warn("BackGroundWorker -Buffering completed and was cancelled");
+                //logger.Warn("BackGroundWorker -Buffering completed and was cancelled");
             } else if (e.Error != null) {
-                logger.ErrorException("BackGroundWorker -Buffering completed with Exception", e.Error);
+                //logger.ErrorException("BackGroundWorker -Buffering completed with Exception", e.Error);
             } else {
-                logger.Info("BackGroundWorker -Buffering completed and was successful");
+                //logger.Info("BackGroundWorker -Buffering completed and was successful");
             }
             IsBuffering = false;
             DeleteBufferFile();
@@ -110,7 +110,7 @@ namespace PlexMediaCenter.Util {
 
         public static void StopBuffering() {
             if (_mediaBufferer.IsBusy) {
-                logger.Info("Request Buffering Cancellation");
+                //logger.Info("Request Buffering Cancellation");
                 _mediaBufferer.CancelAsync();
             }
         }
