@@ -174,52 +174,7 @@
             <onup>507</onup>
             <ondown>503</ondown>
             <label>100</label>
-          </control>
-          <control>
-            <id>503</id>
-            <description>ShowSlideShowCurrent</description>
-            <type>button</type>
-            <onright>50</onright>
-            <onup>2</onup>
-            <ondown>504</ondown>
-            <label>Start Slideshow (selected)</label>
-          </control>
-          <control>
-            <id>504</id>
-            <description>ShowSlideShowAllLocal</description>
-            <type>button</type>
-            <onright>50</onright>
-            <onup>503</onup>
-            <ondown>505</ondown>
-            <label>Start Slideshow (local)</label>
-          </control>
-          <control>
-            <id>505</id>
-            <description>DeleteAllLocalCheez</description>
-            <type>button</type>
-            <onright>50</onright>
-            <onup>504</onup>
-            <ondown>506</ondown>
-            <label>Delete local Cache</label>
-          </control>
-          <control>
-            <id>506</id>
-            <description>SetOnlineMode</description>
-            <type>button</type>
-            <onright>50</onright>
-            <onup>505</onup>
-            <ondown>507</ondown>
-            <label>Set Online Mode</label>
-          </control>
-          <control>
-            <id>507</id>
-            <description>SetLocalMode</description>
-            <type>button</type>
-            <onright>50</onright>
-            <onup>506</onup>
-            <ondown>2</ondown>
-            <label>Set Local Mode</label>
-          </control>
+          </control>         
         </control>
       </control>
     </control>
