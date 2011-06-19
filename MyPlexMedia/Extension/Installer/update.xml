@@ -19,27 +19,7 @@
         <Items />
       </Sections>
       <Dependencies>
-        <Items>
-          <DependencyItem>
-            <Type>MediaPortal</Type>
-            <Id />
-            <MinVersion>
-              <Major>1</Major>
-              <Minor>1</Minor>
-              <Build>0</Build>
-              <Revision>6</Revision>
-            </MinVersion>
-            <MaxVersion>
-              <Major>0</Major>
-              <Minor>0</Minor>
-              <Build>0</Build>
-              <Revision>0</Revision>
-            </MaxVersion>
-            <WarnOnly>true</WarnOnly>
-            <Message>Need version of MediaPortal with version betwen 0.0.0.0 - 0.0.0.0</Message>
-            <Name>MediaPortal</Name>
-          </DependencyItem>
-        </Items>
+        <Items />
       </Dependencies>
       <GeneralInfo>
         <Name>MyPlexMedia</Name>
