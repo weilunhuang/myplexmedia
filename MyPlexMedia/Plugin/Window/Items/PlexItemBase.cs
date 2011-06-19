@@ -44,7 +44,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public override void OnClicked(object sender, EventArgs e) {
             if (ChildItems == null || ChildItems.Count < 1) {
-                SetChildItems(Navigation.GetSubMenuItems(this, PlexInterface.RequestPlexItems(UriPath)));
+                SetChildItems(Navigation.GetSubMenuItems(this, UriPath));
             }
             OnPreferredLayout(PreferredLayout);
             Navigation.ShowCurrentMenu(this, 0);

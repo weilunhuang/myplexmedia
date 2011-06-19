@@ -35,7 +35,7 @@ namespace PlexMediaCenter.Plex.Data.Types
         private string videoFrameRateField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Part", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("Part", Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public System.Collections.Generic.List<MediaPart> Part
         {
             get

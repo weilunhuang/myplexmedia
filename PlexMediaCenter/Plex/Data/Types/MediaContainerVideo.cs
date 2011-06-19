@@ -64,7 +64,7 @@ namespace PlexMediaCenter.Plex.Data.Types
         private string viewOffsetField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Media", Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("Media")]
         public System.Collections.Generic.List<Media> Media
         {
             get
@@ -78,7 +78,7 @@ namespace PlexMediaCenter.Plex.Data.Types
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Genre", Order=1)]
+        [System.Xml.Serialization.XmlElementAttribute("Genre")]
         public System.Collections.Generic.List<Genre> Genre
         {
             get
@@ -92,7 +92,7 @@ namespace PlexMediaCenter.Plex.Data.Types
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Director", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, Order=2)]
+        [System.Xml.Serialization.XmlElementAttribute("Director", Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public System.Collections.Generic.List<MediaContainerVideoDirector> Director
         {
             get
@@ -106,7 +106,7 @@ namespace PlexMediaCenter.Plex.Data.Types
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Field", Form=System.Xml.Schema.XmlSchemaForm.Unqualified, Order=3)]
+        [System.Xml.Serialization.XmlElementAttribute("Field", Form=System.Xml.Schema.XmlSchemaForm.Unqualified)]
         public System.Collections.Generic.List<MediaContainerVideoField> Field
         {
             get

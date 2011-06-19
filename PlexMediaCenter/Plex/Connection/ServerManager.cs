@@ -97,12 +97,8 @@ namespace PlexMediaCenter.Plex.Connection {
 
 
         internal bool Authenticate(ref System.Net.WebClient _webClient, PlexServer plexServer) {
-            if (plexServer.Authenticate(ref _webClient)) {
-                PlexServerCurrent = plexServer;
-                return true;
-            } else {
-                return false;
-            }
+            return plexServer.Authenticate(ref _webClient);              
+         
         }
     }
 }

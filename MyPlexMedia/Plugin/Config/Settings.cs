@@ -10,6 +10,7 @@ namespace MyPlexMedia.Plugin.Config {
 
         public const string PLUGIN_NAME = "MyPlexMedia";
         public const string PLUGIN_AUTHOR = "Anthrax";
+        public const string PLUGIN_VERSION = "0.5.0 (Preview)";
         public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin that allows you to browse Plex Media Center.";
         
         public const int PLUGIN_WINDOW_ID = 20110614;
@@ -20,7 +21,7 @@ namespace MyPlexMedia.Plugin.Config {
         public static string PLEX_ICON_DEFAULT_BACK = Path.Combine(SKIN_FOLDER_MEDIA, "icon_back.png");
         public static string PLEX_ICON_DEFAULT_ONLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.png");
         public static string PLEX_ICON_DEFAULT_OFFLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_offline.png");
-        public static string PLEX_SERVER_LIST_XML = @"C:\Program Files (x86)\Team MediaPortal\MediaPortal\plugins\Windows\PlexServers.xml";
+        public static string PLEX_SERVER_LIST_XML = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Config), "PlexServers.xml");
         public static string PLEX_ARTWORK_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "default_fanart.png");
         public static string PLEX_ARTWORK_CACHE_ROOT_PATH = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs), PLUGIN_NAME);
         public static string SKINFILE_MAIN_WINDOW = GUIGraphicsContext.Skin + @"\MyPlexMedia.xml";
@@ -29,13 +30,13 @@ namespace MyPlexMedia.Plugin.Config {
         public static Dictionary<string, GUIFacadeControl.Layout> PreferredLayouts { get; private set; }
         public static GUIFacadeControl.Layout DefaultLayout { get; private set; }
 
+        public static PlexMediaCenter.Plex.Connection.PlexServer LastPlexServer { get; set; }
+
         static Settings() {
             DefaultLayout = CreatePreferredLayouts();            
-            //Set defaults
-            FetchCount = 10;
-            CheezRootFolder = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs), PLUGIN_NAME);
-            DeleteLocalCheezOnExit = false;
-
+            //Set defaults           
+            CacheFolder = PLEX_ARTWORK_CACHE_ROOT_PATH;
+            DeleteCacheOnExit = false;
         }
 
         private static GUIFacadeControl.Layout CreatePreferredLayouts() {
@@ -43,7 +44,7 @@ namespace MyPlexMedia.Plugin.Config {
             PreferredLayouts.Add("default", GUIFacadeControl.Layout.List);
             PreferredLayouts.Add("secondary", GUIFacadeControl.Layout.List);
             PreferredLayouts.Add("artist", GUIFacadeControl.Layout.LargeIcons);
-            PreferredLayouts.Add("album", GUIFacadeControl.Layout.AlbumView);
+            PreferredLayouts.Add("album", GUIFacadeControl.Layout.Filmstrip);
             PreferredLayouts.Add("show", GUIFacadeControl.Layout.CoverFlow);
             PreferredLayouts.Add("season", GUIFacadeControl.Layout.CoverFlow);
             PreferredLayouts.Add("episode", GUIFacadeControl.Layout.List);
@@ -54,19 +55,18 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         public static int FetchCount { get; set; }
-        public static string CheezRootFolder { get; set; }
-        public static bool DeleteLocalCheezOnExit { get; set; }
+        public static string CacheFolder { get; set; }
+        public static bool DeleteCacheOnExit { get; set; }
 
         /// <summary>
         /// Load the settings from the mediaportal config
         /// </summary>
         public static void Load() {
             using (MediaPortal.Profile.Settings reader = new MediaPortal.Profile.Settings(MediaPortal.Configuration.Config.GetFile(MediaPortal.Configuration.Config.Dir.Config, "MediaPortal.xml"))) {
-                if (!String.IsNullOrEmpty(reader.GetValue(PLUGIN_NAME, "CheezRootFolder"))) {
-                    CheezRootFolder = reader.GetValue(PLUGIN_NAME, "CheezRootFolder");
-                }                
-                FetchCount = reader.GetValueAsInt(PLUGIN_NAME, "FetchCount", FetchCount);             
-                DeleteLocalCheezOnExit = reader.GetValueAsBool(PLUGIN_NAME, "DeleteLocalCheezOnExit", DeleteLocalCheezOnExit);                
+                if (!String.IsNullOrEmpty(reader.GetValue(PLUGIN_NAME, "CacheFolder"))) {
+                    CacheFolder = reader.GetValue(PLUGIN_NAME, "CacheFolder");
+                }
+                DeleteCacheOnExit = reader.GetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);                
             }
         }
 
@@ -75,12 +75,9 @@ namespace MyPlexMedia.Plugin.Config {
         /// </summary>
         public static void Save() {
             using (MediaPortal.Profile.Settings xmlwriter = new MediaPortal.Profile.Settings(MediaPortal.Configuration.Config.GetFile(MediaPortal.Configuration.Config.Dir.Config, "MediaPortal.xml"))) {
-                xmlwriter.SetValue(PLUGIN_NAME, "CheezRootFolder", CheezRootFolder);
-                xmlwriter.SetValue(PLUGIN_NAME, "FetchCount", (int)FetchCount);
-                xmlwriter.SetValueAsBool(PLUGIN_NAME, "DeleteLocalCheezOnExit", DeleteLocalCheezOnExit);
+                xmlwriter.SetValue(PLUGIN_NAME, "CacheFolder", CacheFolder);
+                xmlwriter.SetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
             }
-        }
-
-        
+        }        
     }
 }

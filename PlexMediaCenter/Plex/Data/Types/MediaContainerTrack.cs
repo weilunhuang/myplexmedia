@@ -34,7 +34,7 @@ namespace PlexMediaCenter.Plex.Data.Types
         private string addedAtField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Media", Order=0)]
+        [System.Xml.Serialization.XmlElementAttribute("Media")]
         public System.Collections.Generic.List<Media> Media
         {
             get
