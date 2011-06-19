@@ -19,33 +19,50 @@
         <Items />
       </Sections>
       <Dependencies>
-        <Items />
+        <Items>
+          <DependencyItem>
+            <Type>MediaPortal</Type>
+            <Id />
+            <MinVersion>
+              <Major>1</Major>
+              <Minor>1</Minor>
+              <Build>0</Build>
+              <Revision>6</Revision>
+            </MinVersion>
+            <MaxVersion>
+              <Major>0</Major>
+              <Minor>0</Minor>
+              <Build>0</Build>
+              <Revision>0</Revision>
+            </MaxVersion>
+            <WarnOnly>true</WarnOnly>
+            <Message>Need version of MediaPortal with version betwen 0.0.0.0 - 0.0.0.0</Message>
+            <Name>MediaPortal</Name>
+          </DependencyItem>
+        </Items>
       </Dependencies>
       <GeneralInfo>
-        <Name>EndlessCheez</Name>
+        <Name>MyPlexMedia</Name>
         <Id>59cc585f-cc36-4316-b5a2-477200b95d8b</Id>
         <Author>Anthrax</Author>
         <HomePage>http://myplexmedia.googlecode.com</HomePage>
-        <ForumPage>http://forum.team-mediaportal.com/mediaportal-plugins-47/release-endlesscheez-browse-cheezburger-lolz-97591/#post756446</ForumPage>
-        <UpdateUrl>http://myplexmedia.googlecode.com/svn/trunk/EndlessCheez/Extension/Installer/EndlessCheez.xml</UpdateUrl>
+        <ForumPage>http://forum.team-mediaportal.com/mediaportal-plugins-47/preview-myplexmedia-plexmediaserver-browser-0-5-0-alpha-97743/#post758188</ForumPage>
+        <UpdateUrl>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/update.xml</UpdateUrl>
         <Version>
           <Major>0</Major>
           <Minor>5</Minor>
           <Build>0</Build>
           <Revision>0</Revision>
         </Version>
-        <ExtensionDescription>A MediaPortal plugin that allows you to view Cheezburger™ content.
+        <ExtensionDescription>A MediaPortal plugin to browse your Plex Media Server(s).
 
-Disclaimer:
-Neither MediaPortal nor the author (Anthrax) of this plugin is affiliated with the Cheezburger Network.
-
-“All Content provided by license from the Cheezburger Network—this application is not offered nor endorsed by Cheezburger, Inc.”</ExtensionDescription>
-        <VersionDescription>First initial release of the EndlessCheez plugin</VersionDescription>
+check out Plex: http://www.plexapp.com/</ExtensionDescription>
+        <VersionDescription>First preview release of the MyPlexMedia plugin</VersionDescription>
         <DevelopmentStatus>Alpha</DevelopmentStatus>
-        <OnlineLocation>http://endlesscheez.googlecode.com/svn/trunk/EndlessCheez/Extension/Installer/EndlessCheez_v1.0.0.mpe1</OnlineLocation>
-        <ReleaseDate>2011-06-13T12:49:07.8623538+02:00</ReleaseDate>
-        <Tags>mediaportal, cheezburger, lolcats, ichc</Tags>
-        <Location>C:\Users\Anthrax-Leprosy-Pi\Documents\Development\Projekte\EndlessCheez\EndlessCheez\Extension\Installer\EndlessCheez_v1.0.0.mpe1</Location>
+        <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_0.5.0.mpe1</OnlineLocation>
+        <ReleaseDate>2011-06-19T12:49:07</ReleaseDate>
+        <Tags>mediaportal, plex, plex media server, pms, plex server, media, browser</Tags>
+        <Location>C:\Users\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_0.5.0.mpe1</Location>
         <Params>
           <Items>
             <SectionParam Name="Icon">
