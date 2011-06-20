@@ -35,7 +35,6 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (!String.IsNullOrEmpty(Directory.originallyAvailableAt)) {
                 FileInfo.CreationTime = DateTime.Parse(Directory.originallyAvailableAt);
             }
-        }               
-            
+        }       
     }
 }

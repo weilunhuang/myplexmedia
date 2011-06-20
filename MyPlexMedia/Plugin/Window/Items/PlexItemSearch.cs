@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MyPlexMedia.Plugin.Config;
+using MyPlexMedia.Plugin.Window.Dialogs;
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    class PlexItemSearch : PlexItemBase {
+   public class PlexItemSearch : PlexItemBase {
 
         private string Prompt { get; set; }
         
@@ -13,12 +14,14 @@ namespace MyPlexMedia.Plugin.Window.Items {
             : base(parentItem, title, path) {
             IsFolder = true;
             Prompt = userPrompt;
-            IconImage = IconImageBig = ThumbnailImage = Settings.PLEX_ICON_DEFAULT_SEARCH;     
+            IconImage = Settings.PLEX_ICON_SEARCH;
+            IconImageBig = Settings.PLEX_ICON_SEARCH;
+            ThumbnailImage = Settings.PLEX_ICON_SEARCH;
         }        
 
         public override void OnClicked(object sender, EventArgs e) {
             Uri originalUri = UriPath;
-            string queryString = String.Format("&query={0}", Dialogs.GetKeyBoardInput("", Prompt));            
+            string queryString = String.Format("&query={0}", CommonDialogs.GetKeyBoardInput("", Prompt));            
             UriPath = new Uri(originalUri.AbsoluteUri + queryString);
             base.OnClicked(sender, e);
             UriPath = originalUri;

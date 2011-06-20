@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using MyPlexMedia.Plugin.Window.Items;
 using System.IO;
 using MediaPortal.GUI.Library;
-using PlexMediaCenter.Plex.Data.Types;
 using MediaPortal.Util;
+using MyPlexMedia.Plugin.Window.Items;
+using PlexMediaCenter.Plex.Data.Types;
+
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main {
@@ -24,39 +23,29 @@ namespace MyPlexMedia.Plugin.Window {
             }
         }
 
-        void Navigation_OnMenuItemsFetchStarted() {            
+        void Navigation_OnMenuItemsFetchStarted() {
             GUIWaitCursor.Init();
             GUIWaitCursor.Show();
         }
 
-        void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex) {
+        void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, GUIFacadeControl.Layout preferredLayout) {
             GUIWaitCursor.Hide();
-            Dialogs.CurrentSearchItems = new List<PlexItemSearch>();
+            CurrentLayout = preferredLayout;
+            SwitchLayout();
             facadeLayout.Clear();
             foreach (var item in fetchedMenuItems) {
-                if (item is PlexItemSearch) {
-                    Dialogs.CurrentSearchItems.Add(item as PlexItemSearch);
-                }
-                if (item is MenuItem) {
-                    facadeLayout.Add((MenuItem)item);
-                }
+                facadeLayout.Add(item as MenuItem);
             }
+            facadeLayout.RefreshCoverArt();
             facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
-            facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
+            facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);            
             //facadeLayout.DoUpdate();
         }
 
         void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {
             UpdateGuiProperties(selectedItem);
         }
-
-        void MenuItem_OnPreferredLayout(GUIFacadeControl.Layout preferredLayout) {
-            if (CurrentLayout != preferredLayout) {
-                CurrentLayout = preferredLayout;
-                SwitchLayout();
-            }
-        }
-
+       
         void PlexItem_OnItemDetailsUpdated(MediaContainer itemDetails) {
             UpdateGuiProperties(itemDetails);
         }

@@ -12,7 +12,7 @@ namespace MyPlexMedia.Plugin.Config {
         public const string PLUGIN_AUTHOR = "Anthrax";
         public const string PLUGIN_VERSION = "0.5.0 (Preview)";
         public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin to browse your Plex Media Server(s).";
-        
+
         public const int PLUGIN_WINDOW_ID = 20110614;
         public static string SKIN_FOLDER_MEDIA = Path.Combine(GUIGraphicsContext.Skin, @"Media\" + PLUGIN_NAME);
         public static string PLUGIN_MEDIA_HOVER = @"hover_MyPlexMedia.png";
@@ -26,14 +26,15 @@ namespace MyPlexMedia.Plugin.Config {
         public static string PLEX_ARTWORK_CACHE_ROOT_PATH = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs), PLUGIN_NAME);
         public static string SKINFILE_MAIN_WINDOW = GUIGraphicsContext.Skin + @"\MyPlexMedia.xml";
         public static string PLEX_ICON_DEFAULT_SEARCH;
-        
+        public static string PLEX_ICON_SEARCH;
+
         public static Dictionary<string, GUIFacadeControl.Layout> PreferredLayouts { get; private set; }
         public static GUIFacadeControl.Layout DefaultLayout { get; private set; }
 
         public static PlexMediaCenter.Plex.Connection.PlexServer LastPlexServer { get; set; }
 
         static Settings() {
-            DefaultLayout = CreatePreferredLayouts();            
+            DefaultLayout = CreatePreferredLayouts();
             //Set defaults           
             CacheFolder = PLEX_ARTWORK_CACHE_ROOT_PATH;
             DeleteCacheOnExit = false;
@@ -50,8 +51,16 @@ namespace MyPlexMedia.Plugin.Config {
             PreferredLayouts.Add("episode", GUIFacadeControl.Layout.List);
             PreferredLayouts.Add("track", GUIFacadeControl.Layout.Playlist);
             PreferredLayouts.Add("movie", GUIFacadeControl.Layout.CoverFlow);
-
+            //return default Layout
             return GUIFacadeControl.Layout.List;
+        }
+
+        public static GUIFacadeControl.Layout GetPreferredLayout(string viewGroup) {
+            if (!String.IsNullOrEmpty(viewGroup) && PreferredLayouts.ContainsKey(viewGroup)) {
+                return PreferredLayouts[viewGroup];
+            } else {
+                return DefaultLayout;
+            }
         }
 
         public static int FetchCount { get; set; }
@@ -66,7 +75,7 @@ namespace MyPlexMedia.Plugin.Config {
                 if (!String.IsNullOrEmpty(reader.GetValue(PLUGIN_NAME, "CacheFolder"))) {
                     CacheFolder = reader.GetValue(PLUGIN_NAME, "CacheFolder");
                 }
-                DeleteCacheOnExit = reader.GetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);                
+                DeleteCacheOnExit = reader.GetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
             }
         }
 
@@ -78,6 +87,6 @@ namespace MyPlexMedia.Plugin.Config {
                 xmlwriter.SetValue(PLUGIN_NAME, "CacheFolder", CacheFolder);
                 xmlwriter.SetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
             }
-        }        
+        }
     }
 }

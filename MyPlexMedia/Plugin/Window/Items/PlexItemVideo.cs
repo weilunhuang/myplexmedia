@@ -47,7 +47,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
            
             Transcoding.PlayBackMedia(Video);
         }
-
+        
         void Transcoding_OnPlayHttpAdaptiveStream(Uri m3u8Url) {
             throw new NotImplementedException();
         }
