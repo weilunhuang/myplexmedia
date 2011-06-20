@@ -21,7 +21,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             : base(parentItem, title, path) {
             Track = track;
             IconImage = IconImageBig = ThumbnailImage = Settings.PLEX_ICON_DEFAULT;
-
+            
         }
 
         public override void OnClicked(object sender, EventArgs e) {                 

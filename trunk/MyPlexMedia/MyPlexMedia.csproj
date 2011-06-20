@@ -62,8 +62,10 @@
       <DependentUpon>ConfigurationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Plugin\Config\Settings.cs" />
-    <Compile Include="Plugin\Window\Dialogs.cs" />
+    <Compile Include="Plugin\Window\Dialogs\ContextMenu.cs" />
+    <Compile Include="Plugin\Window\Dialogs\CommonDialogs.cs" />
     <Compile Include="Plugin\Window\Items\ActionItem.cs" />
+    <Compile Include="Plugin\Window\Dialogs\EPluginButtons.cs" />
     <Compile Include="Plugin\Window\Items\IMenuItem.cs" />
     <Compile Include="Plugin\Window\Items\MenuItem.cs" />
     <Compile Include="Plugin\Window\Items\PlexItemBase.cs" />

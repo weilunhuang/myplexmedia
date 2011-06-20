@@ -56,7 +56,7 @@ namespace PlexMediaCenter.Util {
             if (_port == 0)
                 _port = getAvailablePort();
 
-            string prefix = String.Format("http://*:{0}/", _port);
+            string prefix = String.Format("http://localhost:{0}/", _port);
             try {
                 this.listener.Prefixes.Add(prefix);
                 this.listener.Start();

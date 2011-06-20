@@ -13,71 +13,10 @@ using System.Threading;
 using System.Collections;
 using MyPlexMedia.Plugin.Window.Items;
 
-namespace MyPlexMedia.Plugin.Window {
+namespace MyPlexMedia.Plugin.Window.Dialogs {
 
-    internal enum Buttons {
-        BtnSearch = 1, 
-        BtnSwitchLayout,        
-        BtnSortAsc,
-        BtnSortDesc,                
-        NothingSelected
-        
-    }
-
-    internal static class Dialogs {
-
-        #region ContextMenu
-
-        private static readonly List<ContextMenuItem> ContextMenuItems = CreateContextmenuItems();
+    internal static class CommonDialogs {
                
-
-        private static List<ContextMenuItem> CreateContextmenuItems() {
-            List<ContextMenuItem> tmpList = new List<ContextMenuItem>();
-            tmpList.Add(new ContextMenuItem(Buttons.BtnSearch,
-                                                        "Search..."));                        
-            return tmpList;
-        }
-
-
-        internal static IDialogbox contextMenu = (IDialogbox)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-        internal static Buttons ShowContextMenu() {           
-            if (contextMenu == null) {
-                return Buttons.NothingSelected;
-            }
-            contextMenu.Reset();
-            contextMenu.SetHeading("MyPlexMedia Menu");
-            foreach (ContextMenuItem menuItem in ContextMenuItems) {
-                contextMenu.Add(menuItem);
-            }
-            contextMenu.DoModal(GUIWindowManager.ActiveWindow);
-            return (Buttons)contextMenu.SelectedId;
-        }
-
-        private class ContextMenuItem : GUIListItem {
-            public ContextMenuItem(Buttons itemId, string itemLabel)
-                : base(itemLabel) {
-                base.ItemId = (int)itemId;
-            }
-        }
-
-        internal static IDialogbox search = (IDialogbox)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);
-        public static List<PlexItemSearch> CurrentSearchItems { get; set; }
-        internal static void ShowSearchMenu() {
-            if (CurrentSearchItems != null || CurrentSearchItems.Count > 0) {               
-                if (search == null) {
-                    return;
-                }
-                search.Reset();
-                CurrentSearchItems.ForEach(item => search.Add(item));
-                search.DoModal(GUIWindowManager.ActiveWindow);
-                if(search.SelectedId > 0){
-                    CurrentSearchItems[search.SelectedId - 1].OnClicked(null, null);
-                }
-            }
-        }
-
-        #endregion
-
         #region GUI Helper Methods
 
         private static VirtualKeyboard keyboard = (VirtualKeyboard)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
