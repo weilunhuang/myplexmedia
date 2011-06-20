@@ -146,6 +146,8 @@ namespace PlexMediaCenter.Util {
             transcodePath += "identifier=com.plexapp.plugins.library";
             transcodePath += "&offset=" + offset;
             transcodePath += "&qualitiy=" + quality;
+            transcodePath += "&minquality=0";
+            transcodePath += "&minquality=3";
             transcodePath += "&3g=" + (is3G ? "1" : "0");
             transcodePath += "&url=" + Uri.EscapeDataString("http://localhost:32400" + partKey);
             transcodePath += GetPlexAuthParameters(plexServer, transcodePath);

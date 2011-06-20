@@ -110,7 +110,7 @@ namespace MyPlexMedia.Plugin.Window {
                         base.OnAction(action);
                         return;
                     }
-                    Navigation.FetchPreviousMenu(Navigation.CurrentItem);
+                    Navigation.FetchPreviousMenu(Navigation.CurrentItem, facadeLayout.SelectedListItemIndex);
                     break;
                 default:
                     base.OnAction(action);
@@ -130,7 +130,7 @@ namespace MyPlexMedia.Plugin.Window {
         protected override void OnClick(int iItem) {
             if (facadeLayout[iItem] is IMenuItem) {
                 ((IMenuItem)facadeLayout[iItem]).Parent.LastSelectedChildIndex = iItem;
-                ((IMenuItem)facadeLayout[iItem]).OnClicked(this, null);
+                ((IMenuItem)facadeLayout[iItem]).OnClicked(this, null);                
             } else {
                 base.OnClick(iItem);
             }

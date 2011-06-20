@@ -30,6 +30,7 @@ namespace MyPlexMedia.Plugin.Window {
         static MenuItem ServerItem { get; set; }
         static List<IMenuItem> ServerMenu { get; set; }
         public static IMenuItem CurrentItem { get; set; }
+        static List<string> BreadCrumbs { get; set; }
 
 
         static Navigation() {
@@ -42,7 +43,9 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         static void ShowRootMenu(MediaContainer plexSections) {
-            RootItem.UriPath = plexSections.UriSource;
+            if (plexSections != null) {
+                RootItem.UriPath = plexSections.UriSource;
+            }
             RootMenu = GetCreateSubMenuItems(RootItem, RootItem.UriPath);
             RootMenu.Add(ServerItem);
             RootItem.SetChildItems(RootMenu);
@@ -50,6 +53,7 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         internal static void CreateStartupMenu(PlexServer lastSelectedOrDefaultServer) {
+            BreadCrumbs = new List<string>();            
             RefreshServerMenu();
             if (lastSelectedOrDefaultServer != null) {
                 try {
@@ -66,8 +70,11 @@ namespace MyPlexMedia.Plugin.Window {
             ContextMenu.ShowContextMenu(CurrentItem.Name, CurrentItem.ViewItems);
         }
 
-        internal static void FetchPreviousMenu(IMenuItem currentItem) {
+        internal static void FetchPreviousMenu(IMenuItem currentItem, int storeLastSelectedFacadeIndex) {            
             if (currentItem != null && currentItem.Parent != null) {
+                BreadCrumbs.RemoveAt(BreadCrumbs.Count - 1);
+                BreadCrumbs.RemoveAt(BreadCrumbs.Count - 1);
+                currentItem.LastSelectedChildIndex = storeLastSelectedFacadeIndex;
                 ShowCurrentMenu(currentItem.Parent, currentItem.Parent.LastSelectedChildIndex);
             }
         }
@@ -76,6 +83,8 @@ namespace MyPlexMedia.Plugin.Window {
             if (parentItem.ChildItems.Count > 0) {
                 CurrentItem = parentItem;
                 OnMenuItemsFetchCompleted(parentItem.ChildItems, selectFacadeIndex, parentItem.PreferredLayout);
+                BreadCrumbs.Add(parentItem.Name);
+                GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", BreadCrumbs.ToArray()));
             } else {
                 return;
             }
@@ -93,7 +102,7 @@ namespace MyPlexMedia.Plugin.Window {
                 parentItem.SetMetaData(plexResponseConatiner);
                 parentItem.PreferredLayout = Settings.GetPreferredLayout(plexResponseConatiner.viewGroup);
                 //Let's see inside and decide what to do               
-                if (plexResponseConatiner.viewGroup.Equals("secondary")) {
+                if (!string.IsNullOrEmpty(plexResponseConatiner.viewGroup) && plexResponseConatiner.viewGroup.Equals("secondary")) {
                     //We have a list of view items...
                     parentItem.ViewItems.AddRange(plexResponseConatiner.Directory.Where(
                         dir => String.IsNullOrEmpty(dir.prompt)).Select<MediaContainerDirectory, IMenuItem>(
@@ -103,15 +112,13 @@ namespace MyPlexMedia.Plugin.Window {
                     parentItem.ViewItems.AddRange(plexResponseConatiner.Directory.Where(
                         dir => !String.IsNullOrEmpty(dir.prompt)).Select<MediaContainerDirectory, IMenuItem>(
                         dir => new PlexItemSearch(parentItem, dir.prompt, new Uri(parentItem.UriPath, dir.key), dir.prompt))
-                        );
-                    //Mimic iPhone behavior and show 'all' view by default
-                    return GetCreateSubMenuItems(parentItem, new Uri(uriPath, plexResponseConatiner.Directory.First().key));
-                } else {
-                    //We have plain old sub items
-                    tmpList.AddRange(plexResponseConatiner.Directory.ConvertAll<IMenuItem>(dir => new PlexItemDirectory(parentItem, dir.title, new Uri(parentItem.UriPath, dir.key), dir)));
-                    tmpList.AddRange(plexResponseConatiner.Video.ConvertAll<IMenuItem>(vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));
-                    tmpList.AddRange(plexResponseConatiner.Track.ConvertAll<IMenuItem>(track => new PlexItemTrack(parentItem, track.title, new Uri(parentItem.UriPath, track.key), track)));
+                        );                    
                 }
+                //We have plain old sub items
+                tmpList.AddRange(plexResponseConatiner.Directory.ConvertAll<IMenuItem>(dir => new PlexItemDirectory(parentItem, dir.title, new Uri(parentItem.UriPath, dir.key), dir)));
+                tmpList.AddRange(plexResponseConatiner.Video.ConvertAll<IMenuItem>(vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));
+                tmpList.AddRange(plexResponseConatiner.Track.ConvertAll<IMenuItem>(track => new PlexItemTrack(parentItem, track.title, new Uri(parentItem.UriPath, track.key), track)));
+
             } catch (Exception e) {
                 OnErrorOccured(e);
             }
@@ -128,6 +135,7 @@ namespace MyPlexMedia.Plugin.Window {
             ServerMenu.Add(new ActionItem(null, "Add Plex Server...", Settings.PLEX_ICON_DEFAULT_ONLINE, () => AddNewPlexServer()));
             ServerItem.SetChildItems(ServerMenu);
             if (CurrentItem == ServerItem) {
+                BreadCrumbs = new List<string>();
                 ShowCurrentMenu(ServerItem, 0);
             }
         }
