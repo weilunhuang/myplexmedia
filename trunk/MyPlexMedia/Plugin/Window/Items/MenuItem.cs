@@ -18,14 +18,10 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public MenuItem(IMenuItem parent, string title) : base(title) {
             Parent = parent;
-            OnItemSelected += new ItemSelectedHandler(MenuItem_OnItemSelected);
-            OnRetrieveArt += new RetrieveCoverArtHandler(MenuItem_OnRetrieveArt);             
-        }
-
-        void MenuItem_OnRetrieveArt(GUIListItem item) {
-            Utils.SetDefaultIcons(item);
-            Utils.SetThumbnails(ref item);           
-            OnRetrieveArtwork(item);
+            OnItemSelected += new ItemSelectedHandler(MenuItem_OnItemSelected);           
+            IconImage = Settings.PLEX_ICON_DEFAULT;
+            IconImageBig = Settings.PLEX_ICON_DEFAULT;
+            ThumbnailImage = Settings.PLEX_ICON_DEFAULT;
         }
 
         void MenuItem_OnItemSelected(GUIListItem item, GUIControl parent) {            
@@ -49,14 +45,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (ChildItems != null && ChildItems.Count > 0) {
                 Navigation.ShowCurrentMenu(this, 0);
             }
-        }
-
-        public virtual void OnRetrieveArtwork(GUIListItem item) {
-            item.IconImage = Settings.PLEX_ICON_DEFAULT;
-            item.IconImageBig = Settings.PLEX_ICON_DEFAULT;
-            item.ThumbnailImage = Settings.PLEX_ICON_DEFAULT;    
-        }
-
+        }    
 
         public virtual void OnSelected() {
             OnMenuItemSelected(this);

@@ -12,13 +12,16 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public ActionItem(IMenuItem parentItem,string title, string specialIcon, Action actionDelegate)
             : base(parentItem, title) {
             Action = actionDelegate;
-            base.IconImage = specialIcon;
-            base.IconImageBig = specialIcon;
-            base.ThumbnailImage = specialIcon;
+            RetrieveArt = false;
+            IconImage = specialIcon;
+            IconImageBig = specialIcon;
+            ThumbnailImage = specialIcon;        
         }      
+
 
         public override void OnClicked(object sender, EventArgs e) {
             Action();
         }
+    
     }
 }
