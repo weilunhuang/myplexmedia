@@ -248,5 +248,68 @@
       <label>#selecteditem2</label>
       <animation effect="Fade" reversible="FALSE" time="70">Visible</animation>
     </control>
+
+    <control>
+      <description>DUMMY CONTROL FOR FANART HANDLER IS SCRAPING VISIBILITY CONDITION</description>
+      <type>label</type>
+      <id>20110615</id>
+      <posX>0</posX>
+      <posY>0</posY>
+      <width>1</width>
+      <visible>no</visible>
+    </control>
+    <control>
+      <description>Scraping Header Shadow</description>
+      <type>label</type>
+      <id>0</id>
+      <posX>541</posX>
+      <posY>189</posY>
+      <width>200</width>
+      <textcolor>ff000000</textcolor>
+      <font>fontLowerCase14</font>
+      <label>scraping</label>
+      <align>center</align>
+      <animation effect="fade" start="0" end="50" time="10" reversible="false">WindowOpen</animation>
+      <visible>control.isvisible(20110615)</visible>
+    </control>
+    <control>
+      <description>Scraping Header</description>
+      <type>label</type>
+      <id>0</id>
+      <posX>540</posX>
+      <posY>188</posY>
+      <width>200</width>
+      <textcolor>ffffffff</textcolor>
+      <font>fontLowerCase14</font>
+      <label>scraping</label>
+      <align>center</align>
+      <visible>control.isvisible(20110615)</visible>
+    </control>  
+    <control>
+      <description>Scraping Percent Complete Shadow</description>
+      <type>label</type>
+      <id>0</id>
+      <posX>593</posX>
+      <posY>129</posY>
+      <width>96</width>
+      <textcolor>90000000</textcolor>
+      <font>font14</font>
+      <label>#fanarthandler.scraper.percent.completed %</label>
+      <align>center</align>
+      <visible>control.isvisible(20110615)</visible>
+    </control>
+    <control>
+      <description>Scraping Percent Complete</description>
+      <type>label</type>
+      <id>0</id>
+      <posX>592</posX>
+      <posY>128</posY>
+      <width>96</width>
+      <textcolor>90ffffff</textcolor>
+      <font>font14</font>
+      <label>#fanarthandler.scraper.percent.completed %</label>
+      <align>center</align>
+      <visible>control.isvisible(20110615)</visible>
+    </control>
   </controls>
 </window>
