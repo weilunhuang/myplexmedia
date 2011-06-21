@@ -1,17 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Collections.Generic;
 using MediaPortal.GUI.Library;
 using MyPlexMedia.Plugin.Config;
 using MyPlexMedia.Plugin.Window.Items;
-using WindowPlugins;
 using PlexMediaCenter.Plex;
-using PlexMediaCenter.Util;
-using System.IO;
-using MediaPortal.GUI.Video;
 using PlexMediaCenter.Plex.Data;
-using MediaPortal.Player;
-using MyPlexMedia.Plugin.Window.Dialogs;
+using WindowPlugins;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main : WindowPluginBase {
@@ -30,7 +23,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         #endregion
 
-        #region Skin Controls
+        #region Skin Controls        
 
         [SkinControlAttribute(2011)]
         protected GUIImage ctrlBackgroundImage = null;
@@ -170,11 +163,6 @@ namespace MyPlexMedia.Plugin.Window {
         #endregion
 
         #region Plugin Event Handlers
-
-        void PlexInterface_OnPlexError(Exception plexError) {
-            Log.Error(plexError);
-            CommonDialogs.ShowNotifyDialog(30, plexError.ToString());
-        }
 
 
         #endregion

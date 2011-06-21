@@ -4,40 +4,39 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using PlexMediaCenter.Util;
-using PlexMediaCenter.Plex;
 using MediaPortal.GUI.Library;
-using PlexMediaCenter.Plex.Data.Types;
 using MediaPortal.Util;
+using PlexMediaCenter.Plex.Data.Types;
 
 
 namespace MyPlexMedia.Plugin.Window.Items {
     public class PlexItemBase : MenuItem {
-                
+
         public static event OnHasBackgroundEventHandler OnHasBackground;
         public delegate void OnHasBackgroundEventHandler(string imagePath);
 
         public static event OnItemDetailsUpdatedEventHandler OnItemDetailsUpdated;
         public delegate void OnItemDetailsUpdatedEventHandler(MediaContainer itemDetails);
-       
-        public MediaContainer ItemMetaData { get; set; }        
+
+        public MediaContainer ItemMetaData { get; set; }
 
         public PlexItemBase(IMenuItem parentItem, string title, Uri path)
             : base(parentItem, title) {
             if (path != null) {
                 UriPath = path.AbsoluteUri.Contains("?") ? path : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");
             }
-            OnRetrieveArt += new RetrieveCoverArtHandler(PlexItemBase_OnRetrieveArt);            
+            OnRetrieveArt += new RetrieveCoverArtHandler(PlexItemBase_OnRetrieveArt);
             ViewItems = new List<IMenuItem>();
             Utils.SetDefaultIcons(this);
         }
 
-        void PlexItemBase_OnRetrieveArt(GUIListItem item) {            
+        void PlexItemBase_OnRetrieveArt(GUIListItem item) {
             OnRetrieveArtwork(item);
             Utils.SetThumbnails(ref item);
         }
 
         protected virtual void OnRetrieveArtwork(GUIListItem item) {
-           
+
         }
 
         public virtual void SetMetaData(MediaContainer infoContainer) {
@@ -56,10 +55,12 @@ namespace MyPlexMedia.Plugin.Window.Items {
             //}            
             //Navigation.ShowCurrentMenu(this, LastSelectedChildIndex);
             if (ChildItems == null || ChildItems.Count < 1) {
-                PlexInterface.RequestPlexItemsAsync(UriPath, this) ;
-            }            
-            //Navigation.ShowCurrentMenu(this, LastSelectedChildIndex);
-        }    
+                Navigation.RequestChildItems(UriPath, this);
+            } else {
+                Navigation.History.Add(Name);
+                Navigation.ShowCurrentMenu(this, LastSelectedChildIndex);
+            }
+        }
 
         public override void OnSelected() {
             if (!String.IsNullOrEmpty(BackgroundImage)) {

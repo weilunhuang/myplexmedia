@@ -49,10 +49,16 @@ namespace MyPlexMedia.Plugin.Window.Items {
             List<String> list =  Transcoding.GetM3U8PlaylistItems(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key).ToList();
 
 
-            AXVLC.VLCPlugin2Class plugin = new AXVLC.VLCPlugin2Class();
-            plugin.Visible = true;
-            plugin.addTarget(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, true).AbsoluteUri, Type.Missing, AXVLC.VLCPlaylistMode.VLCPlayListReplace, 0);
-            plugin.play();
+            //AXVLC.VLCPlugin2Class plugin = new AXVLC.VLCPlugin2Class();
+            //plugin.Visible = true;
+            //plugin.addTarget(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, true).AbsoluteUri, Type.Missing, AXVLC.VLCPlaylistMode.VLCPlayListReplace, 0);
+            //plugin.play();
+            string test = Transcoding.GetFlvStreamUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key).AbsoluteUri;
+            VideoPlayerVMR9 t = new VideoPlayerVMR9(g_Player.MediaType.Video);
+            t.FullScreen = true;
+            t.PlayStream(test, "Test");
+            //g_Player.PlayVideoStream(test);
+            //g_Player.ShowFullScreenWindow();
            // Transcoding.PlayBackMedia(Video);
         }
         
