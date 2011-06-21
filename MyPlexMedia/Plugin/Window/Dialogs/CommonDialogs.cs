@@ -104,7 +104,10 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             DialogProgress.Progress();
         }
 
-        public static void UpdateProgressDialog(string currentItem, int progressPercentage) {           
+        public static void UpdateProgressDialog(string currentItem, int progressPercentage) {
+            if (!DialogProgress.IsVisible) {
+                ShowProgressDialog(currentItem);
+            }
             DialogProgress.SetPercentage(progressPercentage);
             DialogProgress.SetLine(2, currentItem);
             DialogProgress.Progress();

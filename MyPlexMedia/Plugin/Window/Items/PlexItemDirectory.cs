@@ -34,10 +34,26 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         protected override void OnRetrieveArtwork(MediaPortal.GUI.Library.GUIListItem item) {
-            IconImage = PlexInterface.ArtworkRetriever.GetArtwork(Directory.thumb);
-            IconImageBig = PlexInterface.ArtworkRetriever.GetArtwork(Directory.art);
-            ThumbnailImage = PlexInterface.ArtworkRetriever.GetArtwork(Directory.thumb);
-            BackgroundImage = !String.IsNullOrEmpty(Directory.art) ? PlexInterface.ArtworkRetriever.GetArtwork(Directory.art) : string.Empty;            
+            if (String.IsNullOrEmpty(Directory.thumb)) {
+                if (Parent is PlexItemBase) {
+                    var parent = Parent as PlexItemBase;
+                    IconImage = parent.IconImage;
+                    ThumbnailImage = parent.ThumbnailImage;
+                } else {
+                    IconImage = PlexInterface.ArtworkRetriever.GetArtwork(Directory.thumb);
+                    ThumbnailImage = PlexInterface.ArtworkRetriever.GetArtwork(Directory.thumb);
+                }
+            }
+            if (String.IsNullOrEmpty(Directory.art)) {
+                if (Parent is PlexItemBase) {
+                    var parent = Parent as PlexItemBase;
+                    IconImageBig = parent.IconImageBig;
+                } else {
+                    IconImageBig = PlexInterface.ArtworkRetriever.GetArtwork(Directory.art);
+                }
+            } else {
+                BackgroundImage = !String.IsNullOrEmpty(Directory.art) ? PlexInterface.ArtworkRetriever.GetArtwork(Directory.art) : string.Empty;
+            }
         }
     }
 }

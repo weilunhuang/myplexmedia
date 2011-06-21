@@ -26,13 +26,12 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (path != null) {
                 UriPath = path.AbsoluteUri.Contains("?") ? path : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");
             }
-            OnRetrieveArt += new RetrieveCoverArtHandler(PlexItemBase_OnRetrieveArt);
+            OnRetrieveArt += new RetrieveCoverArtHandler(PlexItemBase_OnRetrieveArt);            
             ViewItems = new List<IMenuItem>();
-            //base.SetIcons(MediaRetrieval.GetArtWork(UriPath.AbsoluteUri));
+            Utils.SetDefaultIcons(this);
         }
 
-        void PlexItemBase_OnRetrieveArt(GUIListItem item) {
-            Utils.SetDefaultIcons(item);
+        void PlexItemBase_OnRetrieveArt(GUIListItem item) {            
             OnRetrieveArtwork(item);
             Utils.SetThumbnails(ref item);
         }
@@ -52,10 +51,14 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
 
         public override void OnClicked(object sender, EventArgs e) {
+            //if (ChildItems == null || ChildItems.Count < 1) {
+            //    SetChildItems(Navigation.GetCreateSubMenuItems(this, PlexInterface.RequestPlexItems(UriPath)));
+            //}            
+            //Navigation.ShowCurrentMenu(this, LastSelectedChildIndex);
             if (ChildItems == null || ChildItems.Count < 1) {
-                SetChildItems(Navigation.GetCreateSubMenuItems(this, UriPath));
+                PlexInterface.RequestPlexItemsAsync(UriPath, this) ;
             }            
-            Navigation.ShowCurrentMenu(this, LastSelectedChildIndex);
+            //Navigation.ShowCurrentMenu(this, LastSelectedChildIndex);
         }    
 
         public override void OnSelected() {

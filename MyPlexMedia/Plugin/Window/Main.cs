@@ -147,6 +147,7 @@ namespace MyPlexMedia.Plugin.Window {
         private void RegisterEventHandlers() {
             PlexInterface.OnPlexError += new PlexInterface.OnPlexErrorEventHandler(PlexInterface_OnPlexError);
             PlexInterface.ArtworkRetriever.OnArtWorkRetrieved += new ArtworkRetriever.OnArtWorkRetrievedEventHandler(MediaRetrieval_OnArtWorkRetrieved);
+            PlexInterface.OnResponseProgress += new PlexInterface.OnResponseProgressEventHandler(PlexInterface_OnResponseProgress);
             PlexItemBase.OnHasBackground += new PlexItemBase.OnHasBackgroundEventHandler(MenuItem_OnHasBackground);
             MenuItem.OnMenuItemSelected += new MenuItem.OnMenuItemSelectedEventHandler(MenuItem_OnMenuItemSelected);
             PlexItemBase.OnItemDetailsUpdated += new PlexItemBase.OnItemDetailsUpdatedEventHandler(PlexItem_OnItemDetailsUpdated);
@@ -155,7 +156,6 @@ namespace MyPlexMedia.Plugin.Window {
             Navigation.OnErrorOccured += new Navigation.OnErrorOccuredEventHandler(PlexInterface_OnPlexError);
         }
 
-      
         private void UnRegisterEventHandlers() {
             PlexInterface.OnPlexError -= PlexInterface_OnPlexError;
             PlexInterface.ArtworkRetriever.OnArtWorkRetrieved -= MediaRetrieval_OnArtWorkRetrieved;

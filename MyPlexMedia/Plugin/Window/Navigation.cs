@@ -11,6 +11,7 @@ using MediaPortal.GUI.Library;
 using System.Net;
 using MyPlexMedia.Plugin.Window.Dialogs;
 using System.IO;
+using System.Collections;
 
 namespace MyPlexMedia.Plugin.Window {
     public static class Navigation {
@@ -30,30 +31,33 @@ namespace MyPlexMedia.Plugin.Window {
         static MenuItem ServerItem { get; set; }
         static List<IMenuItem> ServerMenu { get; set; }
         public static IMenuItem CurrentItem { get; set; }
-        static List<string> BreadCrumbs { get; set; }
+        static List<string> History{ get; set; }
 
 
-        static Navigation() {
+        static Navigation() {            
             PlexInterface.ServerManager.OnPlexServersChanged += new ServerManager.OnPlexServersChangedEventHandler(ServerManager_OnPlexServersChanged);
+            PlexInterface.OnResponseReceived += new PlexInterface.OnResponseReceivedEventHandler(PlexInterface_OnResponseReceived);
             RootItem = new PlexItemBase(null, "Root Item", null);
             ServerItem = new MenuItem(RootItem, "Plex Servers");
             RootMenu = new List<IMenuItem>();
             RootMenu.Add(ServerItem);
             RootItem.SetChildItems(RootMenu);
         }
+               
 
         static void ShowRootMenu(MediaContainer plexSections) {
+            History = new List<string>();
+            GUIPropertyManager.SetProperty("#currentmodule", String.Format("{0}>{1}",Settings.PLUGIN_NAME, String.Join(">", Navigation.History.ToArray())));
             if (plexSections != null) {
                 RootItem.UriPath = plexSections.UriSource;
             }
-            RootMenu = GetCreateSubMenuItems(RootItem, RootItem.UriPath);
+            RootMenu = GetCreateSubMenuItems(RootItem, PlexInterface.RequestPlexItems(RootItem.UriPath));
             RootMenu.Add(ServerItem);
             RootItem.SetChildItems(RootMenu);
             ShowCurrentMenu(RootItem, 0);
         }
 
-        internal static void CreateStartupMenu(PlexServer lastSelectedOrDefaultServer) {
-            BreadCrumbs = new List<string>();            
+        internal static void CreateStartupMenu(PlexServer lastSelectedOrDefaultServer) {                   
             RefreshServerMenu();
             if (lastSelectedOrDefaultServer != null) {
                 try {
@@ -72,29 +76,25 @@ namespace MyPlexMedia.Plugin.Window {
 
         internal static void FetchPreviousMenu(IMenuItem currentItem, int storeLastSelectedFacadeIndex) {            
             if (currentItem != null && currentItem.Parent != null) {
-                BreadCrumbs.RemoveAt(BreadCrumbs.Count - 1);
-                BreadCrumbs.RemoveAt(BreadCrumbs.Count - 1);
+                History.RemoveAt(History.Count - 1);
                 currentItem.LastSelectedChildIndex = storeLastSelectedFacadeIndex;
                 ShowCurrentMenu(currentItem.Parent, currentItem.Parent.LastSelectedChildIndex);
             }
         }
 
         internal static void ShowCurrentMenu(IMenuItem parentItem, int selectFacadeIndex) {
-            if (parentItem.ChildItems.Count > 0) {
-                CurrentItem = parentItem;
+            if (parentItem.ChildItems.Count > 0) {                
+                CurrentItem = parentItem;                
                 OnMenuItemsFetchCompleted(parentItem.ChildItems, selectFacadeIndex, parentItem.PreferredLayout);
-                BreadCrumbs.Add(parentItem.Name);
-                GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", BreadCrumbs.ToArray()));
             } else {
                 return;
             }
         }
 
-        internal static List<IMenuItem> GetCreateSubMenuItems(PlexItemBase parentItem, Uri uriPath) {
+        internal static List<IMenuItem> GetCreateSubMenuItems(PlexItemBase parentItem, MediaContainer plexResponseConatiner) {
             OnMenuItemsFetchStarted();
             List<IMenuItem> tmpList = new List<IMenuItem>();
-            try {
-                MediaContainer plexResponseConatiner = PlexInterface.RequestPlexItems(uriPath);
+            try {                
                 if (plexResponseConatiner == null) {
                     throw new ArgumentNullException("plexResponseContainer");
                 }
@@ -125,6 +125,17 @@ namespace MyPlexMedia.Plugin.Window {
             return tmpList;
         }
 
+        static void PlexInterface_OnResponseReceived(object userToken, MediaContainer response) {
+            if (userToken is PlexItemBase) {
+                var item = userToken as PlexItemBase;
+                item.SetChildItems(GetCreateSubMenuItems(item, response));
+                History.Add(item.Name);
+                ShowCurrentMenu(item, item.LastSelectedChildIndex);
+            } else { 
+                OnErrorOccured(new PlexException(typeof(Navigation), "Unexpected item type in received response!", new InvalidCastException()));
+            }
+        }
+
         private static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
             GUIWaitCursor.Init();
             GUIWaitCursor.Show();
@@ -134,8 +145,7 @@ namespace MyPlexMedia.Plugin.Window {
             ServerMenu.Add(new ActionItem(null, "Refresh Bonjouor...", Settings.PLEX_ICON_DEFAULT_BONJOUR, () => RefreshServerMenu()));
             ServerMenu.Add(new ActionItem(null, "Add Plex Server...", Settings.PLEX_ICON_DEFAULT_ONLINE, () => AddNewPlexServer()));
             ServerItem.SetChildItems(ServerMenu);
-            if (CurrentItem == ServerItem) {
-                BreadCrumbs = new List<string>();
+            if (CurrentItem == ServerItem) {               
                 ShowCurrentMenu(ServerItem, 0);
             }
         }
