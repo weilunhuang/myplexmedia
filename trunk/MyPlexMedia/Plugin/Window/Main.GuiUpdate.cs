@@ -6,16 +6,27 @@ using MediaPortal.Util;
 using MyPlexMedia.Plugin.Window.Items;
 using PlexMediaCenter.Plex.Data.Types;
 using MyPlexMedia.Plugin.Window.Dialogs;
+using MyPlexMedia.Plugin.Config;
+using PlexMediaCenter.Plex;
 
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main {
 
 
+        void PlexInterface_OnPlexError(PlexException plexError) {
+            Log.Error(plexError);
+            CommonDialogs.HideProgressDialog();
+            CommonDialogs.ShowNotifyDialog(30, plexError.ErrorSource.ToString(), plexError.Message);
+        }
+
 
         void PlexInterface_OnResponseProgress(object userToken, int progress) {
-            GUIPropertyManager.SetProperty("#fanarthandler.scraper.percent.completed", progress.ToString() + "%");
-            CommonDialogs.UpdateProgressDialog(((IMenuItem)userToken).Name, progress);
+            if (progress <= 100) {
+                CommonDialogs.UpdateProgressDialog("Fetching Plex Items...",((IMenuItem)userToken).Name, progress);
+            } else {
+                CommonDialogs.HideProgressDialog();
+            }
         }      
 
         void MenuItem_OnHasBackground(string imagePath) {
@@ -31,14 +42,12 @@ namespace MyPlexMedia.Plugin.Window {
             }
         }
 
-        void Navigation_OnMenuItemsFetchStarted() {
-            GUIWaitCursor.Init();
-            GUIWaitCursor.Show();
+        void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
+            CommonDialogs.HideProgressDialog();
         }
 
-        void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, GUIFacadeControl.Layout preferredLayout) {
-            GUIWaitCursor.Hide();
-
+        void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, GUIFacadeControl.Layout preferredLayout) {            
+            GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", Navigation.History.ToArray()));
             CurrentLayout = preferredLayout;
             SwitchLayout();
             facadeLayout.Clear();
@@ -48,7 +57,8 @@ namespace MyPlexMedia.Plugin.Window {
             facadeLayout.RefreshCoverArt();
             facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
             facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);            
-            //facadeLayout.DoUpdate();
+            //facadeLayout.DoUpdate();     
+            CommonDialogs.HideProgressDialog();            
         }
 
         void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {

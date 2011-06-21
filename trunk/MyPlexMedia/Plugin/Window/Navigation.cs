@@ -18,10 +18,10 @@ namespace MyPlexMedia.Plugin.Window {
         public static bool IsFetching { get; set; }
 
         public static event OnErrorOccuredEventHandler OnErrorOccured;
-        public delegate void OnErrorOccuredEventHandler(Exception e);
+        public delegate void OnErrorOccuredEventHandler(PlexException e);
 
         public static event OnMenuItemsFetchStartedEventHandler OnMenuItemsFetchStarted;
-        public delegate void OnMenuItemsFetchStartedEventHandler();
+        public delegate void OnMenuItemsFetchStartedEventHandler(IMenuItem itemToFetch);
 
         public static event OnMenuItemsFetchCompletedEventHandler OnMenuItemsFetchCompleted;
         public delegate void OnMenuItemsFetchCompletedEventHandler(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, GUIFacadeControl.Layout preferredLayout);
@@ -31,50 +31,61 @@ namespace MyPlexMedia.Plugin.Window {
         static MenuItem ServerItem { get; set; }
         static List<IMenuItem> ServerMenu { get; set; }
         public static IMenuItem CurrentItem { get; set; }
-        static List<string> History{ get; set; }
+        public static List<string> History { get; set; }
 
 
-        static Navigation() {            
+        static Navigation() {
             PlexInterface.ServerManager.OnPlexServersChanged += new ServerManager.OnPlexServersChangedEventHandler(ServerManager_OnPlexServersChanged);
             PlexInterface.OnResponseReceived += new PlexInterface.OnResponseReceivedEventHandler(PlexInterface_OnResponseReceived);
+            CommonDialogs.OnProgressCancelled += new CommonDialogs.OnProgressCancelledEventHandler(CommonDialogs_OnProgressCancelled);
+            History = new List<string>();
+            History.Add(Settings.PLUGIN_NAME);
             RootItem = new PlexItemBase(null, "Root Item", null);
             ServerItem = new MenuItem(RootItem, "Plex Servers");
             RootMenu = new List<IMenuItem>();
             RootMenu.Add(ServerItem);
             RootItem.SetChildItems(RootMenu);
         }
-               
 
-        static void ShowRootMenu(MediaContainer plexSections) {
-            History = new List<string>();
-            GUIPropertyManager.SetProperty("#currentmodule", String.Format("{0}>{1}",Settings.PLUGIN_NAME, String.Join(">", Navigation.History.ToArray())));
-            if (plexSections != null) {
-                RootItem.UriPath = plexSections.UriSource;
+        static void CommonDialogs_OnProgressCancelled() {
+            PlexInterface.RequestPlexItemsCancel();
+        }
+
+
+        static void ShowRootMenu(PlexServer selectedServer) {
+            CommonDialogs.ShowWaitCursor();
+            MediaContainer plexSections = PlexInterface.TryGetPlexSections(selectedServer);
+            if (plexSections == null) {
+                return;
             }
+            RootItem.UriPath = plexSections.UriSource;
             RootMenu = GetCreateSubMenuItems(RootItem, PlexInterface.RequestPlexItems(RootItem.UriPath));
             RootMenu.Add(ServerItem);
             RootItem.SetChildItems(RootMenu);
             ShowCurrentMenu(RootItem, 0);
+            CommonDialogs.HideWaitCursor();
         }
 
-        internal static void CreateStartupMenu(PlexServer lastSelectedOrDefaultServer) {                   
+        internal static void CreateStartupMenu(PlexServer lastSelectedOrDefaultServer) {
+            CommonDialogs.ShowWaitCursor();
             RefreshServerMenu();
             if (lastSelectedOrDefaultServer != null) {
                 try {
-                    ShowRootMenu(PlexInterface.TryGetPlexSections(lastSelectedOrDefaultServer));
+                    ShowRootMenu(lastSelectedOrDefaultServer);
                     return;
                 } catch (Exception e) {
-                    OnErrorOccured(e);
+                    OnErrorOccured(new PlexException(typeof(Navigation), "Creating startmenu failed!", e));
                 }
             }
             ShowCurrentMenu(ServerItem, 0);
+            CommonDialogs.HideWaitCursor();
         }
 
         internal static void ShowCurrentContextMenu() {
             ContextMenu.ShowContextMenu(CurrentItem.Name, CurrentItem.ViewItems);
         }
 
-        internal static void FetchPreviousMenu(IMenuItem currentItem, int storeLastSelectedFacadeIndex) {            
+        internal static void FetchPreviousMenu(IMenuItem currentItem, int storeLastSelectedFacadeIndex) {
             if (currentItem != null && currentItem.Parent != null) {
                 History.RemoveAt(History.Count - 1);
                 currentItem.LastSelectedChildIndex = storeLastSelectedFacadeIndex;
@@ -83,18 +94,19 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         internal static void ShowCurrentMenu(IMenuItem parentItem, int selectFacadeIndex) {
-            if (parentItem.ChildItems.Count > 0) {                
-                CurrentItem = parentItem;                
+            CommonDialogs.ShowWaitCursor();
+            if (parentItem.ChildItems.Count > 0) {
+                CurrentItem = parentItem;
                 OnMenuItemsFetchCompleted(parentItem.ChildItems, selectFacadeIndex, parentItem.PreferredLayout);
             } else {
                 return;
             }
+            CommonDialogs.HideWaitCursor();
         }
 
-        internal static List<IMenuItem> GetCreateSubMenuItems(PlexItemBase parentItem, MediaContainer plexResponseConatiner) {
-            OnMenuItemsFetchStarted();
+        internal static List<IMenuItem> GetCreateSubMenuItems(PlexItemBase parentItem, MediaContainer plexResponseConatiner) {            
             List<IMenuItem> tmpList = new List<IMenuItem>();
-            try {                
+            try {
                 if (plexResponseConatiner == null) {
                     throw new ArgumentNullException("plexResponseContainer");
                 }
@@ -112,7 +124,7 @@ namespace MyPlexMedia.Plugin.Window {
                     parentItem.ViewItems.AddRange(plexResponseConatiner.Directory.Where(
                         dir => !String.IsNullOrEmpty(dir.prompt)).Select<MediaContainerDirectory, IMenuItem>(
                         dir => new PlexItemSearch(parentItem, dir.prompt, new Uri(parentItem.UriPath, dir.key), dir.prompt))
-                        );                    
+                        );
                 }
                 //We have plain old sub items
                 tmpList.AddRange(plexResponseConatiner.Directory.ConvertAll<IMenuItem>(dir => new PlexItemDirectory(parentItem, dir.title, new Uri(parentItem.UriPath, dir.key), dir)));
@@ -120,7 +132,7 @@ namespace MyPlexMedia.Plugin.Window {
                 tmpList.AddRange(plexResponseConatiner.Track.ConvertAll<IMenuItem>(track => new PlexItemTrack(parentItem, track.title, new Uri(parentItem.UriPath, track.key), track)));
 
             } catch (Exception e) {
-                OnErrorOccured(e);
+                OnErrorOccured(new PlexException(typeof(Navigation), "Creating submenu failed!", e));
             }
             return tmpList;
         }
@@ -131,23 +143,22 @@ namespace MyPlexMedia.Plugin.Window {
                 item.SetChildItems(GetCreateSubMenuItems(item, response));
                 History.Add(item.Name);
                 ShowCurrentMenu(item, item.LastSelectedChildIndex);
-            } else { 
+            } else {
                 OnErrorOccured(new PlexException(typeof(Navigation), "Unexpected item type in received response!", new InvalidCastException()));
-            }
+            }          
         }
 
         private static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
-            GUIWaitCursor.Init();
-            GUIWaitCursor.Show();
+            CommonDialogs.ShowWaitCursor();
             updatedServerList.ForEach(svr => PlexInterface.Login(svr));
-            GUIWaitCursor.Hide();
-            ServerMenu = updatedServerList.ConvertAll<IMenuItem>(svr => new ActionItem(ServerItem, String.Format("{0} @ {1}", svr.FriendlyName ?? svr.HostName, svr.HostAdress), svr.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE, () => ShowRootMenu(PlexInterface.TryGetPlexSections(svr))));
+            CommonDialogs.HideWaitCursor();
+            ServerMenu = updatedServerList.ConvertAll<IMenuItem>(svr => new ActionItem(ServerItem, String.Format("{0} @ {1}", svr.FriendlyName ?? svr.HostName, svr.HostAdress), svr.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE, () => ShowRootMenu(svr)));
             ServerMenu.Add(new ActionItem(null, "Refresh Bonjouor...", Settings.PLEX_ICON_DEFAULT_BONJOUR, () => RefreshServerMenu()));
             ServerMenu.Add(new ActionItem(null, "Add Plex Server...", Settings.PLEX_ICON_DEFAULT_ONLINE, () => AddNewPlexServer()));
             ServerItem.SetChildItems(ServerMenu);
-            if (CurrentItem == ServerItem) {               
+            if (CurrentItem == ServerItem) {
                 ShowCurrentMenu(ServerItem, 0);
-            }
+            }            
         }
 
         internal static void RefreshServerMenu() {
@@ -167,6 +178,11 @@ namespace MyPlexMedia.Plugin.Window {
                     AddNewPlexServer();
                 }
             }
+        }
+
+        internal static void RequestChildItems(Uri UriPath, IMenuItem destObject) {
+            OnMenuItemsFetchStarted(destObject);
+            PlexInterface.RequestPlexItemsAsync(UriPath, destObject);
         }
     }
 }

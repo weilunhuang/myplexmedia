@@ -12,20 +12,21 @@ using MediaPortal.Configuration;
 using System.Threading;
 using System.Collections;
 using MyPlexMedia.Plugin.Window.Items;
+using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Dialogs {
 
     internal static class CommonDialogs {
-               
+
         #region GUI Helper Methods
 
         private static VirtualKeyboard keyboard = (VirtualKeyboard)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
-        public static string GetKeyBoardInput(string defaultText, string labelText) {                   
+        public static string GetKeyBoardInput(string defaultText, string labelText) {
             if (keyboard == null) {
                 return String.Empty;
-            } 
+            }
             keyboard.Reset();
-            keyboard.Label = labelText;            
+            keyboard.Label = labelText;
             keyboard.IsSearchKeyboard = true;
             keyboard.Text = defaultText;
             keyboard.DoModal(GUIWindowManager.ActiveWindow);
@@ -37,12 +38,12 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
         }
 
         private static GUIDialogNotify dialogMailNotify = (GUIDialogNotify)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_NOTIFY);
-        public static void ShowNotifyDialog(int timeOut, string notifyMessage) {
+        public static void ShowNotifyDialog(int timeOut, string headerText, string notifyMessage) {
             try {
                 dialogMailNotify.Reset();
                 dialogMailNotify.TimeOut = timeOut;
                 dialogMailNotify.SetImage(GUIGraphicsContext.Skin + @"\Media\hover_MyPlexMedia.png");
-                dialogMailNotify.SetHeading("MyPlexMedia");
+                dialogMailNotify.SetHeading(headerText);
                 dialogMailNotify.SetText(notifyMessage);
                 dialogMailNotify.DoModal(GUIWindowManager.ActiveWindow);
             } catch (Exception ex) {
@@ -91,33 +92,53 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             }
         }
 
+        public static event OnProgressCancelledEventHandler OnProgressCancelled;
+        public delegate void OnProgressCancelledEventHandler();
+
         private static GUIDialogProgress DialogProgress = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
         public static void ShowProgressDialog(string headerTitle) {
             DialogProgress.Reset();
-            DialogProgress.SetHeading(headerTitle);
-            DialogProgress.DisableCancel(true);
-            DialogProgress.SetLine(1, "Currently Downloading:");
-            DialogProgress.Percentage = 0;
+            DialogProgress.SetHeading(headerTitle);           
+            DialogProgress.SetLine(1, "Currently Fetching:");
+            DialogProgress.Percentage = 0;            
             DialogProgress.DisplayProgressBar = true;
             DialogProgress.ShowWaitCursor = true;
-            DialogProgress.StartModal(GUIWindowManager.ActiveWindow);
+            DialogProgress.IsVisible = true;
+            DialogProgress.DoModal(GUIWindowManager.ActiveWindow);
+            if (DialogProgress.IsCanceled) {               
+                HideProgressDialog();
+                OnProgressCancelled();                
+            }
             DialogProgress.Progress();
         }
 
-        public static void UpdateProgressDialog(string currentItem, int progressPercentage) {
-            if (!DialogProgress.IsVisible) {
-                ShowProgressDialog(currentItem);
+        public static void UpdateProgressDialog(string headerText, string currentItem, int progressPercentage) {
+            if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled) {
+                ShowProgressDialog(headerText);
             }
             DialogProgress.SetPercentage(progressPercentage);
-            DialogProgress.SetLine(2, currentItem);
+            DialogProgress.SetLine(1, currentItem);
+            DialogProgress.SetLine(3, String.Format ("({0} % completed)", progressPercentage));
             DialogProgress.Progress();
         }
 
         public static void HideProgressDialog() {
+            DialogProgress.Reset();
+            DialogProgress.IsVisible = false;
             DialogProgress.ShowWaitCursor = false;
             DialogProgress.Close();
         }
 
+        public static void ShowWaitCursor() {
+            GUIWaitCursor.Init();
+            GUIWaitCursor.Show();
+            GUIWindowManager.Process();
+        }
+
+        public static void HideWaitCursor() {
+            GUIWaitCursor.Hide();
+        }
+    
         #endregion
 
     }

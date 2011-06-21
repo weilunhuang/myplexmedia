@@ -86,7 +86,17 @@ namespace PlexMediaCenter.Plex {
         }        
 
         public static void RequestPlexItemsAsync(Uri path, object userToken) {
+            if (_webClient.IsBusy) {
+                OnPlexError(new PlexException(typeof(PlexInterface), "Another Request in progress!", null));
+                return;
+            }
             _webClient.DownloadDataAsync(path, userToken);
+        }
+
+        public static void RequestPlexItemsCancel() {
+            if (_webClient.IsBusy) {
+                _webClient.CancelAsync();
+            }
         }
 
         static void _webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
@@ -95,9 +105,9 @@ namespace PlexMediaCenter.Plex {
         }
 
         static void _webClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e) {
-            if (e.Error != null) {
-                OnPlexError(new PlexException(typeof(PlexInterface), String.Format("Asynchronous Request failed! (cancelled: {0})", e.Cancelled), e.Error));
-            } else {
+            if (e.Error != null || e.Cancelled) {
+                OnPlexError(new PlexException(typeof(PlexInterface),e.Error.Message.ToString(),null));
+            } else            {
                 OnResponseReceived(e.UserState, Serialization.DeSerializeXML<MediaContainer>(System.Text.ASCIIEncoding.Default.GetString(e.Result)));
             }
         }

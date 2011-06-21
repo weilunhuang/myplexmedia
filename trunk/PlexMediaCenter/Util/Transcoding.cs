@@ -157,6 +157,20 @@ namespace PlexMediaCenter.Util {
 
             return new Uri(plexServer.UriPlexBase + transcodePath.Remove(0, 1));
         }
+        
+        public static Uri GetFlvStreamUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = false) {
+            //Request: GET /video/:/transcode/generic.flv?format=flv&videoCodec=libx264&vpre=video-embedded-h264&videoBitrate=5000&audioCodec=libfaac&apre=audio-embedded-aac&audioBitrate=128&size=640x480&fakeContentLength=2000000000&url=http%3A%2F%2F192%2E168%2E1%2E87%3A32400%2Fvideo%2F
+            string transcodePath = "/video/:/transcode/generic.flv?";
+            transcodePath += "format=flv";
+            transcodePath += "&videoCodec=libx264&vpre=video-embedded-h264&videoBitrate=5000&audioCodec=libfaac&apre=audio-embedded-aac&audioBitrate=128&size=640x480&fakeContentLength=2000000000";
+            transcodePath += "&url=" + Uri.EscapeDataString("http://localhost:32400" + partKey);
+            transcodePath += GetPlexAuthParameters(plexServer, transcodePath);
+            //transcodePath += PlexCapabilitiesClient.GetClientCapabilities();
+            //transcodePath += "&httpCookies=";
+            //transcodePath += "&userAgent=";
+
+            return new Uri(plexServer.UriPlexBase + transcodePath.Remove(0, 1));
+        }
 
         public static string GetPlexAuthParameters(PlexServer plexServer, string url) {
             string time = GetUnixTime();
