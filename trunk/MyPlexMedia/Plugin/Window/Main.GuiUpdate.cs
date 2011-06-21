@@ -5,10 +5,18 @@ using MediaPortal.GUI.Library;
 using MediaPortal.Util;
 using MyPlexMedia.Plugin.Window.Items;
 using PlexMediaCenter.Plex.Data.Types;
+using MyPlexMedia.Plugin.Window.Dialogs;
 
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main {
+
+
+
+        void PlexInterface_OnResponseProgress(object userToken, int progress) {
+            GUIPropertyManager.SetProperty("#fanarthandler.scraper.percent.completed", progress.ToString() + "%");
+            CommonDialogs.UpdateProgressDialog(((IMenuItem)userToken).Name, progress);
+        }      
 
         void MenuItem_OnHasBackground(string imagePath) {
             if (ctrlBackgroundImage != null && !String.IsNullOrEmpty(imagePath) && File.Exists(imagePath)) {
@@ -30,6 +38,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, GUIFacadeControl.Layout preferredLayout) {
             GUIWaitCursor.Hide();
+
             CurrentLayout = preferredLayout;
             SwitchLayout();
             facadeLayout.Clear();

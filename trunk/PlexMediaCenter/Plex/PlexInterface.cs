@@ -15,14 +15,19 @@ namespace PlexMediaCenter.Plex {
         public static bool IsBusy { get { return _webClient.IsBusy; } }
 
         public static event OnResponseProgressEventHandler OnResponseProgress;
-        public delegate void OnResponseProgressEventHandler(int progress);
+        public delegate void OnResponseProgressEventHandler(object userToken, int progress);
         public static event OnResponseReceivedEventHandler OnResponseReceived;
-        public delegate void OnResponseReceivedEventHandler(MediaContainer response);
+        public delegate void OnResponseReceivedEventHandler(object userToken, MediaContainer response);
         public static event OnPlexErrorEventHandler OnPlexError;
         public delegate void OnPlexErrorEventHandler(PlexException e);
 
         public static ServerManager ServerManager { get; private set; }
         public static ArtworkRetriever ArtworkRetriever { get; private set; }
+        public static PlexServer PlexServerCurrent { get { return ServerManager.PlexServerCurrent; } }
+
+        public static bool Is3GConnected { get; set; }
+        public static bool IsLANConnected { get { return PlexServerCurrent.IsBonjour; } }
+        public static bool ShouldTranscode { get; set; }
 
         static PlexInterface() {
             _webClient = new WebClient();
@@ -38,30 +43,8 @@ namespace PlexMediaCenter.Plex {
             ArtworkRetriever.OnArtworkRetrievalError += new ArtworkRetriever.OnArtworkRetrievalErrorEventHandler(MediaRetrieval_OnArtWorkRetrievalError);
         }
 
-        static void MediaRetrieval_OnArtWorkRetrievalError(PlexException e) {
-            OnPlexError(e);
-        }
 
-        static void ServerManager_OnServerManangerError(PlexException e) {
-            OnPlexError(e);
-        }
-
-        static void _webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
-            OnResponseProgress(e.ProgressPercentage);
-            Console.WriteLine(e.ProgressPercentage + " (" + e.BytesReceived + " / " + e.TotalBytesToReceive + ")");
-        }
-
-        static void _webClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e) {
-            OnResponseReceived(Serialization.DeSerializeXML<MediaContainer>(System.Text.ASCIIEncoding.Default.GetString(e.Result)));
-        }
-
-        public static bool Login(PlexServer plexServer) {
-            if (String.IsNullOrEmpty(plexServer.HostAdress)) {
-                return false;
-            } else {
-                return ServerManager.Authenticate(ref _webClient, plexServer);
-            }
-        }
+        #region Plex Server Requests
 
         public static MediaContainer TryGetPlexSections(PlexServer plexServer) {
             if (plexServer != null && Login(plexServer)) {
@@ -100,23 +83,36 @@ namespace PlexMediaCenter.Plex {
                 OnPlexError(new PlexException(typeof(PlexInterface), "Unable to get items from path: " + selectedPath.AbsoluteUri, e));
             }
             return null;
+        }        
+
+        public static void RequestPlexItemsAsync(Uri path, object userToken) {
+            _webClient.DownloadDataAsync(path, userToken);
         }
 
-        public static bool PlexServersAvailable {
-            get {
-                return ServerManager.PlexServers != null
-                    && ServerManager.PlexServers.Count > 0
-                    && ServerManager.PlexServerCurrent != null;
+        static void _webClient_DownloadProgressChanged(object sender, DownloadProgressChangedEventArgs e) {
+            OnResponseProgress(e.UserState, e.ProgressPercentage);
+            
+        }
+
+        static void _webClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e) {
+            if (e.Error != null) {
+                OnPlexError(new PlexException(typeof(PlexInterface), String.Format("Asynchronous Request failed! (cancelled: {0})", e.Cancelled), e.Error));
+            } else {
+                OnResponseReceived(e.UserState, Serialization.DeSerializeXML<MediaContainer>(System.Text.ASCIIEncoding.Default.GetString(e.Result)));
             }
         }
 
-        public static void RefreshBonjourServers() {
-            ServerManager.RefrehBonjourServers();
+        #endregion
+
+        #region ArtWorkRetriever
+
+        static void MediaRetrieval_OnArtWorkRetrievalError(PlexException e) {
+            OnPlexError(e);
         }
 
-        public static void RequestPlexItemsAsync(Uri path) {
-            _webClient.DownloadDataAsync(path);
-        }
+        #endregion
+
+        #region Transcoding
 
         public static IEnumerable<string> GetAllVideoPartKeys(MediaContainerVideo videoContainer) {
             foreach (Media media in videoContainer.Media) {
@@ -125,7 +121,7 @@ namespace PlexMediaCenter.Plex {
                 }
             }
         }
-
+              
         public static string GetPlayBackProxyUrl(string sourceUrl) {
             if (!_authProxy.Started) {
                 _authProxy.Start();
@@ -133,12 +129,36 @@ namespace PlexMediaCenter.Plex {
             return _authProxy.GetProxyUrl(sourceUrl);
         }
 
-        public static PlexServer PlexServerCurrent { get { return ServerManager.PlexServerCurrent; } }
+        #endregion
 
-        public static bool Is3GConnected { get; set; }
 
-        public static bool IsLANConnected { get { return PlexServerCurrent.IsBonjour; } }
+        #region ServerManager
 
-        public static bool ShouldTranscode { get; set; }
+        static void ServerManager_OnServerManangerError(PlexException e) {
+            OnPlexError(e);
+        }
+
+        public static bool Login(PlexServer plexServer) {
+            if (String.IsNullOrEmpty(plexServer.HostAdress)) {
+                return false;
+            } else {
+                return ServerManager.Authenticate(ref _webClient, plexServer);
+            }
+        }
+
+        public static bool PlexServersAvailable {
+            get {
+                return ServerManager.PlexServers != null
+                    && ServerManager.PlexServers.Count > 0
+                    && ServerManager.PlexServerCurrent != null;
+            }
+        }    
+
+        public static void RefreshBonjourServers() {
+            ServerManager.RefrehBonjourServers();
+        }
+
+        #endregion
+
     }
 }

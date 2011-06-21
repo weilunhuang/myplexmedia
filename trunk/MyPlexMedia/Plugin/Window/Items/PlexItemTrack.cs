@@ -21,10 +21,6 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public PlexItemTrack(IMenuItem parentItem, string title, Uri path, MediaContainerTrack track)
             : base(parentItem, title, path) {
             Track = track;
-            IconImage = Settings.PLEX_ICON_DEFAULT;
-            IconImageBig = Settings.PLEX_ICON_DEFAULT;
-            ThumbnailImage = Settings.PLEX_ICON_DEFAULT;
-            
         }
 
         public override void OnClicked(object sender, EventArgs e) {
@@ -35,6 +31,19 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public override void OnSelected() {
 
+        }
+
+        protected override void OnRetrieveArtwork(MediaPortal.GUI.Library.GUIListItem item) {
+            if (Parent is PlexItemBase) {
+                var parent = Parent as PlexItemBase;
+                IconImage = parent.IconImage;
+                IconImageBig = parent.IconImageBig;
+                ThumbnailImage = parent.ThumbnailImage;
+            } else {
+                IconImage = Settings.PLEX_ICON_DEFAULT;
+                IconImageBig = Settings.PLEX_ICON_DEFAULT;
+                ThumbnailImage = Settings.PLEX_ICON_DEFAULT;
+            }
         }
     }
 }

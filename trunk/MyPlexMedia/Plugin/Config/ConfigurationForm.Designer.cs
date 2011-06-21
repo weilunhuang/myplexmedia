@@ -24,6 +24,7 @@ namespace MyPlexMedia.Plugin.Config {
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationForm));
             this.label16 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -34,27 +35,27 @@ namespace MyPlexMedia.Plugin.Config {
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.buttonRefreshBonjourServers = new System.Windows.Forms.Button();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.hostNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hostAdressDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.userNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.userPassDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.FriendlyName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.isBonjourDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.plexServerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.label1 = new System.Windows.Forms.Label();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.isOnlineDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.uriPlexSectionsDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.uriPlexBaseDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.serverCapabilitiesDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.label1 = new System.Windows.Forms.Label();
-            this.hostNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hostAdressDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.userNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.userPassDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.isBonjourDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.plexServerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // label16
@@ -183,6 +184,38 @@ namespace MyPlexMedia.Plugin.Config {
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             this.dataGridView1.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGridView1_RowPrePaint);
             // 
+            // hostNameDataGridViewTextBoxColumn
+            // 
+            this.hostNameDataGridViewTextBoxColumn.DataPropertyName = "HostName";
+            this.hostNameDataGridViewTextBoxColumn.FillWeight = 75.85722F;
+            this.hostNameDataGridViewTextBoxColumn.HeaderText = "Host Name";
+            this.hostNameDataGridViewTextBoxColumn.Name = "hostNameDataGridViewTextBoxColumn";
+            this.hostNameDataGridViewTextBoxColumn.Width = 85;
+            // 
+            // hostAdressDataGridViewTextBoxColumn
+            // 
+            this.hostAdressDataGridViewTextBoxColumn.DataPropertyName = "HostAdress";
+            this.hostAdressDataGridViewTextBoxColumn.FillWeight = 75.85722F;
+            this.hostAdressDataGridViewTextBoxColumn.HeaderText = "Host Adress";
+            this.hostAdressDataGridViewTextBoxColumn.Name = "hostAdressDataGridViewTextBoxColumn";
+            this.hostAdressDataGridViewTextBoxColumn.Width = 89;
+            // 
+            // userNameDataGridViewTextBoxColumn
+            // 
+            this.userNameDataGridViewTextBoxColumn.DataPropertyName = "UserName";
+            this.userNameDataGridViewTextBoxColumn.FillWeight = 75.85722F;
+            this.userNameDataGridViewTextBoxColumn.HeaderText = "User Name";
+            this.userNameDataGridViewTextBoxColumn.Name = "userNameDataGridViewTextBoxColumn";
+            this.userNameDataGridViewTextBoxColumn.Width = 85;
+            // 
+            // userPassDataGridViewTextBoxColumn
+            // 
+            this.userPassDataGridViewTextBoxColumn.DataPropertyName = "UserPass";
+            this.userPassDataGridViewTextBoxColumn.FillWeight = 75.85722F;
+            this.userPassDataGridViewTextBoxColumn.HeaderText = "User Pass";
+            this.userPassDataGridViewTextBoxColumn.Name = "userPassDataGridViewTextBoxColumn";
+            this.userPassDataGridViewTextBoxColumn.Width = 80;
+            // 
             // FriendlyName
             // 
             this.FriendlyName.DataPropertyName = "FriendlyName";
@@ -191,6 +224,20 @@ namespace MyPlexMedia.Plugin.Config {
             this.FriendlyName.Name = "FriendlyName";
             this.FriendlyName.ReadOnly = true;
             this.FriendlyName.Width = 99;
+            // 
+            // isBonjourDataGridViewCheckBoxColumn
+            // 
+            this.isBonjourDataGridViewCheckBoxColumn.DataPropertyName = "IsBonjour";
+            this.isBonjourDataGridViewCheckBoxColumn.FillWeight = 68.13522F;
+            this.isBonjourDataGridViewCheckBoxColumn.HeaderText = "Bonjour";
+            this.isBonjourDataGridViewCheckBoxColumn.MinimumWidth = 30;
+            this.isBonjourDataGridViewCheckBoxColumn.Name = "isBonjourDataGridViewCheckBoxColumn";
+            this.isBonjourDataGridViewCheckBoxColumn.ReadOnly = true;
+            this.isBonjourDataGridViewCheckBoxColumn.Width = 49;
+            // 
+            // plexServerBindingSource
+            // 
+            this.plexServerBindingSource.DataSource = typeof(PlexMediaCenter.Plex.Connection.PlexServer);
             // 
             // tabPage3
             // 
@@ -202,6 +249,15 @@ namespace MyPlexMedia.Plugin.Config {
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Connection Speed && Quality";
             this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(306, 91);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(76, 13);
+            this.label1.TabIndex = 0;
+            this.label1.Text = "coming soon...";
             // 
             // pictureBox1
             // 
@@ -245,62 +301,7 @@ namespace MyPlexMedia.Plugin.Config {
             this.serverCapabilitiesDataGridViewTextBoxColumn.DataPropertyName = "ServerCapabilities";
             this.serverCapabilitiesDataGridViewTextBoxColumn.HeaderText = "ServerCapabilities";
             this.serverCapabilitiesDataGridViewTextBoxColumn.Name = "serverCapabilitiesDataGridViewTextBoxColumn";
-            this.serverCapabilitiesDataGridViewTextBoxColumn.Width = 58;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(306, 91);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(76, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "coming soon...";
-            // 
-            // hostNameDataGridViewTextBoxColumn
-            // 
-            this.hostNameDataGridViewTextBoxColumn.DataPropertyName = "HostName";
-            this.hostNameDataGridViewTextBoxColumn.FillWeight = 75.85722F;
-            this.hostNameDataGridViewTextBoxColumn.HeaderText = "Host Name";
-            this.hostNameDataGridViewTextBoxColumn.Name = "hostNameDataGridViewTextBoxColumn";
-            this.hostNameDataGridViewTextBoxColumn.Width = 85;
-            // 
-            // hostAdressDataGridViewTextBoxColumn
-            // 
-            this.hostAdressDataGridViewTextBoxColumn.DataPropertyName = "HostAdress";
-            this.hostAdressDataGridViewTextBoxColumn.FillWeight = 75.85722F;
-            this.hostAdressDataGridViewTextBoxColumn.HeaderText = "Host Adress";
-            this.hostAdressDataGridViewTextBoxColumn.Name = "hostAdressDataGridViewTextBoxColumn";
-            this.hostAdressDataGridViewTextBoxColumn.Width = 89;
-            // 
-            // userNameDataGridViewTextBoxColumn
-            // 
-            this.userNameDataGridViewTextBoxColumn.DataPropertyName = "UserName";
-            this.userNameDataGridViewTextBoxColumn.FillWeight = 75.85722F;
-            this.userNameDataGridViewTextBoxColumn.HeaderText = "User Name";
-            this.userNameDataGridViewTextBoxColumn.Name = "userNameDataGridViewTextBoxColumn";
-            this.userNameDataGridViewTextBoxColumn.Width = 85;
-            // 
-            // userPassDataGridViewTextBoxColumn
-            // 
-            this.userPassDataGridViewTextBoxColumn.DataPropertyName = "UserPass";
-            this.userPassDataGridViewTextBoxColumn.FillWeight = 75.85722F;
-            this.userPassDataGridViewTextBoxColumn.HeaderText = "User Pass";
-            this.userPassDataGridViewTextBoxColumn.Name = "userPassDataGridViewTextBoxColumn";
-            this.userPassDataGridViewTextBoxColumn.Width = 80;
-            // 
-            // isBonjourDataGridViewCheckBoxColumn
-            // 
-            this.isBonjourDataGridViewCheckBoxColumn.DataPropertyName = "IsBonjour";
-            this.isBonjourDataGridViewCheckBoxColumn.FillWeight = 68.13522F;
-            this.isBonjourDataGridViewCheckBoxColumn.HeaderText = "Bonjour";
-            this.isBonjourDataGridViewCheckBoxColumn.MinimumWidth = 30;
-            this.isBonjourDataGridViewCheckBoxColumn.Name = "isBonjourDataGridViewCheckBoxColumn";
-            this.isBonjourDataGridViewCheckBoxColumn.ReadOnly = true;
-            this.isBonjourDataGridViewCheckBoxColumn.Width = 49;
-            // 
-            // plexServerBindingSource
-            // 
-            this.plexServerBindingSource.DataSource = typeof(PlexMediaCenter.Plex.Connection.PlexServer);
+            this.serverCapabilitiesDataGridViewTextBoxColumn.Width = 58;            
             // 
             // ConfigurationForm
             // 
@@ -319,10 +320,10 @@ namespace MyPlexMedia.Plugin.Config {
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -353,7 +354,7 @@ namespace MyPlexMedia.Plugin.Config {
         private System.Windows.Forms.DataGridViewTextBoxColumn FriendlyName;
         private System.Windows.Forms.DataGridViewCheckBoxColumn isBonjourDataGridViewCheckBoxColumn;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label1;        
 
 
     }
