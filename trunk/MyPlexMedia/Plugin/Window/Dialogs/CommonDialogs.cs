@@ -96,7 +96,7 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
         public delegate void OnProgressCancelledEventHandler();
 
         private static GUIDialogProgress DialogProgress = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
-        public static void ShowProgressDialog(string headerTitle) {
+        private static void ShowProgressDialog(string headerTitle) {
             DialogProgress.Reset();
             DialogProgress.SetHeading(headerTitle);           
             DialogProgress.SetLine(1, "Currently Fetching:");
@@ -112,8 +112,8 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             DialogProgress.Progress();
         }
 
-        public static void UpdateProgressDialog(string headerText, string currentItem, int progressPercentage) {
-            if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled) {
+        public static void ShowProgressDialog(string headerText, string currentItem, int progressPercentage) {
+            if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled && progressPercentage < 100) {
                 ShowProgressDialog(headerText);
             }
             DialogProgress.SetPercentage(progressPercentage);

@@ -7,6 +7,7 @@ using PlexMediaCenter.Util;
 using MediaPortal.GUI.Library;
 using MediaPortal.Util;
 using PlexMediaCenter.Plex.Data.Types;
+using MyPlexMedia.Plugin.Config;
 
 
 namespace MyPlexMedia.Plugin.Window.Items {
@@ -25,18 +26,21 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (path != null) {
                 UriPath = path.AbsoluteUri.Contains("?") ? path : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");
             }
-            OnRetrieveArt += new RetrieveCoverArtHandler(PlexItemBase_OnRetrieveArt);
-            ViewItems = new List<IMenuItem>();
-            Utils.SetDefaultIcons(this);
+            ViewItems = new List<IMenuItem>();            
+            Utils.SetDefaultIcons(this);     
+            SetIcon(Settings.PLEX_ICON_DEFAULT);
+            SetImage(Settings.PLEX_ARTWORK_DEFAULT);
         }
 
-        void PlexItemBase_OnRetrieveArt(GUIListItem item) {
-            OnRetrieveArtwork(item);
-            Utils.SetThumbnails(ref item);
+        protected void SetIcon(string imagePath) {
+            IconImage = ThumbnailImage = imagePath;
+            RefreshCoverArt();
         }
 
-        protected virtual void OnRetrieveArtwork(GUIListItem item) {
-
+        protected void SetImage(string imagePath) {
+            IconImageBig = imagePath;
+            BackgroundImage = imagePath;
+            RefreshCoverArt();
         }
 
         public virtual void SetMetaData(MediaContainer infoContainer) {

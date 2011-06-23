@@ -21,11 +21,11 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public PlexItemTrack(IMenuItem parentItem, string title, Uri path, MediaContainerTrack track)
             : base(parentItem, title, path) {
             Track = track;
+            IconImage = ThumbnailImage = (parentItem as PlexItemBase).IconImage;
+            IconImageBig = (parentItem as PlexItemBase).IconImageBig;
         }
 
         public override void OnClicked(object sender, EventArgs e) {
-           
-            
             //g_Player.PlayAudioStream(PlexInterface.GetPlayBackProxyUrl(PlexInterface.PlexServerCurrent.UriPlexBase + Track.Media[0].Part[0].key));
         }
 
@@ -33,17 +33,5 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         }
 
-        protected override void OnRetrieveArtwork(MediaPortal.GUI.Library.GUIListItem item) {
-            if (Parent is PlexItemBase) {
-                var parent = Parent as PlexItemBase;
-                IconImage = parent.IconImage;
-                IconImageBig = parent.IconImageBig;
-                ThumbnailImage = parent.ThumbnailImage;
-            } else {
-                IconImage = Settings.PLEX_ICON_DEFAULT;
-                IconImageBig = Settings.PLEX_ICON_DEFAULT;
-                ThumbnailImage = Settings.PLEX_ICON_DEFAULT;
-            }
-        }
     }
 }

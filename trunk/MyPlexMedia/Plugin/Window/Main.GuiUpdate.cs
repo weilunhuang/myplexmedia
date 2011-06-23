@@ -22,12 +22,8 @@ namespace MyPlexMedia.Plugin.Window {
 
 
         void PlexInterface_OnResponseProgress(object userToken, int progress) {
-            if (progress <= 100) {
-                CommonDialogs.UpdateProgressDialog("Fetching Plex Items...",((IMenuItem)userToken).Name, progress);
-            } else {
-                CommonDialogs.HideProgressDialog();
-            }
-        }      
+            CommonDialogs.ShowProgressDialog("Fetching Plex Items...", ((IMenuItem)userToken).Name, progress);
+        }
 
         void MenuItem_OnHasBackground(string imagePath) {
             if (ctrlBackgroundImage != null && !String.IsNullOrEmpty(imagePath) && File.Exists(imagePath)) {
@@ -46,7 +42,7 @@ namespace MyPlexMedia.Plugin.Window {
             CommonDialogs.HideProgressDialog();
         }
 
-        void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, GUIFacadeControl.Layout preferredLayout) {            
+        void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, GUIFacadeControl.Layout preferredLayout) {
             GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", Navigation.History.ToArray()));
             CurrentLayout = preferredLayout;
             SwitchLayout();
@@ -56,15 +52,15 @@ namespace MyPlexMedia.Plugin.Window {
             }
             facadeLayout.RefreshCoverArt();
             facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
-            facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);            
+            facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
             //facadeLayout.DoUpdate();     
-            CommonDialogs.HideProgressDialog();            
+            CommonDialogs.HideProgressDialog();
         }
 
         void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {
             UpdateGuiProperties(selectedItem);
         }
-       
+
         void PlexItem_OnItemDetailsUpdated(MediaContainer itemDetails) {
             UpdateGuiProperties(itemDetails);
         }
