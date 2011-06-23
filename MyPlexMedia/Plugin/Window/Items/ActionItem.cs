@@ -18,7 +18,6 @@ namespace MyPlexMedia.Plugin.Window.Items {
             ThumbnailImage = specialIcon;        
         }      
 
-
         public override void OnClicked(object sender, EventArgs e) {
             Action();
         }
