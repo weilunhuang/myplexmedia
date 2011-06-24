@@ -14,7 +14,8 @@ using Vlc.DotNet.Core.Interops.Signatures.LibVlc.Media;
 
 namespace MyPlexMedia.Plugin.Player {
 
-    public class MyPlexMediaPlayer : IPlayer {
+    public class MyPlexMediaPlayer : IPlayer, IPlayerFactory{
+
         enum PlayState { Init, Playing, Paused, Ended };
 
         VlcControl vlcCtrl;
@@ -25,13 +26,27 @@ namespace MyPlexMedia.Plugin.Player {
         bool bufferingDone;
         float playPosition;
 
-        public override bool Play(string strFile) {
+        public bool PlaySegmentedVideoStream(Uri m3u8PlayListUrl) {
+            IPlayerFactory savedFactory = g_Player.Factory;
+            g_Player.Factory = this as IPlayerFactory;
+            bool playing = g_Player.Play(m3u8PlayListUrl.AbsoluteUri , g_Player.MediaType.Video);
+            g_Player.Factory = savedFactory;
+            return playing;
+        }
+
+        public override bool IsExternal {
+            get {
+                return false;
+            }
+        }
+
+       public override bool Play(string strFile) {            
             url = strFile;
 
             VlcContext.StartupOptions.IgnoreConfig = true;
             VlcContext.StartupOptions.LogOptions.LogInFile = true;
             VlcContext.StartupOptions.LogOptions.Verbosity = VlcLogVerbosities.Debug;
-            //VlcContext.StartupOptions.AddOption("--no-video-title-show");
+            VlcContext.StartupOptions.AddOption("--no-video-title-show");
             VlcContext.StartupOptions.AddOption("--http-caching=5000");
             VlcContext.StartupOptions.LogOptions.LogInFilePath = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Log), "vlc-onlinevideos.log");
             
@@ -93,7 +108,7 @@ namespace MyPlexMedia.Plugin.Player {
                 if (Ended) {
                     PlaybackEnded();
                 } else {
-                    //if (GoFullscreen) GUIWindowManager.ActivateWindow(GUIOnlineVideoFullscreen.WINDOW_FULLSCREEN_ONLINEVIDEO);
+                    GUIWindowManager.ActivateWindow((int)GUIWindow.Window.WINDOW_FULLSCREEN_VIDEO);
                     GUIMessage msgPb = new GUIMessage(GUIMessage.MessageType.GUI_MSG_PLAYBACK_STARTED, 0, 0, 0, 0, 0, null);
                     msgPb.Label = CurrentFile;
                     GUIWindowManager.SendThreadMessage(msgPb);
@@ -254,5 +269,17 @@ namespace MyPlexMedia.Plugin.Player {
                 return !string.IsNullOrEmpty(vlcPath);
             }
         }
+
+        #region IPlayerFactory Members
+
+        public IPlayer Create(string fileName, g_Player.MediaType type) {
+            return this as IPlayer;
+        }
+
+        public IPlayer Create(string fileName) {
+            return Create(fileName, g_Player.MediaType.Video);
+        }
+
+        #endregion
     }
 }

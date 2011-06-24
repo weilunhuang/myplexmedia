@@ -11,6 +11,9 @@ using PlexMediaCenter.Plex;
 using MediaPortal.Player;
 using MediaPortal.Playlists;
 using MyPlexMedia.Plugin.Player;
+using MediaPortal.GUI.Video;
+using MediaPortal.GUI.Library;
+using MediaPortal.Video.Database;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     class PlexItemVideo : PlexItemBase {
@@ -19,7 +22,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public PlexItemVideo(IMenuItem parentItem, string title, Uri path, MediaContainerVideo video)
             : base(parentItem, title, path) {
-            Video = video;
+            Video = video;           
 
             PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, UriPath, Video.thumb);
             PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, UriPath, Video.art);
@@ -33,6 +36,10 @@ namespace MyPlexMedia.Plugin.Window.Items {
                     Rating = float.Parse(Video.rating);
                 } catch { }
             }
+            int year;
+            if (int.TryParse(Video.year, out year)) {
+                base.Year = year;
+            }
             FileInfo = new MediaPortal.Util.FileInformation();
             if (!String.IsNullOrEmpty(Video.originallyAvailableAt)) {
                 FileInfo.CreationTime = DateTime.Parse(Video.originallyAvailableAt);
@@ -41,21 +48,19 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }     
 
         public override void OnClicked(object sender, EventArgs e) {
-            Transcoding.OnPlayBufferedMedia += new Transcoding.OnPlayBufferedMediaEventHandler(Transcoding_OnPlayBufferedMedia);
-            Transcoding.OnPlayHttpAdaptiveStream += new Transcoding.OnPlayHttpAdaptiveStreamEventHandler(Transcoding_OnPlayHttpAdaptiveStream);
-            List<String> list =  Transcoding.GetM3U8PlaylistItems(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key).ToList();
+            
+            MyPlexMediaPlayer myPlayer = new MyPlexMediaPlayer();
+            myPlayer.FullScreen = true;
+            myPlayer.GoFullscreen = true;            
+            myPlayer.PlaySegmentedVideoStream(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, false));            
+            myPlayer.Process();
 
-            //MyPlexMediaPlayer myPlayer = new MyPlexMediaPlayer();
-            //myPlayer.FullScreen = true;
-            //myPlayer.GoFullscreen = true;
+            //g_Player.PlayVideoStream(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, false).AbsoluteUri);
             
-            //myPlayer.Play(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, false).AbsoluteUri);
-            g_Player.PlayVideoStream(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, false).AbsoluteUri);
-            
-            //myPlayer.Process();
-            g_Player.ShowFullScreenWindow();
-            //AXVLC.VLCPlugin2Class plugin = new AXVLC.VLCPlugin2Class();
-            //plugin.Visible = true;
+           
+            //g_Player.ShowFullScreenWindow();
+            ////AXVLC.VLCPlugin2Class plugin = new AXVLC.VLCPlugin2Class();
+            ////plugin.Visible = true;
             //plugin.addTarget(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, true).AbsoluteUri, Type.Missing, AXVLC.VLCPlaylistMode.VLCPlayListReplace, 0);
             ////plugin.play();
             //string test = Transcoding.GetFlvStreamUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key).AbsoluteUri;
@@ -65,19 +70,26 @@ namespace MyPlexMedia.Plugin.Window.Items {
             //g_Player.PlayVideoStream(test);
             //g_Player.ShowFullScreenWindow();
            // Transcoding.PlayBackMedia(Video);
-        }
-        
-        void Transcoding_OnPlayHttpAdaptiveStream(Uri m3u8Url) {
-            throw new NotImplementedException();
-        }
-
-        void Transcoding_OnPlayBufferedMedia(string localBufferPath) {
-            g_Player.PlayVideoStream(localBufferPath);
-            g_Player.ShowFullScreenWindow();
-        }
+        }        
+       
 
         public override void OnSelected() {
 
+        }
+
+        public override void OnInfo() {
+            IMDBMovie movieDetails = new IMDBMovie();
+            movieDetails.Plot = Video.summary;
+            movieDetails.PlotOutline = Video.tagline;
+            movieDetails.Title = Video.title;
+            movieDetails.RunTime = Duration;
+            movieDetails.Rating = Rating;
+            movieDetails.Year = Year;
+            movieDetails.MPARating = Video.contentRating;           
+            
+            GUIVideoInfo videoInfo = (GUIVideoInfo)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIDEO_INFO);            
+            videoInfo.Movie = movieDetails;            
+            GUIWindowManager.ActivateWindow((int)GUIWindow.Window.WINDOW_VIDEO_INFO);
         }
     }
 }

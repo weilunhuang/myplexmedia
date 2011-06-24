@@ -10,6 +10,7 @@ using MyPlexMedia.Plugin.Config;
 using MediaPortal.Playlists;
 using PlexMediaCenter.Plex;
 using MediaPortal.Player;
+using MediaPortal.Music.Database;
 
 
 namespace MyPlexMedia.Plugin.Window.Items {
@@ -31,6 +32,11 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public override void OnSelected() {
 
+        }
+
+        public override void OnInfo() {
+            Song track = new Song();
+            track.Album = Parent.Name;
         }
 
     }

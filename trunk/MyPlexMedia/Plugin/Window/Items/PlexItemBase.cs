@@ -15,12 +15,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public static event OnHasBackgroundEventHandler OnHasBackground;
         public delegate void OnHasBackgroundEventHandler(string imagePath);
-
-        public static event OnItemDetailsUpdatedEventHandler OnItemDetailsUpdated;
-        public delegate void OnItemDetailsUpdatedEventHandler(MediaContainer itemDetails);
-
-        public MediaContainer ItemMetaData { get; set; }
-
+   
         public PlexItemBase(IMenuItem parentItem, string title, Uri path)
             : base(parentItem, title) {
             if (path != null) {
@@ -48,16 +43,11 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (int.TryParse(infoContainer.parentYear, out year)) {
                 base.Year = year;
             }
-            ItemMetaData = infoContainer;
-            OnItemDetailsUpdated(ItemMetaData);
+            base.AlbumInfoTag = infoContainer;           
         }
 
 
-        public override void OnClicked(object sender, EventArgs e) {
-            //if (ChildItems == null || ChildItems.Count < 1) {
-            //    SetChildItems(Navigation.GetCreateSubMenuItems(this, PlexInterface.RequestPlexItems(UriPath)));
-            //}            
-            //Navigation.ShowCurrentMenu(this, LastSelectedChildIndex);
+        public override void OnClicked(object sender, EventArgs e) {            
             if (ChildItems == null || ChildItems.Count < 1) {
                 Navigation.RequestChildItems(UriPath, this);
             } else {

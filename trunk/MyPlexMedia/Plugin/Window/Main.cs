@@ -93,7 +93,12 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         protected override void OnInfo(int iItem) {
-            base.OnInfo(iItem);
+            if (facadeLayout[iItem] is IMenuItem) {
+                ((IMenuItem)facadeLayout[iItem]).Parent.LastSelectedChildIndex = iItem;
+                ((IMenuItem)facadeLayout[iItem]).OnInfo();
+            } else {
+                base.OnInfo(iItem);
+            }            
         }
 
         public override void OnAction(MediaPortal.GUI.Library.Action action) {
@@ -113,7 +118,6 @@ namespace MyPlexMedia.Plugin.Window {
 
         protected override void OnClicked(int controlId, GUIControl control, MediaPortal.GUI.Library.Action.ActionType actionType) {
             switch (controlId) {
-
                 default:
                     break;
             }
@@ -126,7 +130,7 @@ namespace MyPlexMedia.Plugin.Window {
                 ((IMenuItem)facadeLayout[iItem]).OnClicked(this, null);                
             } else {
                 base.OnClick(iItem);
-            }
+            }            
         }
 
         protected override void OnShowContextMenu() {
@@ -142,7 +146,6 @@ namespace MyPlexMedia.Plugin.Window {
             PlexInterface.OnResponseProgress += new PlexInterface.OnResponseProgressEventHandler(PlexInterface_OnResponseProgress);
             PlexItemBase.OnHasBackground += new PlexItemBase.OnHasBackgroundEventHandler(MenuItem_OnHasBackground);
             MenuItem.OnMenuItemSelected += new MenuItem.OnMenuItemSelectedEventHandler(MenuItem_OnMenuItemSelected);
-            PlexItemBase.OnItemDetailsUpdated += new PlexItemBase.OnItemDetailsUpdatedEventHandler(PlexItem_OnItemDetailsUpdated);
             Navigation.OnMenuItemsFetchStarted += new Navigation.OnMenuItemsFetchStartedEventHandler(Navigation_OnMenuItemsFetchStarted);
             Navigation.OnMenuItemsFetchCompleted += new Navigation.OnMenuItemsFetchCompletedEventHandler(Navigation_OnMenuItemsFetchCompleted);
             Navigation.OnErrorOccured += new Navigation.OnErrorOccuredEventHandler(PlexInterface_OnPlexError);
@@ -150,9 +153,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         private void UnRegisterEventHandlers() {
             PlexInterface.OnPlexError -= PlexInterface_OnPlexError;
-            PlexItemBase.OnHasBackground -= MenuItem_OnHasBackground;
             MenuItem.OnMenuItemSelected -= MenuItem_OnMenuItemSelected;
-            PlexItemBase.OnItemDetailsUpdated -= PlexItem_OnItemDetailsUpdated;
             Navigation.OnMenuItemsFetchCompleted -= Navigation_OnMenuItemsFetchCompleted;
             Navigation.OnMenuItemsFetchStarted -= Navigation_OnMenuItemsFetchStarted;
             Navigation.OnErrorOccured -= PlexInterface_OnPlexError;

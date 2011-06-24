@@ -49,7 +49,11 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public virtual void OnSelected() {
             OnMenuItemSelected(this);
-        }       
+        }
+
+        public virtual void OnInfo() {
+            
+        }
         
         #endregion  
 

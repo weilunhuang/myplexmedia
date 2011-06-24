@@ -18,5 +18,6 @@ namespace MyPlexMedia.Plugin.Window.Items {
         List<IMenuItem> ChildItems { get;}
         void OnClicked(object sender, EventArgs e);        
         void OnSelected();
+        void OnInfo();
     }
 }
