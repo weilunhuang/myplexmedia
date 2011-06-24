@@ -87,21 +87,21 @@ namespace PlexMediaCenter.Plex.Data {
         //    //throw new NotImplementedException();
         //}
             
-        public void QueueArtwork( Action<string> downloadFinishedCallback, string imageUrl) {
-            if (String.IsNullOrEmpty(imageUrl)) {
+        public void QueueArtwork( Action<string> downloadFinishedCallback, Uri serverBasePath, string imageFileName) {
+            if (String.IsNullOrEmpty(imageFileName)) {
                 return;
             }
             string localImagePath = ImageBasePath;
             if (!Directory.Exists(localImagePath)) {
                 Directory.CreateDirectory(localImagePath);
             }
-            localImagePath = Path.Combine(localImagePath, GetSafeFilenameFromUrl(imageUrl, '_'));
+            localImagePath = Path.Combine(localImagePath, GetSafeFilenameFromUrl(imageFileName, '_'));
             if (File.Exists(localImagePath)) {
                 //Image locally available so nothing to do...
                 downloadFinishedCallback.Invoke(localImagePath);
             } else {
-                //we need to put this in the Threadpool                
-                ThreadPool.QueueUserWorkItem(new WaitCallback(DownloadEnqueuedArtwork), new ArtworkQueueItem(imageUrl, localImagePath, downloadFinishedCallback));
+                //we need to put this in the Threadpool                 
+                ThreadPool.QueueUserWorkItem(new WaitCallback(DownloadEnqueuedArtwork), new ArtworkQueueItem(new Uri(serverBasePath, imageFileName), localImagePath, downloadFinishedCallback));               
             }
         }
 
@@ -118,11 +118,15 @@ namespace PlexMediaCenter.Plex.Data {
         }
 
         class ArtworkQueueItem {
-            public string ImageUrl { get; set; }
+            public Uri ImageUrl { get; set; }
             public string ImageLocalPath { get; set; }
             public Action<string> FinishedCallback { get; set; }
 
-            public ArtworkQueueItem(string imageUrl, string imageLocalPath, Action<string> downloadFinishedCallback) { }
+            public ArtworkQueueItem(Uri imageUrl, string imageLocalPath, Action<string> downloadFinishedCallback) {
+                ImageUrl = imageUrl;
+                ImageLocalPath = imageLocalPath;
+                FinishedCallback = downloadFinishedCallback;
+            }
         }
 
         public static string GetSafeFilenameFromUrl(string url, char replaceChar) {

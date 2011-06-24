@@ -31,9 +31,10 @@ namespace MyPlexMedia.Plugin.Player {
             VlcContext.StartupOptions.IgnoreConfig = true;
             VlcContext.StartupOptions.LogOptions.LogInFile = true;
             VlcContext.StartupOptions.LogOptions.Verbosity = VlcLogVerbosities.Debug;
-            VlcContext.StartupOptions.AddOption("--no-video-title-show");
+            //VlcContext.StartupOptions.AddOption("--no-video-title-show");
             VlcContext.StartupOptions.AddOption("--http-caching=5000");
             VlcContext.StartupOptions.LogOptions.LogInFilePath = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Log), "vlc-onlinevideos.log");
+            
             if (IsInstalled) {
                 VlcContext.LibVlcDllsPath = vlcPath;
                 VlcContext.LibVlcPluginsPath = Path.Combine(vlcPath, "plugins");
@@ -47,9 +48,9 @@ namespace MyPlexMedia.Plugin.Player {
             vlcCtrl.EncounteredError += vlcCtrl_EncounteredError;
 
             media = new PathMedia(strFile);
-
+            vlcCtrl.Show();             
             vlcCtrl.Play(media);
-
+           
             GUIPropertyManager.SetProperty("#TV.Record.percent3", 0.0f.ToString()); // set to 0, as this player doesn't support download progress reporting
 
             GUIWaitCursor.Init(); GUIWaitCursor.Show(); // init and show the wait cursor while buffering
@@ -92,7 +93,7 @@ namespace MyPlexMedia.Plugin.Player {
                 if (Ended) {
                     PlaybackEnded();
                 } else {
-                   /* if (GoFullscreen) GUIWindowManager.ActivateWindow(GUIOnlineVideoFullscreen.WINDOW_FULLSCREEN_ONLINEVIDEO);*/
+                    //if (GoFullscreen) GUIWindowManager.ActivateWindow(GUIOnlineVideoFullscreen.WINDOW_FULLSCREEN_ONLINEVIDEO);
                     GUIMessage msgPb = new GUIMessage(GUIMessage.MessageType.GUI_MSG_PLAYBACK_STARTED, 0, 0, 0, 0, 0, null);
                     msgPb.Label = CurrentFile;
                     GUIWindowManager.SendThreadMessage(msgPb);
@@ -101,6 +102,7 @@ namespace MyPlexMedia.Plugin.Player {
             }         
         }
 
+        
         public override void SetVideoWindow() {
             vlcCtrl.Location = new Point(FullScreen ? 0 : GUIGraphicsContext.VideoWindow.X, FullScreen ? 0 : GUIGraphicsContext.VideoWindow.Y);
             vlcCtrl.ClientSize = new Size(FullScreen ? GUIGraphicsContext.Width : GUIGraphicsContext.VideoWindow.Width, FullScreen ? GUIGraphicsContext.Height : GUIGraphicsContext.VideoWindow.Height);
