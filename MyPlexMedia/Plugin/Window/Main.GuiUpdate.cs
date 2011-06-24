@@ -61,10 +61,6 @@ namespace MyPlexMedia.Plugin.Window {
             UpdateGuiProperties(selectedItem);
         }
 
-        void PlexItem_OnItemDetailsUpdated(MediaContainer itemDetails) {
-            UpdateGuiProperties(itemDetails);
-        }
-
         private void UpdateGuiProperties(MediaContainer itemDetails) {
             //TODO: add custom skin properties
         }

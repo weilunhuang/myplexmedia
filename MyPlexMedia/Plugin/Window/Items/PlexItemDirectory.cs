@@ -35,8 +35,21 @@ namespace MyPlexMedia.Plugin.Window.Items {
             FileInfo = new MediaPortal.Util.FileInformation();
             if (!String.IsNullOrEmpty(Directory.originallyAvailableAt)) {
                 FileInfo.CreationTime = DateTime.Parse(Directory.originallyAvailableAt);
-            }
-        }        
-        
+            }            
+        }
+
+        public override void OnInfo() {
+           if(!String.IsNullOrEmpty(Directory.type)){
+               switch (Directory.type) {
+                   case "artist":
+                       break;
+                   case "album":
+                       break;
+                   default: 
+                       break;
+          
+               }
+           }
+        }
     }
 }

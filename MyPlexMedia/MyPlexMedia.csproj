@@ -40,6 +40,7 @@
   <ItemGroup>
     <Reference Include="Common.Utils, Version=1.1.7.0, Culture=neutral, processorArchitecture=x86" />
     <Reference Include="core, Version=1.1.7.0, Culture=neutral, processorArchitecture=x86" />
+    <Reference Include="Databases, Version=1.1.7.0, Culture=neutral, processorArchitecture=x86" />
     <Reference Include="dialogs, Version=1.1.7.0, Culture=neutral, processorArchitecture=x86" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -111,12 +112,21 @@
   <ItemGroup>
     <Content Include="Resources\dll\Common.Utils.dll" />
     <Content Include="Resources\dll\core.dll" />
+    <Content Include="Resources\dll\Databases.dll" />
     <Content Include="Resources\dll\dialogs.dll" />
     <Content Include="Resources\dll\utils.dll" />
-    <Content Include="Resources\dll\Vlc.DotNet.Core.dll" />
-    <Content Include="Resources\dll\Vlc.DotNet.Core.Interops.dll" />
-    <Content Include="Resources\dll\Vlc.DotNet.Forms.dll" />
-    <Content Include="Resources\dll\Vlc.DotNet.Wpf.dll" />
+    <Content Include="Resources\dll\Vlc.DotNet.Core.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\dll\Vlc.DotNet.Core.Interops.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\dll\Vlc.DotNet.Forms.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Resources\dll\Vlc.DotNet.Wpf.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Resources\dll\WindowPlugins.dll" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_disabled.png" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_enabled.png" />
@@ -138,17 +148,6 @@
       <Project>{D4ECA463-344D-44C7-A965-B169901278EE}</Project>
       <Name>PlexMediaCenter</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <COMReference Include="AXVLC">
-      <Guid>{DF2BBE39-40A8-433B-A279-073F48DA94B6}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>0</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
