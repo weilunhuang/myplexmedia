@@ -21,8 +21,8 @@ namespace MyPlexMedia.Plugin.Window.Items {
             : base(parentItem, title, path) {
             Video = video;
 
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, Video.thumb);
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, Video.art);
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, UriPath, Video.thumb);
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, UriPath, Video.art);
 
             int duration;
             if (int.TryParse(Video.duration, out duration)) {
@@ -45,10 +45,15 @@ namespace MyPlexMedia.Plugin.Window.Items {
             Transcoding.OnPlayHttpAdaptiveStream += new Transcoding.OnPlayHttpAdaptiveStreamEventHandler(Transcoding_OnPlayHttpAdaptiveStream);
             List<String> list =  Transcoding.GetM3U8PlaylistItems(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key).ToList();
 
-            MyPlexMediaPlayer myPlayer = new MyPlexMediaPlayer();
-            myPlayer.Play(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, false).AbsoluteUri);
-
-
+            //MyPlexMediaPlayer myPlayer = new MyPlexMediaPlayer();
+            //myPlayer.FullScreen = true;
+            //myPlayer.GoFullscreen = true;
+            
+            //myPlayer.Play(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, false).AbsoluteUri);
+            g_Player.PlayVideoStream(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, false).AbsoluteUri);
+            
+            //myPlayer.Process();
+            g_Player.ShowFullScreenWindow();
             //AXVLC.VLCPlugin2Class plugin = new AXVLC.VLCPlugin2Class();
             //plugin.Visible = true;
             //plugin.addTarget(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, true).AbsoluteUri, Type.Missing, AXVLC.VLCPlaylistMode.VLCPlayListReplace, 0);
