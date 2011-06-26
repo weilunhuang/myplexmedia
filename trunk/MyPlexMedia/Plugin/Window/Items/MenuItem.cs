@@ -36,10 +36,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public int LastSelectedChildIndex { get; set; }
 
         public List<IMenuItem> ChildItems { get; set; }
-        
-        public List<IMenuItem> GetChildItems() {
-            return ChildItems;
-        }
+              
 
         public virtual void OnClicked(object sender, EventArgs e) {
             if (ChildItems != null && ChildItems.Count > 0) {

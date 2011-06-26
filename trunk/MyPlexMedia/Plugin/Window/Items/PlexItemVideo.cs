@@ -1,31 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Drawing;
+using MediaPortal.GUI.Library;
+using MediaPortal.GUI.Video;
+using MediaPortal.Video.Database;
+using PlexMediaCenter.Plex;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
-using MyPlexMedia.Plugin.Config;
-using PlexMediaCenter.Plex;
 using MediaPortal.Player;
-using MediaPortal.Playlists;
-using MyPlexMedia.Plugin.Player;
-using MediaPortal.GUI.Video;
-using MediaPortal.GUI.Library;
-using MediaPortal.Video.Database;
+using MyPlexMedia.Plugin.Window.Dialogs;
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    class PlexItemVideo : PlexItemBase {
+    public class PlexItemVideo : PlexItemBase {
 
         public MediaContainerVideo Video { get; set; }
 
         public PlexItemVideo(IMenuItem parentItem, string title, Uri path, MediaContainerVideo video)
             : base(parentItem, title, path) {
-            Video = video;           
+            Video = video;
 
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, UriPath, Video.thumb);
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, UriPath, Video.art);
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, PlexInterface.PlexServerCurrent, Video.thumb);
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, PlexInterface.PlexServerCurrent, Video.art);
 
             int duration;
             if (int.TryParse(Video.duration, out duration)) {
@@ -48,28 +41,37 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }     
 
         public override void OnClicked(object sender, EventArgs e) {
-            
-            MyPlexMediaPlayer myPlayer = new MyPlexMediaPlayer();
-            myPlayer.FullScreen = true;
-            myPlayer.GoFullscreen = true;            
-            myPlayer.PlaySegmentedVideoStream(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, false));            
-            myPlayer.Process();
+            g_Player.Init();
+            g_Player.SetVideoWindow();
 
-            //g_Player.PlayVideoStream(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, false).AbsoluteUri);
-            
-           
-            //g_Player.ShowFullScreenWindow();
-            ////AXVLC.VLCPlugin2Class plugin = new AXVLC.VLCPlugin2Class();
-            ////plugin.Visible = true;
-            //plugin.addTarget(Transcoding.GetM3U8PlaylistUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key, 0, 1, true).AbsoluteUri, Type.Missing, AXVLC.VLCPlaylistMode.VLCPlayListReplace, 0);
-            ////plugin.play();
-            //string test = Transcoding.GetFlvStreamUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key).AbsoluteUri;
-            //VideoPlayerVMR9 t = new VideoPlayerVMR9(g_Player.MediaType.Video);
-            //t.FullScreen = true;
-            //t.PlayStream(test, "Test");
-            //g_Player.PlayVideoStream(test);
-            //g_Player.ShowFullScreenWindow();
-           // Transcoding.PlayBackMedia(Video);
+            Transcoding.OnPlayBufferedMedia += new Transcoding.OnPlayBufferedMediaEventHandler(Transcoding_OnPlayBufferedMedia);
+            Transcoding.OnBufferingProgress += new Transcoding.OnBufferingProgressEventHandler(Transcoding_OnBufferingProgress);
+            g_Player.PlayBackEnded += new g_Player.EndedHandler(g_Player_PlayBackEnded);
+            GUIWaitCursor.Init();
+            GUIWaitCursor.Show();
+            GUIWindowManager.Process();
+            Transcoding.PlayBackMedia(Video);
+        }
+
+        void g_Player_PlayBackEnded(g_Player.MediaType type, string filename) {
+            if (Transcoding.IsBuffering) {
+                g_Player.Pause();
+            }
+        }
+
+        void Transcoding_OnBufferingProgress(int currentProgress) {
+            CommonDialogs.ShowProgressDialog("Buffering...", Video.title, currentProgress);
+            if (g_Player.Playing && g_Player.Paused) {
+                g_Player.Pause();
+            }
+        }
+
+        void Transcoding_OnPlayBufferedMedia(string localBufferPath) {
+            CommonDialogs.HideProgressDialog();
+            GUIWaitCursor.Hide();
+            g_Player.Init();
+            g_Player.SetVideoWindow();           
+            g_Player.PlayVideoStream(localBufferPath, Video.title);
         }        
        
 
@@ -80,6 +82,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public override void OnInfo() {
             IMDBMovie movieDetails = new IMDBMovie();
             movieDetails.Plot = Video.summary;
+            movieDetails.ThumbURL = IconImage;
             movieDetails.PlotOutline = Video.tagline;
             movieDetails.Title = Video.title;
             movieDetails.RunTime = Duration;

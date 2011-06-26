@@ -15,6 +15,8 @@ namespace MyPlexMedia.Plugin.Window.Dialogs{
         internal static void ShowContextMenu(string headerLabel, List<IMenuItem> listCurrentContextMenuItems) {
             if (contextMenu == null) {
                 return;
+            } else if(CurrentMenuItems == null) { 
+                return;
             }
             if (listCurrentContextMenuItems == null || listCurrentContextMenuItems.Count <= 0) {
                 listCurrentContextMenuItems = CurrentMenuItems;

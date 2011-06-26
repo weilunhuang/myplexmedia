@@ -21,8 +21,8 @@ namespace MyPlexMedia.Plugin.Window.Items {
             Directory = directory;
             IsFolder = true;
 
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, UriPath, Directory.thumb);
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, UriPath, Directory.art);
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, PlexInterface.PlexServerCurrent, Directory.thumb);
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, PlexInterface.PlexServerCurrent, Directory.art);
 
             int duration;
             if (int.TryParse(Directory.duration, out duration)) {
@@ -31,7 +31,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (!String.IsNullOrEmpty(Directory.viewedLeafCount) && !String.IsNullOrEmpty(Directory.leafCount)) {
                 Label2 += String.Format(" [{0}/{1}]", Directory.viewedLeafCount, Directory.leafCount);
             }
-            Label3 = Directory.summary;
+            //Label3 = Directory.summary;
             FileInfo = new MediaPortal.Util.FileInformation();
             if (!String.IsNullOrEmpty(Directory.originallyAvailableAt)) {
                 FileInfo.CreationTime = DateTime.Parse(Directory.originallyAvailableAt);

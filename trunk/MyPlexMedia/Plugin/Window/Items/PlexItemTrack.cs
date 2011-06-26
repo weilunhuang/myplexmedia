@@ -1,20 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Drawing;
-using PlexMediaCenter.Plex.Data.Types;
-using PlexMediaCenter.Util;
-using MyPlexMedia.Plugin.Config;
-using MediaPortal.Playlists;
-using PlexMediaCenter.Plex;
-using MediaPortal.Player;
 using MediaPortal.Music.Database;
+using MediaPortal.Playlists;
+using PlexMediaCenter.Plex.Data.Types;
+using MediaPortal.Player;
+using PlexMediaCenter.Util;
+using PlexMediaCenter.Plex;
 
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    class PlexItemTrack : PlexItemBase {
+    public class PlexItemTrack : PlexItemBase {
 
         public MediaContainerTrack Track { get; set; }
         public PlayListItem PlayListItem { get; set; }
@@ -27,6 +21,9 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         public override void OnClicked(object sender, EventArgs e) {
+            //MyPlexMediaPlayer myPlayer = new MyPlexMediaPlayer();           
+            //myPlayer.PlayPlexItem(this);
+            g_Player.PlayAudioStream(new Uri(PlexInterface.PlexServerCurrent.UriPlexBase, Track.Media[0].Part[0].key + Transcoding.GetPlexUserPass(PlexInterface.PlexServerCurrent)).AbsoluteUri);
             //g_Player.PlayAudioStream(PlexInterface.GetPlayBackProxyUrl(PlexInterface.PlexServerCurrent.UriPlexBase + Track.Media[0].Part[0].key));
         }
 
@@ -36,6 +33,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public override void OnInfo() {
             Song track = new Song();
+
             track.Album = Parent.Name;
         }
 

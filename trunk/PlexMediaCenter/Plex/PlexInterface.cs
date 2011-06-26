@@ -10,7 +10,6 @@ namespace PlexMediaCenter.Plex {
     public static class PlexInterface {
 
         private static WebClient _webClient;
-        private static PlexAuthenticationProxy _authProxy;
         public static bool IsConnected { get; private set; }
         public static bool IsBusy { get { return _webClient.IsBusy; } }
 
@@ -32,8 +31,7 @@ namespace PlexMediaCenter.Plex {
         static PlexInterface() {
             _webClient = new WebClient();
             _webClient.DownloadDataCompleted += new DownloadDataCompletedEventHandler(_webClient_DownloadDataCompleted);
-            _webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(_webClient_DownloadProgressChanged);
-            _authProxy = new PlexAuthenticationProxy();
+            _webClient.DownloadProgressChanged += new DownloadProgressChangedEventHandler(_webClient_DownloadProgressChanged);           
         }
 
         public static void Init(string serverListXmlPath, string defaultBasePath, string defaultImage) {
@@ -130,15 +128,8 @@ namespace PlexMediaCenter.Plex {
                     yield return part.key;
                 }
             }
-        }
-              
-        public static string GetPlayBackProxyUrl(string sourceUrl) {
-            if (!_authProxy.Started) {
-                _authProxy.Start();
-            }
-            return _authProxy.GetProxyUrl(sourceUrl);
-        }
-
+        }              
+        
         #endregion
 
 

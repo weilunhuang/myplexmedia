@@ -15,14 +15,14 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public static event OnHasBackgroundEventHandler OnHasBackground;
         public delegate void OnHasBackgroundEventHandler(string imagePath);
-   
+
         public PlexItemBase(IMenuItem parentItem, string title, Uri path)
             : base(parentItem, title) {
             if (path != null) {
                 UriPath = path.AbsoluteUri.Contains("?") ? path : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");
             }
-            ViewItems = new List<IMenuItem>();            
-            Utils.SetDefaultIcons(this);     
+            ViewItems = new List<IMenuItem>();
+            Utils.SetDefaultIcons(this);
             SetIcon(Settings.PLEX_ICON_DEFAULT);
             SetImage(Settings.PLEX_ARTWORK_DEFAULT);
         }
@@ -43,11 +43,11 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (int.TryParse(infoContainer.parentYear, out year)) {
                 base.Year = year;
             }
-            base.AlbumInfoTag = infoContainer;           
+            base.AlbumInfoTag = infoContainer;
         }
 
 
-        public override void OnClicked(object sender, EventArgs e) {            
+        public override void OnClicked(object sender, EventArgs e) {
             if (ChildItems == null || ChildItems.Count < 1) {
                 Navigation.RequestChildItems(UriPath, this);
             } else {

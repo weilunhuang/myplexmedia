@@ -10,6 +10,7 @@ using System.ComponentModel;
 using System.Threading;
 using PlexMediaCenter.Plex.Connection;
 using PlexMediaCenter.Plex.Data.Types;
+using System.Media;
 
 namespace PlexMediaCenter.Util {
     public static class Transcoding {
@@ -17,11 +18,13 @@ namespace PlexMediaCenter.Util {
        // private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public static bool IsBuffering { get; set; }
+
+        public static event OnBufferingProgressEventHandler OnBufferingProgress;
+        public delegate void OnBufferingProgressEventHandler(int currentProgress);
+
         public static event OnPlayBufferedMediaEventHandler OnPlayBufferedMedia;
         public delegate void OnPlayBufferedMediaEventHandler(string localBufferPath);
-        public static event OnPlayHttpAdaptiveStreamEventHandler OnPlayHttpAdaptiveStream;
-        public delegate void OnPlayHttpAdaptiveStreamEventHandler(Uri m3u8Url);
-
+        
         private const string _plexApiPublicKey = "KQMIY6GATPC63AIMC4R2";
         private const string _plexApiSharedSecret = "k3U6GLkZOoNIoSgjDshPErvqMIFdE0xMTx8kgsrhnC0=";
 
@@ -29,9 +32,9 @@ namespace PlexMediaCenter.Util {
         private static WebClient _mediaFetcher;
         private static int Quality { get; set; }
         private static int Buffer { get; set; }
-        private const string _bufferFile = @"D:\buffer.ts";
-        private const int _defaultBuffer = 15;
-        private const int _defaultQuality = 3;
+        private const string _bufferFile = @"D:\buffer.avi";
+        private const int _defaultBuffer = 3;
+        private const int _defaultQuality = 5;
 
         static Transcoding() {
             //logger.Info(" started...");
@@ -46,6 +49,14 @@ namespace PlexMediaCenter.Util {
             _mediaBufferer.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_mediaBufferer_RunWorkerCompleted);
             _mediaBufferer.DoWork += new DoWorkEventHandler(MediaBufferer_DoWork);
 
+           
+
+        }
+
+        private static void CreateDummyFile(string fileName, long length) {
+            using (var fileStream = new FileStream(fileName, FileMode.Create, FileAccess.Write, FileShare.None)) {
+                fileStream.SetLength(length);
+            }
         }
 
         private static void DeleteBufferFile() {
@@ -58,13 +69,17 @@ namespace PlexMediaCenter.Util {
                 //logger.FatalException("Unable reset local media buffer!", e);
             }
 
-        }
+        }       
 
         static void MediaBufferer_DoWork(object sender, DoWorkEventArgs e) {
             //logger.Info("BackGroundWorker - Buffering...");
             if (e.Argument is IEnumerable<string>) {
                 IsBuffering = true;
                 using (FileStream _bufferedMedia = new FileStream(_bufferFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Read)) {
+                    //_bufferedMedia.SetLength(366485736);
+                    _bufferedMedia.Seek(366485736, SeekOrigin.Begin);
+                    _bufferedMedia.WriteByte(0);
+                    _bufferedMedia.Seek(0, SeekOrigin.Begin);                    
                     int bufferedSegments = 0;
                     foreach (string segment in (IEnumerable<string>)e.Argument) {
                         if (_mediaBufferer.CancellationPending) {
@@ -73,11 +88,15 @@ namespace PlexMediaCenter.Util {
                             _bufferedMedia.Close();
                             return;
                         }
-
+                        if (bufferedSegments <= Buffer) {
+                            _mediaBufferer.ReportProgress(bufferedSegments * 100 / Buffer);
+                        }
                         byte[] data = _mediaFetcher.DownloadData(segment);
+
                         _bufferedMedia.Write(data, 0, data.Length);
                         _bufferedMedia.Flush();
-                        _mediaBufferer.ReportProgress((int)_bufferedMedia.Length);
+
+                        SystemSounds.Beep.Play();
                         if (++bufferedSegments == Buffer) {
                             OnPlayBufferedMedia(_bufferFile);
                         }
@@ -89,6 +108,7 @@ namespace PlexMediaCenter.Util {
 
         static void MediaBufferer_ProgressChanged(object sender, ProgressChangedEventArgs e) {
             Console.WriteLine(e.ProgressPercentage);
+            OnBufferingProgress(e.ProgressPercentage);
         }
 
         static void _mediaBufferer_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
@@ -141,13 +161,13 @@ namespace PlexMediaCenter.Util {
             }
         }
 
-        public static Uri GetM3U8PlaylistUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = false) {
+        public static Uri GetM3U8PlaylistUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = true) {
             string transcodePath = "/video/:/transcode/segmented/start.m3u8?";
             transcodePath += "identifier=com.plexapp.plugins.library";
             transcodePath += "&offset=" + offset;
             transcodePath += "&qualitiy=" + quality;
-            transcodePath += "&minquality=0";
-            transcodePath += "&minquality=3";
+            //transcodePath += "&minquality=0";
+            //transcodePath += "&maxquality=1";
             transcodePath += "&3g=" + (is3G ? "1" : "0");
             transcodePath += "&url=" + Uri.EscapeDataString("http://localhost:32400" + partKey);
             transcodePath += GetPlexAuthParameters(plexServer, transcodePath);
@@ -158,14 +178,14 @@ namespace PlexMediaCenter.Util {
             return new Uri(plexServer.UriPlexBase + transcodePath.Remove(0, 1));
         }
         
-        public static Uri GetFlvStreamUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = false) {
+        public static Uri GetFlvStreamUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = true) {
             //Request: GET /video/:/transcode/generic.flv?format=flv&videoCodec=libx264&vpre=video-embedded-h264&videoBitrate=5000&audioCodec=libfaac&apre=audio-embedded-aac&audioBitrate=128&size=640x480&fakeContentLength=2000000000&url=http%3A%2F%2F192%2E168%2E1%2E87%3A32400%2Fvideo%2F
             string transcodePath = "/video/:/transcode/generic.flv?";
             transcodePath += "format=flv";
             transcodePath += "&videoCodec=libx264&vpre=video-embedded-h264&videoBitrate=5000&audioCodec=libfaac&apre=audio-embedded-aac&audioBitrate=128&size=640x480&fakeContentLength=2000000000";
             transcodePath += "&url=" + Uri.EscapeDataString("http://localhost:32400" + partKey);
             transcodePath += GetPlexAuthParameters(plexServer, transcodePath);
-            //transcodePath += PlexCapabilitiesClient.GetClientCapabilities();
+            transcodePath += PlexCapabilitiesClient.GetClientCapabilities();
             //transcodePath += "&httpCookies=";
             //transcodePath += "&userAgent=";
 
@@ -180,6 +200,12 @@ namespace PlexMediaCenter.Util {
             authParameters += "&X-Plex-Access-Key=" + _plexApiPublicKey;
             authParameters += "&X-Plex-Access-Time=" + time;
             authParameters += "&X-Plex-Access-Code=" + Uri.EscapeDataString(GetPlexApiToken(url, time));
+            return authParameters;
+        }
+
+        public static string GetPlexUserPass(PlexServer plexServer) {           
+            string authParameters = "?X-Plex-User=" + plexServer.UserName;
+            authParameters += "&X-Plex-Pass=" + plexServer.UserPass;            
             return authParameters;
         }
 
@@ -207,6 +233,64 @@ namespace PlexMediaCenter.Util {
             string time = Math.Round(dTime / 1000).ToString();
             // the basic url WITH the part key is:
             return time;
+        }
+    }
+
+    public static class StreamExtensions {
+        private const int DEFAULT_BUFFER_SIZE = short.MaxValue; // +32767
+        public static void CopyTo(this Stream input, Stream output) {
+            input.CopyTo(output, DEFAULT_BUFFER_SIZE);
+            return;
+        }
+        public static void CopyTo(this Stream input, Stream output, int bufferSize) {
+            if (!input.CanRead) throw new InvalidOperationException("input must be open for reading");
+            if (!output.CanWrite) throw new InvalidOperationException("output must be open for writing");
+
+            byte[][] buf = { new byte[bufferSize], new byte[bufferSize] };
+            int[] bufl = { 0, 0 };
+            int bufno = 0;
+            IAsyncResult read = input.BeginRead(buf[bufno], 0, buf[bufno].Length, null, null);
+            IAsyncResult write = null;
+
+            while (true) {
+
+                // wait for the read operation to complete
+                read.AsyncWaitHandle.WaitOne();
+                bufl[bufno] = input.EndRead(read);
+
+                // if zero bytes read, the copy is complete
+                if (bufl[bufno] == 0) {
+                    break;
+                }
+
+                // wait for the in-flight write operation, if one exists, to complete
+                // the only time one won't exist is after the very first read operation completes
+                if (write != null) {
+                    write.AsyncWaitHandle.WaitOne();
+                    output.EndWrite(write);
+                }
+
+                // start the new write operation
+                write = output.BeginWrite(buf[bufno], 0, bufl[bufno], null, null);
+
+                // toggle the current, in-use buffer
+                // and start the read operation on the new buffer
+                bufno = (bufno == 0 ? 1 : 0);
+                read = input.BeginRead(buf[bufno], 0, buf[bufno].Length, null, null);
+
+            }
+
+            // wait for the final in-flight write operation, if one exists, to complete
+            // the only time one won't exist is if the input stream is empty.
+            if (write != null) {
+                write.AsyncWaitHandle.WaitOne();
+                output.EndWrite(write);
+            }
+
+            output.Flush();
+
+            // return to the caller ;
+            return;
         }
     }
 }
