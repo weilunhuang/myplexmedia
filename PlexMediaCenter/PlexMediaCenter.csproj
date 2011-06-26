@@ -73,7 +73,6 @@
     <Compile Include="Plex\Data\ArtworkRetriever.cs" />
     <Compile Include="Util\Serialization.cs" />
     <Compile Include="Util\Transcoding.cs" />
-    <Compile Include="Util\PlexAuthenticationProxy.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\dll\ZeroconfService.dll" />

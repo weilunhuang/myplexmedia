@@ -60,6 +60,7 @@ namespace MyPlexMedia.Plugin.Window {
             }
             RootItem.UriPath = plexSections.UriSource;
             RootMenu = GetCreateSubMenuItems(RootItem, PlexInterface.RequestPlexItems(RootItem.UriPath));
+            RootMenu.Add(new PlexItemSearch(RootItem, "Search...", new Uri(PlexInterface.PlexServerCurrent.UriPlexBase, "search?type=0"), "Search Plex Server"));
             RootMenu.Add(ServerItem);
             RootItem.SetChildItems(RootMenu);
             ShowCurrentMenu(RootItem, 0);
@@ -113,21 +114,20 @@ namespace MyPlexMedia.Plugin.Window {
                 //set item meta data
                 parentItem.SetMetaData(plexResponseConatiner);
                 parentItem.PreferredLayout = Settings.GetPreferredLayout(plexResponseConatiner.viewGroup);
-                //Let's see inside and decide what to do               
+               
+                //We have a list of view items...
+                tmpList.AddRange(plexResponseConatiner.Directory.Where(
+                    dir => String.IsNullOrEmpty(dir.prompt)).Select<MediaContainerDirectory, IMenuItem>(
+                    dir => new PlexItemDirectory(parentItem, dir.title, new Uri(parentItem.UriPath, dir.key), dir))
+                    );
+                //And a list of search items
+                tmpList.AddRange(plexResponseConatiner.Directory.Where(
+                    dir => !String.IsNullOrEmpty(dir.prompt)).Select<MediaContainerDirectory, IMenuItem>(
+                    dir => new PlexItemSearch(parentItem, dir.prompt, new Uri(parentItem.UriPath, dir.key), dir.prompt))
+                    );
                 if (!string.IsNullOrEmpty(plexResponseConatiner.viewGroup) && plexResponseConatiner.viewGroup.Equals("secondary")) {
-                    //We have a list of view items...
-                    parentItem.ViewItems.AddRange(plexResponseConatiner.Directory.Where(
-                        dir => String.IsNullOrEmpty(dir.prompt)).Select<MediaContainerDirectory, IMenuItem>(
-                        dir => new PlexItemDirectory(parentItem, dir.title, new Uri(parentItem.UriPath, dir.key), dir))
-                        );
-                    //And a list of search items
-                    parentItem.ViewItems.AddRange(plexResponseConatiner.Directory.Where(
-                        dir => !String.IsNullOrEmpty(dir.prompt)).Select<MediaContainerDirectory, IMenuItem>(
-                        dir => new PlexItemSearch(parentItem, dir.prompt, new Uri(parentItem.UriPath, dir.key), dir.prompt))
-                        );
+                    parentItem.ViewItems = tmpList;
                 }
-                //We have plain old sub items
-                tmpList.AddRange(plexResponseConatiner.Directory.ConvertAll<IMenuItem>(dir => new PlexItemDirectory(parentItem, dir.title, new Uri(parentItem.UriPath, dir.key), dir)));
                 tmpList.AddRange(plexResponseConatiner.Video.ConvertAll<IMenuItem>(vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));
                 tmpList.AddRange(plexResponseConatiner.Track.ConvertAll<IMenuItem>(track => new PlexItemTrack(parentItem, track.title, new Uri(parentItem.UriPath, track.key), track)));
 
@@ -138,6 +138,9 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         static void PlexInterface_OnResponseReceived(object userToken, MediaContainer response) {
+            if (userToken is PlexItemSearch && response.Directory.Count < 1 && response.Video.Count < 1 && response.Track.Count < 1) {
+                CommonDialogs.ShowNotifyDialog(10, "Plex Search", "Nothing found...");
+            }
             if (userToken is PlexItemBase) {
                 var item = userToken as PlexItemBase;
                 item.SetChildItems(GetCreateSubMenuItems(item, response));

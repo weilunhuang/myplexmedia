@@ -26,7 +26,8 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         void MenuItem_OnHasBackground(string imagePath) {
-            if (ctrlBackgroundImage != null && !String.IsNullOrEmpty(imagePath) && File.Exists(imagePath)) {
+            if (ctrlBackgroundImage != null && !String.IsNullOrEmpty(imagePath) && File.Exists(imagePath) && !ctrlBackgroundImage.ImagePath.Equals(imagePath)) {
+                ctrlBackgroundImage.ResetAnimations();
                 ctrlBackgroundImage.SetFileName(imagePath);
             }
         }
@@ -43,18 +44,25 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, GUIFacadeControl.Layout preferredLayout) {
+            CommonDialogs.HideProgressDialog();
             GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", Navigation.History.ToArray()));
+            facadeLayout.Clear();
+            facadeLayout.ListLayout.Clear();           
+            facadeLayout.CoverFlowLayout.Clear();
+            facadeLayout.ThumbnailLayout.Clear();
+            facadeLayout.FilmstripLayout.Clear();
+            facadeLayout.ListLayout.Clear();
+            facadeLayout.PlayListLayout.Clear();
             CurrentLayout = preferredLayout;
             SwitchLayout();
-            facadeLayout.Clear();
+           
             foreach (var item in fetchedMenuItems) {
                 facadeLayout.Add(item as MenuItem);
             }
             facadeLayout.RefreshCoverArt();
             facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
             facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
-            //facadeLayout.DoUpdate();     
-            CommonDialogs.HideProgressDialog();
+            //facadeLayout.DoUpdate();                
         }
 
         void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {

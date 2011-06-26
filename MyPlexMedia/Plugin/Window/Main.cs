@@ -23,7 +23,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         #endregion
 
-        #region Skin Controls        
+        #region Skin Controls
 
         [SkinControlAttribute(2011)]
         protected GUIImage ctrlBackgroundImage = null;
@@ -56,9 +56,15 @@ namespace MyPlexMedia.Plugin.Window {
         protected override void OnPageLoad() {
             base.OnPageLoad();
             facadeLayout.Clear();
+            facadeLayout.Clear();
+            facadeLayout.ListLayout.Clear();            
+            facadeLayout.CoverFlowLayout.Clear();
+            facadeLayout.ThumbnailLayout.Clear();
+            facadeLayout.FilmstripLayout.Clear();
+            facadeLayout.ListLayout.Clear();
+            facadeLayout.PlayListLayout.Clear();
             RegisterEventHandlers();
-            if (Navigation.CurrentItem == null) {
-                facadeLayout.Clear();
+            if (Navigation.CurrentItem == null) {                
                 Navigation.CreateStartupMenu(Settings.LastPlexServer);
                 CurrentLayout = Settings.DefaultLayout;
                 SwitchLayout();
@@ -79,6 +85,7 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         protected override bool AllowLayout(GUIFacadeControl.Layout layout) {
+            Navigation.CurrentItem.PreferredLayout = layout;
             switch (layout) {
                 case GUIFacadeControl.Layout.CoverFlow:
                 case GUIFacadeControl.Layout.Filmstrip:
@@ -125,6 +132,7 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         protected override void OnClick(int iItem) {
+            var item = facadeLayout[iItem];
             if (facadeLayout[iItem] is IMenuItem) {
                 ((IMenuItem)facadeLayout[iItem]).Parent.LastSelectedChildIndex = iItem;
                 ((IMenuItem)facadeLayout[iItem]).OnClicked(this, null);                

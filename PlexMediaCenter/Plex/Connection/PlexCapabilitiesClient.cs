@@ -16,15 +16,22 @@ namespace PlexMediaCenter.Plex.Connection {
                 "http-live-streaming",
                 "http-mp4-streaming",
                 "http-streaming-video",
+                "http-streaming-video-240p",
+                "http-streaming-video-320p",
+                "http-streaming-video-480p",
                 "http-streaming-video-720p",
                 "http-streaming-video-1080p",
                 "http-mp4-video",
+                "http-mp4-video-240p",
+                "http-mp4-video-320p",
+                "http-mp4-video-480p",
                 "http-mp4-video-720p",
-                "http-mp4-video-1080p"
+                "http-mp4-video-1080p",          
+                "webkit",
             };
 
             VideoDecoders = new List<string>() { 
-                "h264{profile:high&resolution:1080&level:51}",
+                "h264{profile:high&resolution:1080&level:51}"
             };
 
             AudioDecoders = new List<string>(){
