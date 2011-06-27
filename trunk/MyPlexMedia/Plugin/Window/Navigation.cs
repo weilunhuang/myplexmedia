@@ -12,6 +12,7 @@ using System.Net;
 using MyPlexMedia.Plugin.Window.Dialogs;
 using System.IO;
 using System.Collections;
+using MyPlexMedia.Plugin.Window.Playback;
 
 namespace MyPlexMedia.Plugin.Window {
     public static class Navigation {
@@ -98,6 +99,7 @@ namespace MyPlexMedia.Plugin.Window {
             CommonDialogs.ShowWaitCursor();
             if (parentItem.ChildItems.Count > 0) {
                 CurrentItem = parentItem;
+                PlexPlayList.CreatePlayList(parentItem.ChildItems.Where(item => item is PlexItemTrack) as List<PlexItemTrack>, parentItem.Name);
                 OnMenuItemsFetchCompleted(parentItem.ChildItems, selectFacadeIndex, parentItem.PreferredLayout);
             } else {
                 return;
@@ -128,7 +130,7 @@ namespace MyPlexMedia.Plugin.Window {
                 if (!string.IsNullOrEmpty(plexResponseConatiner.viewGroup) && plexResponseConatiner.viewGroup.Equals("secondary")) {
                     parentItem.ViewItems = tmpList;
                 }
-                tmpList.AddRange(plexResponseConatiner.Video.ConvertAll<IMenuItem>(vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));
+                tmpList.AddRange(plexResponseConatiner.Video.ConvertAll<IMenuItem>(vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));                
                 tmpList.AddRange(plexResponseConatiner.Track.ConvertAll<IMenuItem>(track => new PlexItemTrack(parentItem, track.title, new Uri(parentItem.UriPath, track.key), track)));
 
             } catch (Exception e) {
@@ -155,7 +157,7 @@ namespace MyPlexMedia.Plugin.Window {
             CommonDialogs.ShowWaitCursor();
             updatedServerList.ForEach(svr => PlexInterface.Login(svr));
             CommonDialogs.HideWaitCursor();
-            ServerMenu = updatedServerList.ConvertAll<IMenuItem>(svr => new ActionItem(ServerItem, String.Format("{0} @ {1}", svr.FriendlyName ?? svr.HostName, svr.HostAdress), svr.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE, () => ShowRootMenu(svr)));
+            ServerMenu = updatedServerList.ConvertAll<IMenuItem>(svr => new PlexItemServer(ServerItem, svr));
             ServerMenu.Add(new ActionItem(null, "Refresh Bonjouor...", Settings.PLEX_ICON_DEFAULT_BONJOUR, () => RefreshServerMenu()));
             ServerMenu.Add(new ActionItem(null, "Add Plex Server...", Settings.PLEX_ICON_DEFAULT_ONLINE, () => AddNewPlexServer()));
             ServerItem.SetChildItems(ServerMenu);

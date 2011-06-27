@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MediaPortal.GUI.Library;
 using MediaPortal.Util;
 using MyPlexMedia.Plugin.Window.Items;
@@ -8,7 +9,6 @@ using PlexMediaCenter.Plex.Data.Types;
 using MyPlexMedia.Plugin.Window.Dialogs;
 using MyPlexMedia.Plugin.Config;
 using PlexMediaCenter.Plex;
-
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main {
@@ -61,7 +61,7 @@ namespace MyPlexMedia.Plugin.Window {
             }
             facadeLayout.RefreshCoverArt();
             facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
-            facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
+            facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);            
             //facadeLayout.DoUpdate();                
         }
 
