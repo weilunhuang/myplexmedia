@@ -15,7 +15,7 @@ using System.Media;
 namespace PlexMediaCenter.Util {
     public static class Transcoding {
 
-       // private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        // private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public static bool IsBuffering { get; set; }
 
@@ -24,7 +24,7 @@ namespace PlexMediaCenter.Util {
 
         public static event OnPlayBufferedMediaEventHandler OnPlayBufferedMedia;
         public delegate void OnPlayBufferedMediaEventHandler(string localBufferPath);
-        
+
         private const string _plexApiPublicKey = "KQMIY6GATPC63AIMC4R2";
         private const string _plexApiSharedSecret = "k3U6GLkZOoNIoSgjDshPErvqMIFdE0xMTx8kgsrhnC0=";
 
@@ -49,7 +49,7 @@ namespace PlexMediaCenter.Util {
             _mediaBufferer.RunWorkerCompleted += new RunWorkerCompletedEventHandler(_mediaBufferer_RunWorkerCompleted);
             _mediaBufferer.DoWork += new DoWorkEventHandler(MediaBufferer_DoWork);
 
-           
+
 
         }
 
@@ -69,42 +69,102 @@ namespace PlexMediaCenter.Util {
                 //logger.FatalException("Unable reset local media buffer!", e);
             }
 
-        }       
+        }
+
+        //static void MediaBufferer_DoWork(object sender, DoWorkEventArgs e) {
+        //    //logger.Info("BackGroundWorker - Buffering...");
+        //    if (e.Argument is IEnumerable<string>) {
+        //        IsBuffering = true;
+        //        using (FileStream _bufferedMedia = new FileStream(_bufferFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Read)) {
+        //            //_bufferedMedia.SetLength(366485736);
+        //            _bufferedMedia.Seek(366485736, SeekOrigin.Begin);
+        //            _bufferedMedia.WriteByte(0);
+        //            _bufferedMedia.Seek(0, SeekOrigin.Begin);                    
+        //            int bufferedSegments = 0;
+        //            foreach (string segment in (IEnumerable<string>)e.Argument) {
+        //                if (_mediaBufferer.CancellationPending) {
+        //                    //logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
+        //                    e.Cancel = true;
+        //                    _bufferedMedia.Close();
+        //                    return;
+        //                }
+        //                if (bufferedSegments <= Buffer) {
+        //                    _mediaBufferer.ReportProgress(bufferedSegments * 100 / Buffer);
+        //                }
+        //                byte[] data = _mediaFetcher.DownloadData(segment);
+
+        //                _bufferedMedia.Write(data, 0, data.Length);
+        //                _bufferedMedia.Flush();
+
+        //                SystemSounds.Beep.Play();
+        //                if (++bufferedSegments == Buffer) {
+        //                    OnPlayBufferedMedia(_bufferFile);
+        //                }
+
+        //            }
+        //        }
+        //    }
+        //}
 
         static void MediaBufferer_DoWork(object sender, DoWorkEventArgs e) {
             //logger.Info("BackGroundWorker - Buffering...");
             if (e.Argument is IEnumerable<string>) {
                 IsBuffering = true;
-                using (FileStream _bufferedMedia = new FileStream(_bufferFile, FileMode.Create, FileAccess.ReadWrite, FileShare.Read)) {
-                    //_bufferedMedia.SetLength(366485736);
+                using (FileStream _bufferedMedia = new FileStream(_bufferFile, FileMode.Create, FileAccess.Write, FileShare.Read)) {
+                    _bufferedMedia.SetLength(366485736);
                     _bufferedMedia.Seek(366485736, SeekOrigin.Begin);
                     _bufferedMedia.WriteByte(0);
-                    _bufferedMedia.Seek(0, SeekOrigin.Begin);                    
+                    _bufferedMedia.Seek(0, SeekOrigin.Begin);
                     int bufferedSegments = 0;
                     foreach (string segment in (IEnumerable<string>)e.Argument) {
                         if (_mediaBufferer.CancellationPending) {
                             //logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
                             e.Cancel = true;
+                            _bufferedMedia.Flush();
                             _bufferedMedia.Close();
                             return;
                         }
                         if (bufferedSegments <= Buffer) {
                             _mediaBufferer.ReportProgress(bufferedSegments * 100 / Buffer);
                         }
-                        byte[] data = _mediaFetcher.DownloadData(segment);
+                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(segment);
+                        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                            using (Stream readStream = response.GetResponseStream()) { 
+                                
+                                readStream.CopyTo(_bufferedMedia);
+                            }
+                        }
+                        //byte[] data = _mediaFetcher.DownloadData(segment);
 
-                        _bufferedMedia.Write(data, 0, data.Length);
-                        _bufferedMedia.Flush();
+                        //_bufferedMedia.Write(data, 0, data.Length);
+                        //_bufferedMedia.Flush();
 
-                        SystemSounds.Beep.Play();
+
                         if (++bufferedSegments == Buffer) {
                             OnPlayBufferedMedia(_bufferFile);
                         }
 
                     }
                 }
+            } else if (e.Argument is string) {
+                using (FileStream _bufferedMedia = new FileStream(@"D:\flvbuffer.flv", FileMode.Create, FileAccess.Write, FileShare.Read)) {
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(e.Argument as string);
+                    using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                        using (Stream readStream = response.GetResponseStream()) {
+                            long t = readStream.Length;
+                            _bufferedMedia.SetLength(366485736);
+                            _bufferedMedia.Seek(366485736, SeekOrigin.Begin);
+                            _bufferedMedia.WriteByte(0);
+                            _bufferedMedia.Seek(0, SeekOrigin.Begin);
+                            readStream.CopyTo(_bufferedMedia);
+                        }
+                    }
+                }
+
             }
         }
+
+
 
         static void MediaBufferer_ProgressChanged(object sender, ProgressChangedEventArgs e) {
             Console.WriteLine(e.ProgressPercentage);
@@ -127,6 +187,12 @@ namespace PlexMediaCenter.Util {
             StopBuffering();
             _mediaBufferer.RunWorkerAsync(segmentedParts);
         }
+
+        public static void BufferFlvAsync(MediaContainerVideo video) {
+            StopBuffering();
+            _mediaBufferer.RunWorkerAsync(GetFlvStreamUrl(PlexInterface.PlexServerCurrent, video.Media[0].Part[0].key));
+        }
+
 
         public static void StopBuffering() {
             if (_mediaBufferer.IsBusy) {
@@ -177,7 +243,7 @@ namespace PlexMediaCenter.Util {
 
             return new Uri(plexServer.UriPlexBase + transcodePath.Remove(0, 1));
         }
-        
+
         public static Uri GetFlvStreamUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = true) {
             //Request: GET /video/:/transcode/generic.flv?format=flv&videoCodec=libx264&vpre=video-embedded-h264&videoBitrate=5000&audioCodec=libfaac&apre=audio-embedded-aac&audioBitrate=128&size=640x480&fakeContentLength=2000000000&url=http%3A%2F%2F192%2E168%2E1%2E87%3A32400%2Fvideo%2F
             string transcodePath = "/video/:/transcode/generic.flv?";
@@ -203,9 +269,13 @@ namespace PlexMediaCenter.Util {
             return authParameters;
         }
 
-        public static string GetPlexUserPass(PlexServer plexServer) {           
+        public static Uri GetAuthPlaybackUrl(MediaContainerTrack track) {
+            return new Uri(PlexInterface.PlexServerCurrent.UriPlexBase, track.Media[0].Part[0].key + GetPlexUserPass(PlexInterface.PlexServerCurrent));
+        }
+
+        public static string GetPlexUserPass(PlexServer plexServer) {
             string authParameters = "?X-Plex-User=" + plexServer.UserName;
-            authParameters += "&X-Plex-Pass=" + plexServer.UserPass;            
+            authParameters += "&X-Plex-Pass=" + plexServer.UserPass;
             return authParameters;
         }
 
@@ -237,11 +307,13 @@ namespace PlexMediaCenter.Util {
     }
 
     public static class StreamExtensions {
+
         private const int DEFAULT_BUFFER_SIZE = short.MaxValue; // +32767
         public static void CopyTo(this Stream input, Stream output) {
             input.CopyTo(output, DEFAULT_BUFFER_SIZE);
             return;
         }
+
         public static void CopyTo(this Stream input, Stream output, int bufferSize) {
             if (!input.CanRead) throw new InvalidOperationException("input must be open for reading");
             if (!output.CanWrite) throw new InvalidOperationException("output must be open for writing");

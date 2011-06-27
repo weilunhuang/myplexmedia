@@ -41,7 +41,7 @@ namespace PlexMediaCenter.Plex.Data {
         }
 
         private void DownloadEnqueuedArtwork(object queueItem) {
-            ArtworkQueueItem currentItem = queueItem as ArtworkQueueItem;
+            ArtworkQueueItem currentItem = queueItem as ArtworkQueueItem;           
             WebClient downloader = new WebClient();
             try {
                 currentItem.PlexServer.AddAuthHeaders(ref downloader);
@@ -49,7 +49,7 @@ namespace PlexMediaCenter.Plex.Data {
                 currentItem.FinishedCallback.Invoke(currentItem.ImageLocalPath);
             } catch (Exception e) {
                 OnArtworkRetrievalError(new PlexException(this.GetType(), "Download failed: " + currentItem.ImageUrl, e));
-            }
+            }            
             downloader.Dispose();
         }
 

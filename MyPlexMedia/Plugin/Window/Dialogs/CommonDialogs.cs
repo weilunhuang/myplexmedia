@@ -130,12 +130,19 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
         }
 
         public static void ShowWaitCursor() {
+            if (GUIGraphicsContext.form.InvokeRequired) {
+                GUIGraphicsContext.form.Invoke(new System.Action(ShowWaitCursor));
+            }
+
             GUIWaitCursor.Init();
             GUIWaitCursor.Show();
             GUIWindowManager.Process();
         }
 
         public static void HideWaitCursor() {
+            if (GUIGraphicsContext.form.InvokeRequired) {
+                GUIGraphicsContext.form.Invoke(new System.Action(HideWaitCursor));
+            }
             GUIWaitCursor.Hide();
         }
 
