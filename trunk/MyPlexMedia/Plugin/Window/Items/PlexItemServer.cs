@@ -21,18 +21,14 @@ namespace MyPlexMedia.Plugin.Window.Items {
             : base(parentItem, plexServer.FriendlyName ?? plexServer.HostName, plexServer.UriPlexSections) {            
             IsFolder = true;
 
-            PlexServer = plexServer;
-            OnRetrieveArt += new RetrieveCoverArtHandler(PlexItemServer_OnRetrieveArt);
-            string onOffImage = PlexServer.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE;
-            SetIcon(onOffImage);
-            SetImage(onOffImage);
+            PlexServer = plexServer;        
+            SetIcon(PlexServer.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE);
             Label2 = "@ " + PlexServer.HostAdress;        
         }
 
-        void PlexItemServer_OnRetrieveArt(MediaPortal.GUI.Library.GUIListItem item) {
-            string onOffImage = PlexServer.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE;
-            SetIcon(onOffImage);
-            SetImage(onOffImage);
-        }        
+        public override void OnClicked(object sender, EventArgs e) {
+            Navigation.ShowRootMenu(PlexServer);
+        }
+
     }
 }

@@ -91,7 +91,7 @@ namespace PlexMediaCenter.Plex.Connection {
             using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
                 try {
                     IAsyncResult result = socket.BeginConnect(HostAdress, PlexPort, null, null);                    
-                    return result.AsyncWaitHandle.WaitOne(3000, true);                   
+                    return result.AsyncWaitHandle.WaitOne(5000, true);                   
                 } finally {                    
                     socket.Close();
                 }
