@@ -7,6 +7,8 @@ using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
 using MediaPortal.Player;
 using MyPlexMedia.Plugin.Window.Dialogs;
+using MediaPortal.Util;
+using System.Windows.Forms;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     public class PlexItemVideo : PlexItemBase {
@@ -39,33 +41,22 @@ namespace MyPlexMedia.Plugin.Window.Items {
                 Label2 = FileInfo.CreationTime.ToShortDateString();
             }
         }
+        Timer timer = new Timer();
 
         public override void OnClicked(object sender, EventArgs e) {
-            
-            string playBackUrl = Transcoding.GetFlvStreamUrl(PlexInterface.PlexServerCurrent, Video.Media[0].Part[0].key).AbsoluteUri;
-            BaseStreamBufferPlayer bsbp = new BaseStreamBufferPlayer();
-            StreamBufferPlayer9 sbp9 = new StreamBufferPlayer9();
-            RTSPPlayer rtsp = new RTSPPlayer();
-            
-            if (bsbp.PlayStream(playBackUrl, Video.title)) {
+            Transcoding.OnPlayBufferedMedia += new Transcoding.OnPlayBufferedMediaEventHandler(Transcoding_OnPlayBufferedMedia);
+            Transcoding.OnBufferingProgress += new Transcoding.OnBufferingProgressEventHandler(Transcoding_OnBufferingProgress);
+            g_Player.PlayBackEnded += new g_Player.EndedHandler(g_Player_PlayBackEnded);
+            CommonDialogs.ShowWaitCursor();
+            GUIWindowManager.Process();
+            Transcoding.PlayBackMedia(Video);
+            timer.Interval = 500;
+            timer.Tick += new EventHandler(timer_Tick);
+            timer.Start();
+            //Transcoding.BufferFlvAsync(Video);
 
-            } else if (sbp9.PlayStream(playBackUrl, Video.title)) {
-
-            } else if (rtsp.PlayStream(playBackUrl, Video.title)) {
-
-            } else {
-                g_Player.Init();
-                g_Player.SetVideoWindow();
-
-                Transcoding.OnPlayBufferedMedia += new Transcoding.OnPlayBufferedMediaEventHandler(Transcoding_OnPlayBufferedMedia);
-                Transcoding.OnBufferingProgress += new Transcoding.OnBufferingProgressEventHandler(Transcoding_OnBufferingProgress);
-                g_Player.PlayBackEnded += new g_Player.EndedHandler(g_Player_PlayBackEnded);
-                CommonDialogs.ShowWaitCursor();
-                GUIWindowManager.Process();
-                //Transcoding.PlayBackMedia(Video);
-                Transcoding.Buf
-            }
         }
+      
 
         void g_Player_PlayBackEnded(g_Player.MediaType type, string filename) {
             if (Transcoding.IsBuffering) {
@@ -81,10 +72,16 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         void Transcoding_OnPlayBufferedMedia(string localBufferPath) {
-            CommonDialogs.HideProgressDialog();
+           CommonDialogs.HideProgressDialog();
             g_Player.Init();
             g_Player.SetVideoWindow();
-            g_Player.PlayVideoStream(localBufferPath, Video.title);
+         
+            
+            g_Player.PlayVideoStream(localBufferPath, Video.title);           
+        }
+
+        void timer_Tick(object sender, EventArgs e) {
+            GUIPropertyManager.SetProperty("#currentmodule", "Current: " + g_Player.CurrentPosition.ToString() + " Stream: " + g_Player.Duration); 
         }
 
 

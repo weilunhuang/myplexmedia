@@ -20,7 +20,10 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             PlexPlayListPlayer.Init();
         }
 
-        public static void CreatePlayList(List<PlexItemTrack> currentTracks, string listTitle) {                     
+        public static void CreatePlayList(List<PlexItemTrack> currentTracks, string listTitle) {
+            if (currentTracks == null || currentTracks.Count < 1) {
+                return;
+            }        
             PlayList newPlayList = new PlayList();
             newPlayList.Name = listTitle;
             foreach (PlexItemTrack currentTrack in currentTracks) {

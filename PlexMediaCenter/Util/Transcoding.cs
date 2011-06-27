@@ -32,9 +32,9 @@ namespace PlexMediaCenter.Util {
         private static WebClient _mediaFetcher;
         private static int Quality { get; set; }
         private static int Buffer { get; set; }
-        private const string _bufferFile = @"D:\buffer.avi";
+        private const string _bufferFile = @"D:\buffer.ts";
         private const int _defaultBuffer = 3;
-        private const int _defaultQuality = 5;
+        private const int _defaultQuality = 1;
 
         static Transcoding() {
             //logger.Info(" started...");
@@ -111,10 +111,10 @@ namespace PlexMediaCenter.Util {
             if (e.Argument is IEnumerable<string>) {
                 IsBuffering = true;
                 using (FileStream _bufferedMedia = new FileStream(_bufferFile, FileMode.Create, FileAccess.Write, FileShare.Read)) {
-                    _bufferedMedia.SetLength(366485736);
-                    _bufferedMedia.Seek(366485736, SeekOrigin.Begin);
-                    _bufferedMedia.WriteByte(0);
-                    _bufferedMedia.Seek(0, SeekOrigin.Begin);
+                    //_bufferedMedia.SetLength(366485736);
+                    //_bufferedMedia.Seek(366485736, SeekOrigin.Begin);
+                    //_bufferedMedia.WriteByte(0);
+                    //_bufferedMedia.Seek(0, SeekOrigin.Begin);
                     int bufferedSegments = 0;
                     foreach (string segment in (IEnumerable<string>)e.Argument) {
                         if (_mediaBufferer.CancellationPending) {
@@ -127,17 +127,20 @@ namespace PlexMediaCenter.Util {
                         if (bufferedSegments <= Buffer) {
                             _mediaBufferer.ReportProgress(bufferedSegments * 100 / Buffer);
                         }
-                        HttpWebRequest request = (HttpWebRequest)WebRequest.Create(segment);
-                        using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
-                            using (Stream readStream = response.GetResponseStream()) { 
-                                
-                                readStream.CopyTo(_bufferedMedia);
-                            }
-                        }
-                        //byte[] data = _mediaFetcher.DownloadData(segment);
+                        //HttpWebRequest request = (HttpWebRequest)WebRequest.Create(segment);
+                        //using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
+                        //    using (Stream readStream = response.GetResponseStream()) {
+                        //        _bufferedMedia.SetLength(366485736);
+                        //        _bufferedMedia.Seek(366485736, SeekOrigin.Begin);
+                        //        _bufferedMedia.WriteByte(0);
+                        //        _bufferedMedia.Seek(0, SeekOrigin.Begin);
+                        //        readStream.CopyTo(_bufferedMedia);
+                        //    }
+                        //}
+                        byte[] data = _mediaFetcher.DownloadData(segment);
 
-                        //_bufferedMedia.Write(data, 0, data.Length);
-                        //_bufferedMedia.Flush();
+                        _bufferedMedia.Write(data, 0, data.Length);
+                        _bufferedMedia.Flush();
 
 
                         if (++bufferedSegments == Buffer) {
@@ -146,12 +149,13 @@ namespace PlexMediaCenter.Util {
 
                     }
                 }
-            } else if (e.Argument is string) {
+            } else if (e.Argument is Uri) {
                 using (FileStream _bufferedMedia = new FileStream(@"D:\flvbuffer.flv", FileMode.Create, FileAccess.Write, FileShare.Read)) {
-                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(e.Argument as string);
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(e.Argument as Uri);
                     using (HttpWebResponse response = (HttpWebResponse)request.GetResponse()) {
                         using (Stream readStream = response.GetResponseStream()) {
-                            long t = readStream.Length;
+                            int i = readStream.ReadByte();
+
                             _bufferedMedia.SetLength(366485736);
                             _bufferedMedia.Seek(366485736, SeekOrigin.Begin);
                             _bufferedMedia.WriteByte(0);
@@ -227,7 +231,7 @@ namespace PlexMediaCenter.Util {
             }
         }
 
-        public static Uri GetM3U8PlaylistUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = true) {
+        public static Uri GetM3U8PlaylistUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = false) {
             string transcodePath = "/video/:/transcode/segmented/start.m3u8?";
             transcodePath += "identifier=com.plexapp.plugins.library";
             transcodePath += "&offset=" + offset;
@@ -244,7 +248,7 @@ namespace PlexMediaCenter.Util {
             return new Uri(plexServer.UriPlexBase + transcodePath.Remove(0, 1));
         }
 
-        public static Uri GetFlvStreamUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = true) {
+        public static Uri GetFlvStreamUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = false) {
             //Request: GET /video/:/transcode/generic.flv?format=flv&videoCodec=libx264&vpre=video-embedded-h264&videoBitrate=5000&audioCodec=libfaac&apre=audio-embedded-aac&audioBitrate=128&size=640x480&fakeContentLength=2000000000&url=http%3A%2F%2F192%2E168%2E1%2E87%3A32400%2Fvideo%2F
             string transcodePath = "/video/:/transcode/generic.flv?";
             transcodePath += "format=flv";
@@ -348,8 +352,7 @@ namespace PlexMediaCenter.Util {
                 // toggle the current, in-use buffer
                 // and start the read operation on the new buffer
                 bufno = (bufno == 0 ? 1 : 0);
-                read = input.BeginRead(buf[bufno], 0, buf[bufno].Length, null, null);
-
+                read = input.BeginRead(buf[bufno], 0, buf[bufno].Length, null, null);                
             }
 
             // wait for the final in-flight write operation, if one exists, to complete

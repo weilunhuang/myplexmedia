@@ -53,7 +53,7 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
 
-        static void ShowRootMenu(PlexServer selectedServer) {
+        public static void ShowRootMenu(PlexServer selectedServer) {
             CommonDialogs.ShowWaitCursor();
             MediaContainer plexSections = PlexInterface.TryGetPlexSections(selectedServer);
             if (plexSections == null) {
@@ -99,7 +99,8 @@ namespace MyPlexMedia.Plugin.Window {
             CommonDialogs.ShowWaitCursor();
             if (parentItem.ChildItems.Count > 0) {
                 CurrentItem = parentItem;
-                PlexPlayList.CreatePlayList(parentItem.ChildItems.Where(item => item is PlexItemTrack) as List<PlexItemTrack>, parentItem.Name);
+                
+                PlexPlayList.CreatePlayList(parentItem.ChildItems.Where(item => item is PlexItemTrack).ToList().ConvertAll(item => item as PlexItemTrack), parentItem.Name);
                 OnMenuItemsFetchCompleted(parentItem.ChildItems, selectFacadeIndex, parentItem.PreferredLayout);
             } else {
                 return;
@@ -107,7 +108,7 @@ namespace MyPlexMedia.Plugin.Window {
             CommonDialogs.HideWaitCursor();
         }
 
-        internal static List<IMenuItem> GetCreateSubMenuItems(PlexItemBase parentItem, MediaContainer plexResponseConatiner) {            
+        internal static List<IMenuItem> GetCreateSubMenuItems(PlexItemBase parentItem, MediaContainer plexResponseConatiner) {
             List<IMenuItem> tmpList = new List<IMenuItem>();
             try {
                 if (plexResponseConatiner == null) {
@@ -116,7 +117,7 @@ namespace MyPlexMedia.Plugin.Window {
                 //set item meta data
                 parentItem.SetMetaData(plexResponseConatiner);
                 parentItem.PreferredLayout = Settings.GetPreferredLayout(plexResponseConatiner.viewGroup);
-               
+
                 //We have a list of view items...
                 tmpList.AddRange(plexResponseConatiner.Directory.Where(
                     dir => String.IsNullOrEmpty(dir.prompt)).Select<MediaContainerDirectory, IMenuItem>(
@@ -130,7 +131,7 @@ namespace MyPlexMedia.Plugin.Window {
                 if (!string.IsNullOrEmpty(plexResponseConatiner.viewGroup) && plexResponseConatiner.viewGroup.Equals("secondary")) {
                     parentItem.ViewItems = tmpList;
                 }
-                tmpList.AddRange(plexResponseConatiner.Video.ConvertAll<IMenuItem>(vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));                
+                tmpList.AddRange(plexResponseConatiner.Video.ConvertAll<IMenuItem>(vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));
                 tmpList.AddRange(plexResponseConatiner.Track.ConvertAll<IMenuItem>(track => new PlexItemTrack(parentItem, track.title, new Uri(parentItem.UriPath, track.key), track)));
 
             } catch (Exception e) {
@@ -150,7 +151,7 @@ namespace MyPlexMedia.Plugin.Window {
                 ShowCurrentMenu(item, item.LastSelectedChildIndex);
             } else {
                 OnErrorOccured(new PlexException(typeof(Navigation), "Unexpected item type in received response!", new InvalidCastException()));
-            }          
+            }
         }
 
         private static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
@@ -163,7 +164,7 @@ namespace MyPlexMedia.Plugin.Window {
             ServerItem.SetChildItems(ServerMenu);
             if (CurrentItem == ServerItem) {
                 ShowCurrentMenu(ServerItem, 0);
-            }            
+            }
         }
 
         internal static void RefreshServerMenu() {
