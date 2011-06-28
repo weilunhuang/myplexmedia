@@ -1,13 +1,32 @@
-﻿using System;
+﻿#region #region Copyright (C) 2005-2011 Team MediaPortal
+
+// 
+// Copyright (C) 2005-2011 Team MediaPortal
+// http://www.team-mediaportal.com
+// 
+// MediaPortal is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+// 
+// MediaPortal is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
+// 
+
+#endregion
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.IO;
 using MediaPortal.GUI.Library;
 
 namespace MyPlexMedia.Plugin.Config {
     public static class Settings {
-
         public const string PLUGIN_NAME = "MyPlexMedia";
         public const string PLUGIN_AUTHOR = "Anthrax";
         public const string PLUGIN_VERSION = "0.5.0 (Preview)";
@@ -21,16 +40,19 @@ namespace MyPlexMedia.Plugin.Config {
         public static string PLEX_ICON_DEFAULT_BACK = Path.Combine(SKIN_FOLDER_MEDIA, "icon_back.png");
         public static string PLEX_ICON_DEFAULT_ONLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.png");
         public static string PLEX_ICON_DEFAULT_OFFLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_offline.png");
-        public static string PLEX_SERVER_LIST_XML = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Config), "PlexServers.xml");
+
+        public static string PLEX_SERVER_LIST_XML =
+            Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Config),
+                         "PlexServers.xml");
+
         public static string PLEX_ARTWORK_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "default_fanart.png");
-        public static string PLEX_ARTWORK_CACHE_ROOT_PATH = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs), PLUGIN_NAME);
+
+        public static string PLEX_ARTWORK_CACHE_ROOT_PATH =
+            Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs),
+                         PLUGIN_NAME);
+
         public static string SKINFILE_MAIN_WINDOW = GUIGraphicsContext.Skin + @"\MyPlexMedia.xml";
         public static string PLEX_ICON_DEFAULT_SEARCH = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.png");
-
-        public static Dictionary<string, GUIFacadeControl.Layout> PreferredLayouts { get; private set; }
-        public static GUIFacadeControl.Layout DefaultLayout { get; private set; }
-
-        public static PlexMediaCenter.Plex.Connection.PlexServer LastPlexServer { get; set; }
 
         static Settings() {
             DefaultLayout = CreatePreferredLayouts();
@@ -39,17 +61,28 @@ namespace MyPlexMedia.Plugin.Config {
             DeleteCacheOnExit = false;
         }
 
+        public static Dictionary<string, GUIFacadeControl.Layout> PreferredLayouts { get; private set; }
+        public static GUIFacadeControl.Layout DefaultLayout { get; private set; }
+
+        public static PlexMediaCenter.Plex.Connection.PlexServer LastPlexServer { get; set; }
+
+        public static int FetchCount { get; set; }
+        public static string CacheFolder { get; set; }
+        public static bool DeleteCacheOnExit { get; set; }
+
         private static GUIFacadeControl.Layout CreatePreferredLayouts() {
-            PreferredLayouts = new Dictionary<string, GUIFacadeControl.Layout>();
-            PreferredLayouts.Add("default", GUIFacadeControl.Layout.List);
-            PreferredLayouts.Add("secondary", GUIFacadeControl.Layout.List);
-            PreferredLayouts.Add("artist", GUIFacadeControl.Layout.LargeIcons);
-            PreferredLayouts.Add("album", GUIFacadeControl.Layout.Filmstrip);
-            PreferredLayouts.Add("show", GUIFacadeControl.Layout.CoverFlow);
-            PreferredLayouts.Add("season", GUIFacadeControl.Layout.CoverFlow);
-            PreferredLayouts.Add("episode", GUIFacadeControl.Layout.List);
-            PreferredLayouts.Add("track", GUIFacadeControl.Layout.Playlist);
-            PreferredLayouts.Add("movie", GUIFacadeControl.Layout.CoverFlow);
+            PreferredLayouts = new Dictionary<string, GUIFacadeControl.Layout>
+                                   {
+                                       {"default", GUIFacadeControl.Layout.List},
+                                       {"secondary", GUIFacadeControl.Layout.List},
+                                       {"artist", GUIFacadeControl.Layout.LargeIcons},
+                                       {"album", GUIFacadeControl.Layout.Filmstrip},
+                                       {"show", GUIFacadeControl.Layout.CoverFlow},
+                                       {"season", GUIFacadeControl.Layout.CoverFlow},
+                                       {"episode", GUIFacadeControl.Layout.List},
+                                       {"track", GUIFacadeControl.Layout.Playlist},
+                                       {"movie", GUIFacadeControl.Layout.CoverFlow}
+                                   };
             //return default Layout
             return GUIFacadeControl.Layout.List;
         }
@@ -57,20 +90,19 @@ namespace MyPlexMedia.Plugin.Config {
         public static GUIFacadeControl.Layout GetPreferredLayout(string viewGroup) {
             if (!String.IsNullOrEmpty(viewGroup) && PreferredLayouts.ContainsKey(viewGroup)) {
                 return PreferredLayouts[viewGroup];
-            } else {
-                return DefaultLayout;
             }
+            return DefaultLayout;
         }
 
-        public static int FetchCount { get; set; }
-        public static string CacheFolder { get; set; }
-        public static bool DeleteCacheOnExit { get; set; }
-
         /// <summary>
-        /// Load the settings from the mediaportal config
+        ///   Load the settings from the mediaportal config
         /// </summary>
         public static void Load() {
-            using (MediaPortal.Profile.Settings reader = new MediaPortal.Profile.Settings(MediaPortal.Configuration.Config.GetFile(MediaPortal.Configuration.Config.Dir.Config, "MediaPortal.xml"))) {
+            using (
+                MediaPortal.Profile.Settings reader =
+                    new MediaPortal.Profile.Settings(
+                        MediaPortal.Configuration.Config.GetFile(MediaPortal.Configuration.Config.Dir.Config,
+                                                                 "MediaPortal.xml"))) {
                 if (!String.IsNullOrEmpty(reader.GetValue(PLUGIN_NAME, "CacheFolder"))) {
                     CacheFolder = reader.GetValue(PLUGIN_NAME, "CacheFolder");
                 }
@@ -79,10 +111,14 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         /// <summary>
-        /// Save the settings to the MP config
+        ///   Save the settings to the MP config
         /// </summary>
         public static void Save() {
-            using (MediaPortal.Profile.Settings xmlwriter = new MediaPortal.Profile.Settings(MediaPortal.Configuration.Config.GetFile(MediaPortal.Configuration.Config.Dir.Config, "MediaPortal.xml"))) {
+            using (
+                MediaPortal.Profile.Settings xmlwriter =
+                    new MediaPortal.Profile.Settings(
+                        MediaPortal.Configuration.Config.GetFile(MediaPortal.Configuration.Config.Dir.Config,
+                                                                 "MediaPortal.xml"))) {
                 xmlwriter.SetValue(PLUGIN_NAME, "CacheFolder", CacheFolder);
                 xmlwriter.SetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
             }

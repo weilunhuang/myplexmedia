@@ -1,34 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using System.Drawing;
-using PlexMediaCenter.Plex.Data;
-using PlexMediaCenter.Util;
+﻿#region #region Copyright (C) 2005-2011 Team MediaPortal
+
+// 
+// Copyright (C) 2005-2011 Team MediaPortal
+// http://www.team-mediaportal.com
+// 
+// MediaPortal is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+// 
+// MediaPortal is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
+// 
+
+#endregion
+
+using System;
 using MyPlexMedia.Plugin.Config;
-using PlexMediaCenter.Plex;
-using PlexMediaCenter.Plex.Data.Types;
-using MediaPortal.Util;
 using PlexMediaCenter.Plex.Connection;
 
 namespace MyPlexMedia.Plugin.Window.Items {
-    class PlexItemServer : PlexItemBase {
-
-        private PlexServer PlexServer { get; set; }
-
+    internal class PlexItemServer : PlexItemBase {
         public PlexItemServer(IMenuItem parentItem, PlexServer plexServer)
-            : base(parentItem, plexServer.FriendlyName ?? plexServer.HostName, plexServer.UriPlexSections) {            
+            : base(parentItem, plexServer.FriendlyName ?? plexServer.HostName, plexServer.UriPlexSections) {
             IsFolder = true;
 
-            PlexServer = plexServer;        
+            PlexServer = plexServer;
             SetIcon(PlexServer.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE);
-            Label2 = "@ " + PlexServer.HostAdress;        
+            Label2 = "@ " + PlexServer.HostAdress;
         }
+
+        private PlexServer PlexServer { get; set; }
 
         public override void OnClicked(object sender, EventArgs e) {
             Navigation.ShowRootMenu(PlexServer);
         }
-
     }
 }

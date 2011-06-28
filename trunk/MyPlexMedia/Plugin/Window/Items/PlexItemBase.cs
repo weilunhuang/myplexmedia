@@ -1,25 +1,45 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
-using PlexMediaCenter.Util;
-using MediaPortal.GUI.Library;
-using MediaPortal.Util;
-using PlexMediaCenter.Plex.Data.Types;
-using MyPlexMedia.Plugin.Config;
+﻿#region #region Copyright (C) 2005-2011 Team MediaPortal
 
+// 
+// Copyright (C) 2005-2011 Team MediaPortal
+// http://www.team-mediaportal.com
+// 
+// MediaPortal is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+// 
+// MediaPortal is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
+// 
+
+#endregion
+
+using System;
+using System.Collections.Generic;
+using MediaPortal.Util;
+using MyPlexMedia.Plugin.Config;
+using PlexMediaCenter.Plex.Data.Types;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     public class PlexItemBase : MenuItem {
+        #region Delegates
 
-        public static event OnHasBackgroundEventHandler OnHasBackground;
         public delegate void OnHasBackgroundEventHandler(string imagePath);
+
+        #endregion
 
         public PlexItemBase(IMenuItem parentItem, string title, Uri path)
             : base(parentItem, title) {
             if (path != null) {
-                UriPath = path.AbsoluteUri.Contains("?") ? path : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");
+                UriPath = path.AbsoluteUri.Contains("?")
+                              ? path
+                              : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");
             }
             ViewItems = new List<IMenuItem>();
             Utils.SetDefaultIcons(this);
@@ -27,12 +47,16 @@ namespace MyPlexMedia.Plugin.Window.Items {
             SetImage(Settings.PLEX_ARTWORK_DEFAULT);
         }
 
+        public static event OnHasBackgroundEventHandler OnHasBackground;
+
         protected void SetIcon(string imagePath) {
+            Utils.DoInsertExistingFileIntoCache(imagePath);
             IconImage = ThumbnailImage = imagePath;
             RefreshCoverArt();
         }
 
         protected void SetImage(string imagePath) {
+            Utils.DoInsertExistingFileIntoCache(imagePath);
             IconImageBig = imagePath;
             BackgroundImage = imagePath;
             RefreshCoverArt();
@@ -41,11 +65,10 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public virtual void SetMetaData(MediaContainer infoContainer) {
             int year;
             if (int.TryParse(infoContainer.parentYear, out year)) {
-                base.Year = year;
+                Year = year;
             }
-            base.AlbumInfoTag = infoContainer;
+            AlbumInfoTag = infoContainer;
         }
-
 
         public override void OnClicked(object sender, EventArgs e) {
             if (ChildItems == null || ChildItems.Count < 1) {
@@ -62,7 +85,5 @@ namespace MyPlexMedia.Plugin.Window.Items {
             }
             base.OnSelected();
         }
-
-
     }
 }
