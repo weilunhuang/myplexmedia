@@ -43,8 +43,9 @@ namespace MyPlexMedia.Plugin.Window {
         private void MenuItem_OnHasBackground(string imagePath) {
             if (ctrlBackgroundImage == null || String.IsNullOrEmpty(imagePath) || !File.Exists(imagePath) ||
                 ctrlBackgroundImage.ImagePath.Equals(imagePath)) return;
-            ctrlBackgroundImage.ResetAnimations();
             ctrlBackgroundImage.SetFileName(imagePath);
+            ctrlBackgroundImage.DoUpdate();
+            GUIWindowManager.Process();
         }
 
         private static void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {

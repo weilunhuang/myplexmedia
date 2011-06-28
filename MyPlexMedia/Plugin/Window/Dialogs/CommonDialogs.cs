@@ -105,9 +105,8 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
 
         public static event OnProgressCancelledEventHandler OnProgressCancelled;
 
-        public static void ShowProgressDialog(int progressPercentage, string headerText = "", string currentItem = "") {
-            DialogProgress =
-                (GUIDialogProgress) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
+        public static void ShowProgressDialog(int progressPercentage, string headerText = "", string currentItem = "", bool doModal = true) {
+            DialogProgress = (GUIDialogProgress) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
             if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled) {
                 if (progressPercentage < 100) {
                     DialogProgress.Reset();
@@ -119,10 +118,16 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                     DialogProgress.DisplayProgressBar = true;
                     DialogProgress.ShowWaitCursor = true;
                     DialogProgress.IsVisible = true;
-                    DialogProgress.DoModal(GUIWindowManager.ActiveWindow);
-                    if (DialogProgress.IsCanceled) {
-                        HideProgressDialog();
-                        OnProgressCancelled();
+                    if (doModal) {
+                        DialogProgress.DisableCancel(false);
+                        DialogProgress.DoModal(GUIWindowManager.ActiveWindow);
+                        if (DialogProgress.IsCanceled) {
+                            HideProgressDialog();
+                            OnProgressCancelled();
+                        }
+                    } else {
+                        DialogProgress.DisableCancel(true);
+                        DialogProgress.StartModal(GUIWindowManager.ActiveWindow);
                     }
                 }
             }
@@ -131,8 +136,7 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                 DialogProgress.SetLine(2, currentItem);
             }
             DialogProgress.SetLine(3, String.Format("({0} % completed)", progressPercentage));
-            DialogProgress.Progress();
-            GUIWindowManager.Process();
+            DialogProgress.Progress();           
         }
 
         public static void HideProgressDialog() {

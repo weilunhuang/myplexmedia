@@ -80,6 +80,8 @@ namespace MyPlexMedia.Plugin.Window {
             }
         }
 
+
+
         protected override void OnPageDestroy(int new_windowId) {
             UnRegisterEventHandlers();
             base.OnPageDestroy(new_windowId);

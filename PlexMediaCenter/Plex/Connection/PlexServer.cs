@@ -117,11 +117,12 @@ namespace PlexMediaCenter.Plex.Connection {
             using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
                 try {
                     IAsyncResult result = socket.BeginConnect(HostAdress, PlexPort, null, null);
-                    return result.AsyncWaitHandle.WaitOne(5000, true);
-                } finally {
+                    return result.AsyncWaitHandle.WaitOne(2000, true);
+                } catch {
                     socket.Close();
+                    return false;
                 }
-            }
+            }            
         }
 
         private static PlexCapabilitiesServer GetServerCapabilities(MediaContainer serverResponse) {
