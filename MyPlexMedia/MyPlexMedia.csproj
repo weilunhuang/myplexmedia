@@ -78,6 +78,8 @@
     <Compile Include="Plugin\Window\Main.cs" />
     <Compile Include="Plugin\Window\Main.GuiUpdate.cs" />
     <Compile Include="Plugin\Window\Navigation.cs" />
+    <Compile Include="Plugin\Window\Playback\Buffering.cs" />
+    <Compile Include="Plugin\Window\Playback\PlexVideoPlayer.cs" />
     <Compile Include="Plugin\Window\Playback\PlexPlayList.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Plugin\Config\ConfigurationForm.resx">

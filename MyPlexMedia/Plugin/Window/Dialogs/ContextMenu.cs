@@ -1,33 +1,53 @@
-﻿using System;
+﻿#region #region Copyright (C) 2005-2011 Team MediaPortal
+
+// 
+// Copyright (C) 2005-2011 Team MediaPortal
+// http://www.team-mediaportal.com
+// 
+// MediaPortal is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+// 
+// MediaPortal is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
+// 
+
+#endregion
+
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using MediaPortal.GUI.Library;
 using MyPlexMedia.Plugin.Window.Items;
-using MyPlexMedia.Plugin.Config;
 
-namespace MyPlexMedia.Plugin.Window.Dialogs{
+namespace MyPlexMedia.Plugin.Window.Dialogs {
     public static class ContextMenu {
+        internal static IDialogbox contextMenu =
+            (IDialogbox) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_MENU);
 
         private static List<IMenuItem> CurrentMenuItems { get; set; }
-       
-        internal static IDialogbox contextMenu = (IDialogbox)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_MENU);      
+
         internal static void ShowContextMenu(string headerLabel, List<IMenuItem> listCurrentContextMenuItems) {
             if (contextMenu == null) {
                 return;
-            } else if(CurrentMenuItems == null) { 
+            }
+            if (CurrentMenuItems == null) {
                 return;
             }
             if (listCurrentContextMenuItems == null || listCurrentContextMenuItems.Count <= 0) {
                 listCurrentContextMenuItems = CurrentMenuItems;
             }
             CurrentMenuItems = listCurrentContextMenuItems;
-            contextMenu.SetHeading(headerLabel ?? "Current Context Menu:");              
+            contextMenu.SetHeading(headerLabel ?? "Current Context Menu:");
             listCurrentContextMenuItems.ForEach(item => contextMenu.Add(item.Name));
             contextMenu.DoModal(GUIWindowManager.ActiveWindow);
-            if (contextMenu.SelectedId > 0) {                
+            if (contextMenu.SelectedId > 0) {
                 listCurrentContextMenuItems[contextMenu.SelectedId - 1].OnClicked(null, null);
             }
-        }                      
+        }
     }
 }

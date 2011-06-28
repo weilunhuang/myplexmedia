@@ -1,28 +1,46 @@
-﻿using System;
-using System.Collections.Generic;
+﻿#region #region Copyright (C) 2005-2011 Team MediaPortal
+
+// 
+// Copyright (C) 2005-2011 Team MediaPortal
+// http://www.team-mediaportal.com
+// 
+// MediaPortal is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 2 of the License, or
+// (at your option) any later version.
+// 
+// MediaPortal is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with MediaPortal. If not, see <http://www.gnu.org/licenses/>.
+// 
+
+#endregion
+
+using System;
 using System.Linq;
-using System.Text;
-using System.Windows.Forms;
-using MediaPortal.UserInterface.Controls;
-using MediaPortal.GUI;
-using MediaPortal.GUI.Library;
-using MediaPortal.Util;
 using MediaPortal.Dialogs;
-using MediaPortal.Configuration;
-using System.Threading;
-using System.Collections;
-using MyPlexMedia.Plugin.Window.Items;
-using MyPlexMedia.Plugin.Config;
+using MediaPortal.GUI.Library;
+using Action = System.Action;
 
 namespace MyPlexMedia.Plugin.Window.Dialogs {
-
     internal static class CommonDialogs {
-
         #region GUI Helper Methods
 
-        
+        #region Delegates
+
+        public delegate void OnProgressCancelledEventHandler();
+
+        #endregion
+
+        private static GUIDialogProgress DialogProgress;
+
         public static string GetKeyBoardInput(string defaultText, string labelText) {
-        VirtualKeyboard keyboard = (VirtualKeyboard)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
+            VirtualKeyboard keyboard =
+                (VirtualKeyboard) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
             if (keyboard == null) {
                 return String.Empty;
             }
@@ -31,15 +49,12 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             keyboard.IsSearchKeyboard = true;
             keyboard.Text = defaultText;
             keyboard.DoModal(GUIWindowManager.ActiveWindow);
-            if (keyboard.IsConfirmed) {
-                return keyboard.Text;
-            } else {
-                return String.Empty;
-            }
+            return keyboard.IsConfirmed ? keyboard.Text : String.Empty;
         }
 
         public static void ShowNotifyDialog(int timeOut, string headerText, string notifyMessage) {
-            GUIDialogNotify dialogMailNotify = (GUIDialogNotify)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_NOTIFY);
+            GUIDialogNotify dialogMailNotify =
+                (GUIDialogNotify) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_NOTIFY);
             try {
                 dialogMailNotify.Reset();
                 dialogMailNotify.TimeOut = timeOut;
@@ -53,35 +68,30 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
         }
 
         /// <summary>
-        /// Displays a yes/no dialog with custom labels for the buttons
-        /// This method may become obsolete in the future if media portal adds more dialogs
+        ///   Displays a yes/no dialog with custom labels for the buttons
+        ///   This method may become obsolete in the future if media portal adds more dialogs
         /// </summary>
         /// <returns>True if yes was clicked, False if no was clicked</returns>
         /// This has been taken (stolen really) from the wonderful MovingPictures Plugin -Anthrax.
-        public static bool ShowCustomYesNo(string heading, string lines, string yesLabel, string noLabel, bool defaultYes) {
-            GUIDialogYesNo dialog = (GUIDialogYesNo)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_YES_NO);
+        public static bool ShowCustomYesNo(string heading, string lines, string yesLabel, string noLabel,
+                                           bool defaultYes) {
+            GUIDialogYesNo dialog =
+                (GUIDialogYesNo) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_YES_NO);
             try {
                 dialog.Reset();
                 dialog.SetHeading(heading);
-                string[] linesArray = lines.Split(new string[] { "\\n" }, StringSplitOptions.None);
-                if (linesArray.Length > 0)
-                    dialog.SetLine(1, linesArray[0]);
-                if (linesArray.Length > 1)
-                    dialog.SetLine(2, linesArray[1]);
-                if (linesArray.Length > 2)
-                    dialog.SetLine(3, linesArray[2]);
-                if (linesArray.Length > 3)
-                    dialog.SetLine(4, linesArray[3]);
+                string[] linesArray = lines.Split(new[] {"\\n"}, StringSplitOptions.None);
+                if (linesArray.Length > 0) dialog.SetLine(1, linesArray[0]);
+                if (linesArray.Length > 1) dialog.SetLine(2, linesArray[1]);
+                if (linesArray.Length > 2) dialog.SetLine(3, linesArray[2]);
+                if (linesArray.Length > 3) dialog.SetLine(4, linesArray[3]);
                 dialog.SetDefaultToYes(defaultYes);
 
-                foreach (var item in dialog.Children) {
-                    if (item is GUIButtonControl) {
-                        GUIButtonControl btn = (GUIButtonControl)item;
-                        if (btn.GetID == 11 && !String.IsNullOrEmpty(yesLabel)) // Yes button
-                            btn.Label = yesLabel;
-                        else if (btn.GetID == 10 && !String.IsNullOrEmpty(noLabel)) // No button
-                            btn.Label = noLabel;
-                    }
+                foreach (var btn in dialog.Children.OfType<GUIButtonControl>()) {
+                    if (btn.GetID == 11 && !String.IsNullOrEmpty(yesLabel)) // Yes button
+                        btn.Label = yesLabel;
+                    else if (btn.GetID == 10 && !String.IsNullOrEmpty(noLabel)) // No button
+                        btn.Label = noLabel;
                 }
                 dialog.DoModal(GUIWindowManager.ActiveWindow);
                 return dialog.IsConfirmed;
@@ -94,16 +104,16 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
         }
 
         public static event OnProgressCancelledEventHandler OnProgressCancelled;
-        public delegate void OnProgressCancelledEventHandler();
 
-
-        static GUIDialogProgress DialogProgress;
-        public static void ShowProgressDialog(string headerText, string currentItem, int progressPercentage) {
-            DialogProgress = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
+        public static void ShowProgressDialog(int progressPercentage, string headerText = "", string currentItem = "") {
+            DialogProgress =
+                (GUIDialogProgress) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
             if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled) {
                 if (progressPercentage < 100) {
                     DialogProgress.Reset();
-                    DialogProgress.SetHeading(headerText);
+                    if (!String.IsNullOrEmpty(headerText)) {
+                        DialogProgress.SetHeading(headerText);
+                    }
                     DialogProgress.SetLine(1, "Currently Fetching:");
                     DialogProgress.Percentage = 0;
                     DialogProgress.DisplayProgressBar = true;
@@ -117,13 +127,17 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                 }
             }
             DialogProgress.SetPercentage(progressPercentage);
-            DialogProgress.SetLine(2, currentItem);
+            if (!String.IsNullOrEmpty(currentItem)) {
+                DialogProgress.SetLine(2, currentItem);
+            }
             DialogProgress.SetLine(3, String.Format("({0} % completed)", progressPercentage));
             DialogProgress.Progress();
+            GUIWindowManager.Process();
         }
 
         public static void HideProgressDialog() {
-            DialogProgress = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
+            DialogProgress =
+                (GUIDialogProgress) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
             DialogProgress.IsVisible = false;
             DialogProgress.ShowWaitCursor = false;
             DialogProgress.Close();
@@ -131,7 +145,7 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
 
         public static void ShowWaitCursor() {
             if (GUIGraphicsContext.form.InvokeRequired) {
-                GUIGraphicsContext.form.Invoke(new System.Action(ShowWaitCursor));
+                GUIGraphicsContext.form.Invoke(new Action(ShowWaitCursor));
             }
 
             GUIWaitCursor.Init();
@@ -141,12 +155,11 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
 
         public static void HideWaitCursor() {
             if (GUIGraphicsContext.form.InvokeRequired) {
-                GUIGraphicsContext.form.Invoke(new System.Action(HideWaitCursor));
+                GUIGraphicsContext.form.Invoke(new Action(HideWaitCursor));
             }
             GUIWaitCursor.Hide();
         }
 
         #endregion
-
     }
 }
