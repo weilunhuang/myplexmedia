@@ -36,26 +36,23 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         public delegate void OnPlayPreBufferedMediaEventHandler(string localBufferPath);
 
-        public delegate void OnPreBufferingProgressEventHandler(int currentProgress, string infoText);
-
         #endregion
 
         private const string BufferFile = @"D:\buffer.ts";
-        private const int DefaultBuffer = 3;
-        private const int DefaultQuality = 1;
+        private static int DefaultBuffer = 1;
+        private const int DefaultQuality = 3;
         private static readonly BackgroundWorker MediaBufferer;
 
         static Buffering() {
             //logger.Info(" started...");
             DeleteBufferFile();
-            MediaBufferer = new BackgroundWorker {WorkerSupportsCancellation = true};
+            MediaBufferer = new BackgroundWorker {WorkerSupportsCancellation = true, WorkerReportsProgress = true};
             MediaBufferer.RunWorkerCompleted += _mediaBufferer_RunWorkerCompleted;
             MediaBufferer.DoWork += MediaBufferer_DoWork;
-        }
+            MediaBufferer.ProgressChanged += new ProgressChangedEventHandler(MediaBufferer_ProgressChanged);
+        }       
 
         public static bool IsBuffering { get; set; }
-
-        public static event OnPreBufferingProgressEventHandler OnPreBufferingProgress;
         public static event OnBufferingProgressEventHandler OnBufferingProgress;
         public static event OnPlayPreBufferedMediaEventHandler OnPlayPreBufferedMedia;
 
@@ -69,6 +66,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         internal static void BufferMedia(Uri plexUriPath, MediaContainerVideo video, long offset = 0,
                                          int quality = DefaultQuality, bool is3G = false) {
             StopBuffering();
+            DefaultBuffer = quality;
             MediaBufferer.RunWorkerAsync(Transcoding.GetVideoSegmentedPlayList(plexUriPath, video, offset, quality, is3G));
         }
 
@@ -95,23 +93,25 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                         bufferedMedia.Close();
                         return;
                     }
-                    using (WebClient segmentFetcher = new WebClient()) {
-                        byte[] data = segmentFetcher.DownloadData(segment);
-                        bufferedMedia.Write(data, 0, data.Length);
-                        bufferedMedia.Flush();
-                    }
+                    try {
+                        using (WebClient segmentFetcher = new WebClient()) {
+                            byte[] data = segmentFetcher.DownloadData(segment);
+                            bufferedMedia.Write(data, 0, data.Length);
+                            bufferedMedia.Flush();
+                        }
+                    } catch {
+                        throw;
+                    }                    
+                    MediaBufferer.ReportProgress((int)(bufferedSegments * 100 / segments.Count), String.Format("Segments: {0, -3} / {1, 3}", bufferedSegments, segments.Count));
                     if (++bufferedSegments == DefaultBuffer) {
                         OnPlayPreBufferedMedia(BufferFile);
                     }
-                    if (bufferedSegments <= DefaultBuffer) {
-                        OnPreBufferingProgress(bufferedSegments*100/DefaultBuffer,
-                                               String.Format("Segments: {0, -3} / {1, 3}"));
-                    } else {
-                        OnBufferingProgress(bufferedSegments*100/segments.Count,
-                                            String.Format("Segments: {0, -3} / {1, 3}"));
-                    }
                 }
             }
+        }
+
+        static void MediaBufferer_ProgressChanged(object sender, ProgressChangedEventArgs e) {
+           OnBufferingProgress(e.ProgressPercentage, e.UserState.ToString());
         }
 
         private static void _mediaBufferer_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {

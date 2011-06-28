@@ -91,6 +91,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         internal static void CreateStartupMenu(PlexServer lastSelectedOrDefaultServer) {
             CommonDialogs.ShowWaitCursor();
+            //ServerManager_OnPlexServersChanged(PlexInterface.ServerManager.PlexServers);
             RefreshServerMenu();
             if (lastSelectedOrDefaultServer != null) {
                 try {

@@ -21,24 +21,29 @@
 #endregion
 
 using System;
-using System.Windows.Forms;
 using MediaPortal.Player;
 using MyPlexMedia.Plugin.Window.Dialogs;
 using PlexMediaCenter.Plex.Data.Types;
+using System.Timers;
+using MediaPortal.GUI.Library;
+using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Playback {
     internal static class PlexVideoPlayer {
         private static readonly Timer BufferCheckTimer;
 
         static PlexVideoPlayer() {
-            BufferCheckTimer = new Timer {Interval = 5000};
-            BufferCheckTimer.Tick += _bufferCheckTimer_Tick;
+            BufferCheckTimer = new Timer {Interval = 1000};
+            BufferCheckTimer.Elapsed += _bufferCheckTimer_Tick;
 
-            g_Player.PlayBackStarted += g_Player_PlayBackStarted;
-            g_Player.PlayBackStopped += g_Player_PlayBackStopped;
-            Buffering.OnPreBufferingProgress += Buffering_OnPreBufferingProgress;
+           g_Player.PlayBackStopped += g_Player_PlayBackStopped;
+            g_Player.PlayBackEnded += g_Player_PlayBackEnded;
             Buffering.OnPlayPreBufferedMedia += Buffering_OnPlayBufferedMedia;
             Buffering.OnBufferingProgress += Buffering_OnBufferingProgress;
+        }
+
+        static void g_Player_PlayBackEnded(g_Player.MediaType type, string filename) {
+            g_Player_PlayBackStopped(type, (int)g_Player.CurrentPosition, filename);
         }
 
         private static void g_Player_PlayBackStopped(g_Player.MediaType type, int stoptime, string filename) {
@@ -50,23 +55,22 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
         }
 
-        private static void g_Player_PlayBackStarted(g_Player.MediaType type, string filename) {
-            BufferCheckTimer.Start();
-        }
-
         private static void _bufferCheckTimer_Tick(object sender, EventArgs e) {
-            if (Buffering.IsBuffering) {
-                if (GetRemainingBufferPercentage() <= 5) {
+            if (Buffering.IsBuffering) {                
+                if (GetRemainingBufferPercentage() < 10) {
                     //we're running out of oxygen here... pause playback to be safe!
-                    if (g_Player.Playing) {
+                    g_Player.Process();
+                    if (!g_Player.Paused) {
                         g_Player.Pause();
                     }
                 } else {
                     //back in business... unpause, UNPAUSE!
                     if (g_Player.Paused) {
+                        CommonDialogs.HideProgressDialog();
                         g_Player.Pause();
                     }
                 }
+                
             }
         }
 
@@ -76,34 +80,31 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             } catch {
                 return 0;
             }
-        }
+        }   
 
-        private static void Buffering_OnPreBufferingProgress(int currentProgress, string infoText) {
-            CommonDialogs.ShowProgressDialog(currentProgress, string.Empty, infoText);
-        }
-
-        public static void PlayBackMedia(Uri itemPath, MediaContainerVideo video) {
-            CommonDialogs.ShowProgressDialog(0, "Buffering...", video.title);
-            Buffering.BufferMedia(itemPath, video);
+        public static void PlayBackMedia(Uri itemPath, MediaContainerVideo video) {            
+            CommonDialogs.ShowProgressDialog(0, "Buffering...", video.title, false);
+            GUIWindowManager.Process();
+            Buffering.BufferMedia(itemPath, video, 0, 5, false);
         }
 
         private static void Buffering_OnBufferingProgress(int currentProgress, string infoText) {
-            if (g_Player.Paused) {
-                CommonDialogs.ShowProgressDialog(currentProgress, "", infoText);
+            if ((!g_Player.Playing)) {
+                CommonDialogs.ShowProgressDialog(currentProgress, "Buffering...", infoText, false);
+                GUIWindowManager.Process();
             } else {
                 CommonDialogs.HideProgressDialog();
             }
         }
 
-        private static void Buffering_OnPlayBufferedMedia(string localBufferPath) {
-            CommonDialogs.HideProgressDialog();
+        private static void Buffering_OnPlayBufferedMedia(string localBufferPath) {            
+            BufferCheckTimer.Start();
             g_Player.Init();
             g_Player.SetVideoWindow();
             g_Player.PlayVideoStream(localBufferPath);
-
-            //if (Settings.PLUGIN_WINDOW_ID == GUIWindowManager.ActiveWindow) {
-            //    GUIWindowManager.ActivateWindow((int)GUIWindow.Window.WINDOW_TVFULLSCREEN);
-            //}
+            CommonDialogs.HideProgressDialog();
         }
+
+       
     }
 }

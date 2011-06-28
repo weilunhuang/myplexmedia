@@ -43,10 +43,13 @@ namespace PlexMediaCenter.Util {
         public static List<string> GetVideoSegmentedPlayList(Uri plexUriPath, MediaContainerVideo video, long offset,
                                                              int quality, bool is3G) {
             PlexServer server = PlexInterface.ServerManager.TryFindPlexServer(plexUriPath);
-            return (List<string>) from media in video.Media
-                                  from part in media.Part
-                                  from segment in GetM3U8PlaylistItems(server, part.key, offset, quality, is3G)
-                                  select segment;
+            List<string> tmpList = new List<string>();
+            foreach (var media in video.Media) {
+                foreach (var part in media.Part) { 
+                    tmpList.AddRange(Transcoding.GetM3U8PlaylistItems(server, part.key, offset, quality, is3G));
+                }
+            }
+            return tmpList;
         }
 
         private static string GetPlexApiToken(string url, string time) {
