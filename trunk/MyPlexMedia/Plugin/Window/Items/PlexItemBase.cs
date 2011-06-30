@@ -49,7 +49,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public static event OnHasBackgroundEventHandler OnHasBackground;
 
-        protected void SetIcon(string imagePath) {
+        protected virtual void SetIcon(string imagePath) {
             Utils.DoInsertExistingFileIntoCache(imagePath);
             IconImage = ThumbnailImage = imagePath;
             RefreshCoverArt();

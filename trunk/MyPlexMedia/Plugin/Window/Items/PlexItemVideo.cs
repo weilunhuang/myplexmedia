@@ -60,6 +60,11 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         public MediaContainerVideo Video { get; set; }
 
+        protected override void SetIcon(string imagePath) {
+            Video.thumb = imagePath;
+            base.SetIcon(imagePath);
+        }
+
         public override void OnClicked(object sender, EventArgs e) {
             PlexVideoPlayer.PlayBackMedia(UriPath, Video);
         }

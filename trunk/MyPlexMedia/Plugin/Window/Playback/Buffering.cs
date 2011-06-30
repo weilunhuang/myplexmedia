@@ -32,14 +32,13 @@ namespace MyPlexMedia.Plugin.Window.Playback {
     internal static class Buffering {
         #region Delegates
 
-        public delegate void OnBufferingProgressEventHandler(int currentProgress, string infoText);
+        public delegate void OnBufferingProgressEventHandler(int currentProgress, BufferJob currentJobInfo);
 
-        public delegate void OnPlayPreBufferedMediaEventHandler(string localBufferPath);
+        public delegate void OnPlayPreBufferedMediaEventHandler(string localBufferPath, BufferJob currentJobInfo);
 
         #endregion
 
         private const string BufferFile = @"D:\buffer.ts";
-        private static int DefaultBuffer = 1;
         private const int DefaultQuality = 3;
         private static readonly BackgroundWorker MediaBufferer;
 
@@ -49,10 +48,16 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             MediaBufferer = new BackgroundWorker {WorkerSupportsCancellation = true, WorkerReportsProgress = true};
             MediaBufferer.RunWorkerCompleted += _mediaBufferer_RunWorkerCompleted;
             MediaBufferer.DoWork += MediaBufferer_DoWork;
-            MediaBufferer.ProgressChanged += new ProgressChangedEventHandler(MediaBufferer_ProgressChanged);
+            MediaBufferer.ProgressChanged += MediaBufferer_ProgressChanged;
         }       
 
+        public static long Offset { get; set; }
+        public static int Quality { get; set; }
+        public static int Buffer { get; set; }
+        public static bool Is3G { get; set; }
+
         public static bool IsBuffering { get; set; }
+
         public static event OnBufferingProgressEventHandler OnBufferingProgress;
         public static event OnPlayPreBufferedMediaEventHandler OnPlayPreBufferedMedia;
 
@@ -63,13 +68,22 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
         }
 
+        public struct BufferJob {
+            public Uri ServerPath { get; set; }
+            public MediaContainerVideo Video { get; set; }
+            public int SegmentsBuffered { get; set; }
+            public int SegmentsCount { get; set; }
+        }
+
         internal static void BufferMedia(Uri plexUriPath, MediaContainerVideo video, long offset = 0,
                                          int quality = DefaultQuality, bool is3G = false) {
             StopBuffering();
-            DefaultBuffer = quality;
-            MediaBufferer.RunWorkerAsync(Transcoding.GetVideoSegmentedPlayList(plexUriPath, video, offset, quality, is3G));
+            Offset = offset;
+            Buffer = quality * 2;
+            Quality = quality;
+            MediaBufferer.RunWorkerAsync(new BufferJob{ServerPath = plexUriPath, Video= video});
         }
-
+        
         private static void DeleteBufferFile() {
             if (File.Exists(BufferFile)) {
                 File.Delete(BufferFile);
@@ -78,13 +92,15 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         private static void MediaBufferer_DoWork(object sender, DoWorkEventArgs e) {
             //logger.Info("BackGroundWorker - Buffering...");
-            if (!(e.Argument is List<string>)) return;
-            List<string> segments = (List<string>) e.Argument;
+            if (!(e.Argument is BufferJob)) return;
+            var bufferJob = (BufferJob) e.Argument;
+            List<string> segments = Transcoding.GetVideoSegmentedPlayList(bufferJob.ServerPath, bufferJob.Video, Offset, Quality, Is3G);
+            bufferJob.SegmentsBuffered = 0;
+            bufferJob.SegmentsCount = segments.Count;
             IsBuffering = true;
             using (
                 FileStream bufferedMedia = new FileStream(BufferFile, FileMode.Create, FileAccess.Write, FileShare.Read)
                 ) {
-                int bufferedSegments = 0;
                 foreach (string segment in segments) {
                     if (MediaBufferer.CancellationPending) {
                         //logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
@@ -101,17 +117,17 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                         }
                     } catch {
                         throw;
-                    }                    
-                    MediaBufferer.ReportProgress((int)(bufferedSegments * 100 / segments.Count), String.Format("Segments: {0, -3} / {1, 3}", bufferedSegments, segments.Count));
-                    if (++bufferedSegments == DefaultBuffer) {
-                        OnPlayPreBufferedMedia(BufferFile);
+                    }
+                    MediaBufferer.ReportProgress((int)(bufferJob.SegmentsBuffered * 100 / bufferJob.SegmentsCount), bufferJob);
+                    if (++bufferJob.SegmentsBuffered == Buffer) {
+                        OnPlayPreBufferedMedia(BufferFile, bufferJob);
                     }
                 }
             }
         }
 
         static void MediaBufferer_ProgressChanged(object sender, ProgressChangedEventArgs e) {
-           OnBufferingProgress(e.ProgressPercentage, e.UserState.ToString());
+           OnBufferingProgress(e.ProgressPercentage, (BufferJob)e.UserState);
         }
 
         private static void _mediaBufferer_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
@@ -124,64 +140,6 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
             IsBuffering = false;
             DeleteBufferFile();
-        }
-    }
-
-    public static class StreamExtensions {
-        private const int DEFAULT_BUFFER_SIZE = short.MaxValue; // +32767
-
-        public static void CopyTo(this Stream input, Stream output) {
-            input.CopyTo(output, DEFAULT_BUFFER_SIZE);
-            return;
-        }
-
-        public static void CopyTo(this Stream input, Stream output, int bufferSize) {
-            if (!input.CanRead) throw new InvalidOperationException("input must be open for reading");
-            if (!output.CanWrite) throw new InvalidOperationException("output must be open for writing");
-
-            byte[][] buf = {new byte[bufferSize], new byte[bufferSize]};
-            int[] bufl = {0, 0};
-            int bufno = 0;
-            IAsyncResult read = input.BeginRead(buf[bufno], 0, buf[bufno].Length, null, null);
-            IAsyncResult write = null;
-
-            while (true) {
-                // wait for the read operation to complete
-                read.AsyncWaitHandle.WaitOne();
-                bufl[bufno] = input.EndRead(read);
-
-                // if zero bytes read, the copy is complete
-                if (bufl[bufno] == 0) {
-                    break;
-                }
-
-                // wait for the in-flight write operation, if one exists, to complete
-                // the only time one won't exist is after the very first read operation completes
-                if (write != null) {
-                    write.AsyncWaitHandle.WaitOne();
-                    output.EndWrite(write);
-                }
-
-                // start the new write operation
-                write = output.BeginWrite(buf[bufno], 0, bufl[bufno], null, null);
-
-                // toggle the current, in-use buffer
-                // and start the read operation on the new buffer
-                bufno = (bufno == 0 ? 1 : 0);
-                read = input.BeginRead(buf[bufno], 0, buf[bufno].Length, null, null);
-            }
-
-            // wait for the final in-flight write operation, if one exists, to complete
-            // the only time one won't exist is if the input stream is empty.
-            if (write != null) {
-                write.AsyncWaitHandle.WaitOne();
-                output.EndWrite(write);
-            }
-
-            output.Flush();
-
-            // return to the caller ;
-            return;
         }
     }
 }

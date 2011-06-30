@@ -24,9 +24,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using MediaPortal.GUI.Library;
+using MyPlexMedia.Plugin.Config;
 using MyPlexMedia.Plugin.Window.Dialogs;
 using MyPlexMedia.Plugin.Window.Items;
 using PlexMediaCenter.Plex;
+using PlexMediaCenter.Plex.Data.Types;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main {
@@ -43,6 +45,7 @@ namespace MyPlexMedia.Plugin.Window {
         private void MenuItem_OnHasBackground(string imagePath) {
             if (ctrlBackgroundImage == null || String.IsNullOrEmpty(imagePath) || !File.Exists(imagePath) ||
                 ctrlBackgroundImage.ImagePath.Equals(imagePath)) return;
+            ctrlBackgroundImage.RemoveMemoryImageTexture();
             ctrlBackgroundImage.SetFileName(imagePath);
             ctrlBackgroundImage.DoUpdate();
             GUIWindowManager.Process();
@@ -53,7 +56,7 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex,
-                                                          GUIFacadeControl.Layout preferredLayout) {
+                                                          Settings.PlexSectionLayout preferredLayout) {
             CommonDialogs.HideProgressDialog();
             GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", Navigation.History.ToArray()));
             facadeLayout.Clear();
@@ -63,7 +66,7 @@ namespace MyPlexMedia.Plugin.Window {
             facadeLayout.FilmstripLayout.Clear();
             facadeLayout.ListLayout.Clear();
             facadeLayout.PlayListLayout.Clear();
-            CurrentLayout = preferredLayout;
+            CurrentLayout = preferredLayout.Layout;
             SwitchLayout();
 
             foreach (var item in fetchedMenuItems) {
@@ -81,6 +84,23 @@ namespace MyPlexMedia.Plugin.Window {
 
         private static void UpdateGuiProperties(IMenuItem selectedItem) {
             //TODO: add custom skin properties
+        }
+
+        private static void PlexVideoPlayer_OnPlexVideoPlayBack(MediaContainerVideo nowPlaying) {
+            GUIPropertyManager.SetProperty("#Play.Current.Title", nowPlaying.title);
+            GUIPropertyManager.SetProperty("#Play.Current.File", nowPlaying.Media[0].Part[0].file);
+            GUIPropertyManager.SetProperty("#Play.Current.Thumb", nowPlaying.thumb);
+            GUIPropertyManager.SetProperty("#Play.Current.Plot", nowPlaying.summary);
+            GUIPropertyManager.SetProperty("#Play.Current.PlotOutline", nowPlaying.tagline);
+            GUIPropertyManager.SetProperty("#Play.Current.Rating", nowPlaying.rating);
+            GUIPropertyManager.SetProperty("#Play.Current.MPAARating", nowPlaying.contentRating);
+            GUIPropertyManager.SetProperty("#Play.Current.Year", nowPlaying.year);
+            GUIPropertyManager.SetProperty("#Play.Current.Runtime", nowPlaying.duration);
+            GUIPropertyManager.SetProperty("#Play.Current.AspectRatio", nowPlaying.Media[0].aspectRatio);
+            GUIPropertyManager.SetProperty("#Play.Current.VideoResolution", nowPlaying.Media[0].videoResolution);
+            GUIPropertyManager.SetProperty("#Play.Current.VideoCodec.Texture", nowPlaying.Media[0].videoCodec);
+            GUIPropertyManager.SetProperty("#Play.Current.AudioCodec.Texture", nowPlaying.Media[0].audioCodec);
+            GUIPropertyManager.SetProperty("#Play.Current.AudioChannels", nowPlaying.Media[0].audioChannels);
         }
     }
 }
