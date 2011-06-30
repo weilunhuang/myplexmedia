@@ -86,6 +86,7 @@ namespace PlexMediaCenter.Plex {
             if (plexServer != null && Login(plexServer)) {
                 try {
                     ServerManager.SetCurrentPlexServer(plexServer);
+                    System.Threading.Thread.Sleep(500);
                     return RequestPlexItems(plexServer.UriPlexSections);
                 } catch (Exception e) {
                     OnPlexError(new PlexException(typeof (PlexInterface), "TryGetPlexSections failed for: " + plexServer,

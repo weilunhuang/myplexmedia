@@ -28,6 +28,7 @@ using PlexMediaCenter.Plex;
 using WindowPlugins;
 using MyPlexMedia.Plugin.Window.Playback;
 using PlexMediaCenter.Plex.Data.Types;
+using MyPlexMedia.Plugin.Window.Dialogs;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main : WindowPluginBase {
@@ -105,20 +106,20 @@ namespace MyPlexMedia.Plugin.Window {
                                                              Layout = CurrentLayout,
                                                              Section = Navigation.CurrentItem.PreferredLayout.Section
                                                          };
-            switch (Navigation.CurrentItem.PreferredLayout.Section) {
-                case Settings.SectionType.Music:
-                    Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Music.xml");
-                    break;
-                case Settings.SectionType.Video:
-                    Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Videos.xml");
-                    break;
-                case Settings.SectionType.Photo:
-                    Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Photos.xml");
-                    break;
-                default:
-                    Load(Settings.SKINFILE_MAIN_WINDOW);
-                    break;
-            }
+            //switch (Navigation.CurrentItem.PreferredLayout.Section) {
+            //    case Settings.SectionType.Music:
+            //        Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Music.xml");
+            //        break;
+            //    case Settings.SectionType.Video:
+            //        Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Videos.xml");
+            //        break;
+            //    case Settings.SectionType.Photo:
+            //        Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Photos.xml");
+            //        break;
+            //    default:
+            //        Load(Settings.SKINFILE_MAIN_WINDOW);
+            //        break;
+            //}
             base.SwitchLayout();
         }
         protected override bool AllowLayout(GUIFacadeControl.Layout layout) {
@@ -158,20 +159,14 @@ namespace MyPlexMedia.Plugin.Window {
                     break;
             }
         }
-
-        protected override void OnClicked(int controlId, GUIControl control,
-                                          MediaPortal.GUI.Library.Action.ActionType actionType) {
-            switch (controlId) {
-                default:
-                    break;
-            }
-            base.OnClicked(controlId, control, actionType);
-        }
+             
 
         protected override void OnClick(int iItem) {
+            CommonDialogs.ShowProgressDialog(50);
             GUIListItem item = facadeLayout[iItem];
             if (facadeLayout[iItem] is IMenuItem) {
                 ((IMenuItem) facadeLayout[iItem]).Parent.LastSelectedChildIndex = iItem;
+                CommonDialogs.HideWaitCursor();
                 ((IMenuItem) facadeLayout[iItem]).OnClicked(this, null);
             } else {
                 base.OnClick(iItem);

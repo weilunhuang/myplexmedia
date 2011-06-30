@@ -29,6 +29,17 @@ using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
 
 namespace MyPlexMedia.Plugin.Window.Playback {
+
+    public enum PlexQualities { 
+        _1_320kbps240p = 3,
+        _2_720kbps320p,
+        _3_1500kbps480p,
+        _4_2000kbps720p,
+        _5_3000kbps720p,
+        _6_4000kbps720p,
+        _7_8000kbps1080p
+    }
+
     internal static class Buffering {
         #region Delegates
 
@@ -39,20 +50,20 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         #endregion
 
         private const string BufferFile = @"D:\buffer.ts";
-        private const int DefaultQuality = 3;
+        private const PlexQualities DefaultQuality = PlexQualities._1_320kbps240p;
         private static readonly BackgroundWorker MediaBufferer;
 
         static Buffering() {
             //logger.Info(" started...");
             DeleteBufferFile();
-            MediaBufferer = new BackgroundWorker {WorkerSupportsCancellation = true, WorkerReportsProgress = true};
+            MediaBufferer = new BackgroundWorker { WorkerSupportsCancellation = true, WorkerReportsProgress = true };
             MediaBufferer.RunWorkerCompleted += _mediaBufferer_RunWorkerCompleted;
             MediaBufferer.DoWork += MediaBufferer_DoWork;
             MediaBufferer.ProgressChanged += MediaBufferer_ProgressChanged;
-        }       
+        }
 
         public static long Offset { get; set; }
-        public static int Quality { get; set; }
+        public static PlexQualities Quality { get; set; }
         public static int Buffer { get; set; }
         public static bool Is3G { get; set; }
 
@@ -64,7 +75,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         public static void StopBuffering() {
             if (MediaBufferer.IsBusy) {
                 //logger.Info("Request Buffering Cancellation");
-                MediaBufferer.CancelAsync();
+                MediaBufferer.CancelAsync();              
             }
         }
 
@@ -76,14 +87,15 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         }
 
         internal static void BufferMedia(Uri plexUriPath, MediaContainerVideo video, long offset = 0,
-                                         int quality = DefaultQuality, bool is3G = false) {
+                                         PlexQualities quality = DefaultQuality, bool is3G = false) {
             StopBuffering();
             Offset = offset;
-            Buffer = quality * 2;
+            Is3G = is3G;
             Quality = quality;
-            MediaBufferer.RunWorkerAsync(new BufferJob{ServerPath = plexUriPath, Video= video});
+            Buffer = (int)Quality;
+            MediaBufferer.RunWorkerAsync(new BufferJob { ServerPath = plexUriPath, Video = video });
         }
-        
+
         private static void DeleteBufferFile() {
             if (File.Exists(BufferFile)) {
                 File.Delete(BufferFile);
@@ -93,14 +105,15 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         private static void MediaBufferer_DoWork(object sender, DoWorkEventArgs e) {
             //logger.Info("BackGroundWorker - Buffering...");
             if (!(e.Argument is BufferJob)) return;
-            var bufferJob = (BufferJob) e.Argument;
-            List<string> segments = Transcoding.GetVideoSegmentedPlayList(bufferJob.ServerPath, bufferJob.Video, Offset, Quality, Is3G);
+            var bufferJob = (BufferJob)e.Argument;
+            List<string> segments = Transcoding.GetVideoSegmentedPlayList(bufferJob.ServerPath, bufferJob.Video, Offset, (int)Quality, Is3G);
             bufferJob.SegmentsBuffered = 0;
             bufferJob.SegmentsCount = segments.Count;
             IsBuffering = true;
-            using (
-                FileStream bufferedMedia = new FileStream(BufferFile, FileMode.Create, FileAccess.Write, FileShare.Read)
-                ) {
+            //Path.ChangeExtension(BufferFile, Is3G ? "ts" : "ts");
+            DeleteBufferFile();
+
+            using (FileStream bufferedMedia = new FileStream(BufferFile, FileMode.Create, FileAccess.Write, FileShare.Read)) {
                 foreach (string segment in segments) {
                     if (MediaBufferer.CancellationPending) {
                         //logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
@@ -116,7 +129,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                             bufferedMedia.Flush();
                         }
                     } catch {
-                        throw;
+
                     }
                     MediaBufferer.ReportProgress((int)(bufferJob.SegmentsBuffered * 100 / bufferJob.SegmentsCount), bufferJob);
                     if (++bufferJob.SegmentsBuffered == Buffer) {
@@ -127,7 +140,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         }
 
         static void MediaBufferer_ProgressChanged(object sender, ProgressChangedEventArgs e) {
-           OnBufferingProgress(e.ProgressPercentage, (BufferJob)e.UserState);
+            OnBufferingProgress(e.ProgressPercentage, (BufferJob)e.UserState);
         }
 
         private static void _mediaBufferer_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e) {
@@ -139,7 +152,6 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 //logger.Info("BackGroundWorker -Buffering completed and was successful");
             }
             IsBuffering = false;
-            DeleteBufferFile();
         }
     }
 }

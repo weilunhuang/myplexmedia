@@ -40,14 +40,13 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             if (currentTracks == null || currentTracks.Count < 1) {
                 return;
             }
-            PlayList newPlayList = new PlayList {Name = listTitle};
+            PlayList newPlayList = new PlayList { Name = listTitle };
             foreach (
                 var newItem in
                     currentTracks.Select(
                         currentTrack =>
                         new PlayListItem(currentTrack.Track.title, currentTrack.PlaybackAuthUrl.AbsoluteUri,
-                                         int.Parse(currentTrack.Track.duration))
-                            {Type = PlayListItem.PlayListItemType.AudioStream})) {
+                                         int.Parse(currentTrack.Track.duration)) { Type = PlayListItem.PlayListItemType.AudioStream })) {
                 newPlayList.Add(newItem);
             }
             PlexPlayListPlayer.ReplacePlaylist(PlayListType.PLAYLIST_MUSIC, newPlayList);
@@ -62,8 +61,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             if (GUIGraphicsContext.form.InvokeRequired) {
                 GUIGraphicsContext.form.Invoke(new Action(() => PlayItem(fileNameUri)));
             }
-            PlexPlayListPlayer.Play(fileNameUri);
-            PlexPlayListPlayer.g_Player.ShowFullScreenWindow();
+            PlexPlayListPlayer.g_Player.PlayAudioStream(fileNameUri);
         }
     }
 }

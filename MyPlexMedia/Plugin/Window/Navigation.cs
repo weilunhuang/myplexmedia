@@ -73,7 +73,6 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         public static void ShowRootMenu(PlexServer selectedServer) {
-            CommonDialogs.ShowWaitCursor();
             MediaContainer plexSections = PlexInterface.TryGetPlexSections(selectedServer);
             if (plexSections == null) {
                 return;
@@ -86,7 +85,6 @@ namespace MyPlexMedia.Plugin.Window {
             RootMenu.Add(ServerItem);
             RootItem.SetChildItems(RootMenu);
             ShowCurrentMenu(RootItem, 0);
-            CommonDialogs.HideWaitCursor();
         }
 
         internal static void CreateStartupMenu(PlexServer lastSelectedOrDefaultServer) {
@@ -102,7 +100,6 @@ namespace MyPlexMedia.Plugin.Window {
                 }
             }
             ShowCurrentMenu(ServerItem, 0);
-            CommonDialogs.HideWaitCursor();
         }
 
         internal static void ShowCurrentContextMenu() {
@@ -116,8 +113,7 @@ namespace MyPlexMedia.Plugin.Window {
             ShowCurrentMenu(currentItem.Parent, currentItem.Parent.LastSelectedChildIndex);
         }
 
-        internal static void ShowCurrentMenu(IMenuItem parentItem, int selectFacadeIndex) {
-            CommonDialogs.ShowWaitCursor();
+        internal static void ShowCurrentMenu(IMenuItem parentItem, int selectFacadeIndex) {           
             if (parentItem.ChildItems != null && parentItem.ChildItems.Count > 0) {
                 CurrentItem = parentItem;
                 PlexPlayList.CreateMusicPlayList(
@@ -127,7 +123,6 @@ namespace MyPlexMedia.Plugin.Window {
             } else {
                 return;
             }
-            CommonDialogs.HideWaitCursor();
         }
 
         internal static List<IMenuItem> GetCreateSubMenuItems(PlexItemBase parentItem,
@@ -185,10 +180,8 @@ namespace MyPlexMedia.Plugin.Window {
             }
         }
 
-        private static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
-            CommonDialogs.ShowWaitCursor();
-            updatedServerList.ForEach(svr => PlexInterface.Login(svr));
-            CommonDialogs.HideWaitCursor();
+        private static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {            
+            updatedServerList.ForEach(svr => PlexInterface.Login(svr));            
             ServerMenu = updatedServerList.ConvertAll<IMenuItem>(svr => new PlexItemServer(ServerItem, svr));
             ServerMenu.Add(new ActionItem(null, "Refresh Bonjouor...", Settings.PLEX_ICON_DEFAULT_BONJOUR,
                                           RefreshServerMenu));

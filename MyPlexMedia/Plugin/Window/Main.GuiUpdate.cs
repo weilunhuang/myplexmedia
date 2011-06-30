@@ -39,15 +39,16 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private static void PlexInterface_OnResponseProgress(object userToken, int progress) {
-            CommonDialogs.ShowProgressDialog(progress, "Fetching Plex Items...", ((IMenuItem) userToken).Name);
+            CommonDialogs.ShowProgressDialog(progress, "Fetching Plex Items...", ((IMenuItem) userToken).Name, true);
         }
 
         private void MenuItem_OnHasBackground(string imagePath) {
             if (ctrlBackgroundImage == null || String.IsNullOrEmpty(imagePath) || !File.Exists(imagePath) ||
                 ctrlBackgroundImage.ImagePath.Equals(imagePath)) return;
-            ctrlBackgroundImage.RemoveMemoryImageTexture();
+            //ctrlBackgroundImage.RemoveMemoryImageTexture();           
             ctrlBackgroundImage.SetFileName(imagePath);
             ctrlBackgroundImage.DoUpdate();
+            ctrlBackgroundImage.Refresh();
             GUIWindowManager.Process();
         }
 
@@ -87,20 +88,8 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private static void PlexVideoPlayer_OnPlexVideoPlayBack(MediaContainerVideo nowPlaying) {
-            GUIPropertyManager.SetProperty("#Play.Current.Title", nowPlaying.title);
-            GUIPropertyManager.SetProperty("#Play.Current.File", nowPlaying.Media[0].Part[0].file);
-            GUIPropertyManager.SetProperty("#Play.Current.Thumb", nowPlaying.thumb);
-            GUIPropertyManager.SetProperty("#Play.Current.Plot", nowPlaying.summary);
-            GUIPropertyManager.SetProperty("#Play.Current.PlotOutline", nowPlaying.tagline);
-            GUIPropertyManager.SetProperty("#Play.Current.Rating", nowPlaying.rating);
-            GUIPropertyManager.SetProperty("#Play.Current.MPAARating", nowPlaying.contentRating);
-            GUIPropertyManager.SetProperty("#Play.Current.Year", nowPlaying.year);
-            GUIPropertyManager.SetProperty("#Play.Current.Runtime", nowPlaying.duration);
-            GUIPropertyManager.SetProperty("#Play.Current.AspectRatio", nowPlaying.Media[0].aspectRatio);
-            GUIPropertyManager.SetProperty("#Play.Current.VideoResolution", nowPlaying.Media[0].videoResolution);
-            GUIPropertyManager.SetProperty("#Play.Current.VideoCodec.Texture", nowPlaying.Media[0].videoCodec);
-            GUIPropertyManager.SetProperty("#Play.Current.AudioCodec.Texture", nowPlaying.Media[0].audioCodec);
-            GUIPropertyManager.SetProperty("#Play.Current.AudioChannels", nowPlaying.Media[0].audioChannels);
+            
+          
         }
     }
 }

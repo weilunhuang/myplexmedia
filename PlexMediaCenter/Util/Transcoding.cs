@@ -106,8 +106,8 @@ namespace PlexMediaCenter.Util {
             transcodePath += "&url=" + Uri.EscapeDataString("http://localhost:32400" + partKey);
             transcodePath += GetPlexAuthParameters(plexServer, transcodePath);
             transcodePath += PlexCapabilitiesClient.GetClientCapabilities();
-            transcodePath += "&httpCookies=";
-            transcodePath += "&userAgent=";
+            //transcodePath += "&httpCookies=";
+            //transcodePath += "&userAgent=";
             return new Uri(plexServer.UriPlexBase + transcodePath.Remove(0, 1));
         }
 
