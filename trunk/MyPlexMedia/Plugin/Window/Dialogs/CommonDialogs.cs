@@ -104,64 +104,76 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
         }
 
         public static event OnProgressCancelledEventHandler OnProgressCancelled;
-
+        
+        delegate void ShowProgressDialogCallback(int progressPercentage, string headerText, string currentItem, bool doModal);
         public static void ShowProgressDialog(int progressPercentage, string headerText = "", string currentItem = "", bool doModal = true) {
-            DialogProgress = (GUIDialogProgress) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
-            if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled) {
-                if (progressPercentage < 100) {
-                    DialogProgress.Reset();
-                    if (!String.IsNullOrEmpty(headerText)) {
-                        DialogProgress.SetHeading(headerText);
-                    }
-                    DialogProgress.SetLine(1, "Currently Fetching:");
-                    DialogProgress.Percentage = 0;
-                    DialogProgress.DisplayProgressBar = true;
-                    DialogProgress.ShowWaitCursor = true;
-                    DialogProgress.IsVisible = true;
-                    if (doModal) {
-                        DialogProgress.DisableCancel(false);
-                        DialogProgress.DoModal(GUIWindowManager.ActiveWindow);
-                        if (DialogProgress.IsCanceled) {
-                            HideProgressDialog();
-                            OnProgressCancelled();
+            if (GUIGraphicsContext.form.InvokeRequired) {
+                ShowProgressDialogCallback callback = new ShowProgressDialogCallback(ShowProgressDialog);
+                GUIGraphicsContext.form.Invoke(callback, new object[] { progressPercentage, headerText, currentItem, doModal });
+            } else {
+                DialogProgress = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
+                if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled) {
+                    if (progressPercentage < 100) {
+                        //DialogProgress.Reset();
+                        if (!String.IsNullOrEmpty(headerText)) {
+                            DialogProgress.SetHeading(headerText);
                         }
-                    } else {
-                        DialogProgress.DisableCancel(true);
-                        DialogProgress.StartModal(GUIWindowManager.ActiveWindow);
+                        DialogProgress.SetLine(1, "Currently Fetching:");                        
+                        DialogProgress.DisplayProgressBar = true;
+                        DialogProgress.ShowWaitCursor = true;                       
+                        if (doModal) {
+                            DialogProgress.DisableCancel(false);
+                            DialogProgress.DoModal(GUIWindowManager.ActiveWindow);
+                            if (DialogProgress.IsCanceled) {
+                                HideProgressDialog();
+                                OnProgressCancelled();
+                            }
+                        } else {
+                            DialogProgress.DisableCancel(true);
+                            DialogProgress.StartModal(GUIWindowManager.ActiveWindow);
+                        }
                     }
                 }
+                DialogProgress.SetPercentage(progressPercentage);
+                if (!String.IsNullOrEmpty(currentItem)) {
+                    DialogProgress.SetLine(2, currentItem);
+                }
+                DialogProgress.SetLine(3, String.Format("({0} % completed)", progressPercentage));
+                DialogProgress.Progress();
+                DialogProgress.ProcessDoModal();
+                DialogProgress.UpdateVisibility();                
+                GUIWindowManager.Process();
             }
-            DialogProgress.SetPercentage(progressPercentage);
-            if (!String.IsNullOrEmpty(currentItem)) {
-                DialogProgress.SetLine(2, currentItem);
-            }
-            DialogProgress.SetLine(3, String.Format("({0} % completed)", progressPercentage));
-            DialogProgress.Progress();           
         }
 
         public static void HideProgressDialog() {
             DialogProgress =
                 (GUIDialogProgress) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
-            DialogProgress.IsVisible = false;
-            DialogProgress.ShowWaitCursor = false;
-            DialogProgress.Close();
+            if (DialogProgress.IsVisible) {                  
+                DialogProgress.Close();
+            }
+            HideWaitCursor();
+            GUIWindowManager.Process();
         }
 
+        delegate void ShowWaitCursorCallback();
         public static void ShowWaitCursor() {
             if (GUIGraphicsContext.form.InvokeRequired) {
-                GUIGraphicsContext.form.Invoke(new Action(ShowWaitCursor));
+                ShowWaitCursorCallback callback = new ShowWaitCursorCallback(ShowWaitCursor);
+                GUIGraphicsContext.form.Invoke(callback);
+            } else {
+                GUIWaitCursor.Init();
+                GUIWaitCursor.Show();               
             }
-
-            GUIWaitCursor.Init();
-            GUIWaitCursor.Show();
-            GUIWindowManager.Process();
         }
 
         public static void HideWaitCursor() {
             if (GUIGraphicsContext.form.InvokeRequired) {
                 GUIGraphicsContext.form.Invoke(new Action(HideWaitCursor));
+            } else {                
+                GUIWaitCursor.Hide();
+                GUIWindowManager.Process();
             }
-            GUIWaitCursor.Hide();
         }
 
         #endregion
