@@ -61,8 +61,8 @@ namespace MyPlexMedia.Plugin.Config {
             DeleteCacheOnExit = false;
         }
 
-        public static Dictionary<string, GUIFacadeControl.Layout> PreferredLayouts { get; private set; }
-        public static GUIFacadeControl.Layout DefaultLayout { get; private set; }
+        public static Dictionary<string, PlexSectionLayout> PreferredLayouts { get; private set; }
+        public static PlexSectionLayout DefaultLayout { get; private set; }
 
         public static PlexMediaCenter.Plex.Connection.PlexServer LastPlexServer { get; set; }
 
@@ -70,24 +70,35 @@ namespace MyPlexMedia.Plugin.Config {
         public static string CacheFolder { get; set; }
         public static bool DeleteCacheOnExit { get; set; }
 
-        private static GUIFacadeControl.Layout CreatePreferredLayouts() {
-            PreferredLayouts = new Dictionary<string, GUIFacadeControl.Layout>
+        private static PlexSectionLayout CreatePreferredLayouts() {
+            PreferredLayouts = new Dictionary<string, PlexSectionLayout>
                                    {
-                                       {"default", GUIFacadeControl.Layout.List},
-                                       {"secondary", GUIFacadeControl.Layout.List},
-                                       {"artist", GUIFacadeControl.Layout.LargeIcons},
-                                       {"album", GUIFacadeControl.Layout.Filmstrip},
-                                       {"show", GUIFacadeControl.Layout.CoverFlow},
-                                       {"season", GUIFacadeControl.Layout.CoverFlow},
-                                       {"episode", GUIFacadeControl.Layout.List},
-                                       {"track", GUIFacadeControl.Layout.Playlist},
-                                       {"movie", GUIFacadeControl.Layout.CoverFlow}
+                                       {"default", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.List, Section =  SectionType.Music}},
+                                       {"secondary", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.List, Section =  SectionType.Music}},
+                                       {"artist", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.LargeIcons, Section =  SectionType.Music}},
+                                       {"album", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.CoverFlow, Section =  SectionType.Music}},
+                                       {"show", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.CoverFlow, Section =  SectionType.Video}},
+                                       {"season", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.Filmstrip, Section =  SectionType.Video}},
+                                       {"episode", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.List, Section =  SectionType.Photo}},
+                                       {"track", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.Playlist, Section =  SectionType.Music}},
+                                       {"movie", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.CoverFlow, Section =  SectionType.Video}},
                                    };
             //return default Layout
-            return GUIFacadeControl.Layout.List;
+            return new PlexSectionLayout() {Layout = GUIFacadeControl.Layout.List, Section =  SectionType.Video};
         }
 
-        public static GUIFacadeControl.Layout GetPreferredLayout(string viewGroup) {
+        public struct PlexSectionLayout {
+            public SectionType Section { get; set; }
+            public GUIFacadeControl.Layout Layout { get; set; }
+            }
+
+        public enum SectionType {
+            Music,
+            Video,
+            Photo
+        }
+
+        public static PlexSectionLayout GetPreferredLayout(string viewGroup) {
             if (!String.IsNullOrEmpty(viewGroup) && PreferredLayouts.ContainsKey(viewGroup)) {
                 return PreferredLayouts[viewGroup];
             }

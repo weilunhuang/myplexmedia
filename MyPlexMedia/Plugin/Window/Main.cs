@@ -20,11 +20,14 @@
 
 #endregion
 
+using System;
 using MediaPortal.GUI.Library;
 using MyPlexMedia.Plugin.Config;
 using MyPlexMedia.Plugin.Window.Items;
 using PlexMediaCenter.Plex;
 using WindowPlugins;
+using MyPlexMedia.Plugin.Window.Playback;
+using PlexMediaCenter.Plex.Data.Types;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main : WindowPluginBase {
@@ -43,6 +46,12 @@ namespace MyPlexMedia.Plugin.Window {
         #endregion
 
         #region GUIWindow Base Class Overrides
+
+        public override bool SupportsDelayedLoad {
+            get {
+                return true;
+            }
+        }
 
         protected override string SerializeName {
             get { return Settings.PLUGIN_NAME; }
@@ -73,7 +82,7 @@ namespace MyPlexMedia.Plugin.Window {
             RegisterEventHandlers();
             if (Navigation.CurrentItem == null) {
                 Navigation.CreateStartupMenu(Settings.LastPlexServer);
-                CurrentLayout = Settings.DefaultLayout;
+                CurrentLayout = Settings.DefaultLayout.Layout;
                 SwitchLayout();
             } else {
                 Navigation.ShowCurrentMenu(Navigation.CurrentItem, 0);
@@ -90,8 +99,29 @@ namespace MyPlexMedia.Plugin.Window {
         protected override void OnShowViews() {
         }
 
+        protected override void SwitchLayout() {
+            Navigation.CurrentItem.PreferredLayout = new Settings.PlexSectionLayout
+                                                         {
+                                                             Layout = CurrentLayout,
+                                                             Section = Navigation.CurrentItem.PreferredLayout.Section
+                                                         };
+            switch (Navigation.CurrentItem.PreferredLayout.Section) {
+                case Settings.SectionType.Music:
+                    Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Music.xml");
+                    break;
+                case Settings.SectionType.Video:
+                    Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Videos.xml");
+                    break;
+                case Settings.SectionType.Photo:
+                    Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Photos.xml");
+                    break;
+                default:
+                    Load(Settings.SKINFILE_MAIN_WINDOW);
+                    break;
+            }
+            base.SwitchLayout();
+        }
         protected override bool AllowLayout(GUIFacadeControl.Layout layout) {
-            Navigation.CurrentItem.PreferredLayout = layout;
             switch (layout) {
                 case GUIFacadeControl.Layout.CoverFlow:
                 case GUIFacadeControl.Layout.Filmstrip:
@@ -160,17 +190,23 @@ namespace MyPlexMedia.Plugin.Window {
             PlexInterface.OnPlexError += PlexInterface_OnPlexError;
             PlexInterface.OnResponseProgress += PlexInterface_OnResponseProgress;
             PlexItemBase.OnHasBackground += MenuItem_OnHasBackground;
+            PlexVideoPlayer.OnPlexVideoPlayBack += PlexVideoPlayer_OnPlexVideoPlayBack;
             MenuItem.OnMenuItemSelected += MenuItem_OnMenuItemSelected;
             Navigation.OnMenuItemsFetchStarted += Navigation_OnMenuItemsFetchStarted;
             Navigation.OnMenuItemsFetchCompleted += Navigation_OnMenuItemsFetchCompleted;
             Navigation.OnErrorOccured += PlexInterface_OnPlexError;
         }
 
+        
+
         private void UnRegisterEventHandlers() {
             PlexInterface.OnPlexError -= PlexInterface_OnPlexError;
+            PlexInterface.OnResponseProgress -= PlexInterface_OnResponseProgress;
+            PlexItemBase.OnHasBackground -= MenuItem_OnHasBackground;
+            PlexVideoPlayer.OnPlexVideoPlayBack -= PlexVideoPlayer_OnPlexVideoPlayBack;
             MenuItem.OnMenuItemSelected -= MenuItem_OnMenuItemSelected;
-            Navigation.OnMenuItemsFetchCompleted -= Navigation_OnMenuItemsFetchCompleted;
             Navigation.OnMenuItemsFetchStarted -= Navigation_OnMenuItemsFetchStarted;
+            Navigation.OnMenuItemsFetchCompleted -= Navigation_OnMenuItemsFetchCompleted;
             Navigation.OnErrorOccured -= PlexInterface_OnPlexError;
         }
 

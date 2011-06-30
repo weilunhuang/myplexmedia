@@ -69,7 +69,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public virtual void OnInfo() {
         }
 
-        public GUIFacadeControl.Layout PreferredLayout { get; set; }
+        public Settings.PlexSectionLayout PreferredLayout { get; set; }
 
         #endregion
 

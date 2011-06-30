@@ -23,11 +23,12 @@
 using System;
 using System.Collections.Generic;
 using MediaPortal.GUI.Library;
+using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     public interface IMenuItem {
         IMenuItem Parent { get; set; }
-        GUIFacadeControl.Layout PreferredLayout { get; set; }
+        Settings.PlexSectionLayout PreferredLayout { get; set; }
         string Name { get; }
         List<IMenuItem> ViewItems { get; set; }
         int LastSelectedChildIndex { get; set; }

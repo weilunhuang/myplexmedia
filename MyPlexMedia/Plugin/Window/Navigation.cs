@@ -39,7 +39,7 @@ namespace MyPlexMedia.Plugin.Window {
         public delegate void OnErrorOccuredEventHandler(PlexException e);
 
         public delegate void OnMenuItemsFetchCompletedEventHandler(
-            List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, GUIFacadeControl.Layout preferredLayout);
+            List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, Settings.PlexSectionLayout preferredLayout);
 
         public delegate void OnMenuItemsFetchStartedEventHandler(IMenuItem itemToFetch);
 
