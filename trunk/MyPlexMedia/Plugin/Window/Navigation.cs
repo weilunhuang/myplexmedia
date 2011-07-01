@@ -23,7 +23,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using MediaPortal.GUI.Library;
 using MyPlexMedia.Plugin.Config;
 using MyPlexMedia.Plugin.Window.Dialogs;
 using MyPlexMedia.Plugin.Window.Items;
@@ -113,7 +112,7 @@ namespace MyPlexMedia.Plugin.Window {
             ShowCurrentMenu(currentItem.Parent, currentItem.Parent.LastSelectedChildIndex);
         }
 
-        internal static void ShowCurrentMenu(IMenuItem parentItem, int selectFacadeIndex) {           
+        internal static void ShowCurrentMenu(IMenuItem parentItem, int selectFacadeIndex) {
             if (parentItem.ChildItems != null && parentItem.ChildItems.Count > 0) {
                 CurrentItem = parentItem;
                 PlexPlayList.CreateMusicPlayList(
@@ -180,8 +179,8 @@ namespace MyPlexMedia.Plugin.Window {
             }
         }
 
-        private static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {            
-            updatedServerList.ForEach(svr => PlexInterface.Login(svr));            
+        private static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
+            updatedServerList.ForEach(svr => PlexInterface.Login(svr));
             ServerMenu = updatedServerList.ConvertAll<IMenuItem>(svr => new PlexItemServer(ServerItem, svr));
             ServerMenu.Add(new ActionItem(null, "Refresh Bonjouor...", Settings.PLEX_ICON_DEFAULT_BONJOUR,
                                           RefreshServerMenu));

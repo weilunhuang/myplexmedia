@@ -45,7 +45,7 @@ namespace PlexMediaCenter.Util {
             PlexServer server = PlexInterface.ServerManager.TryFindPlexServer(plexUriPath);
             List<string> tmpList = new List<string>();
             foreach (var media in video.Media) {
-                foreach (var part in media.Part) { 
+                foreach (var part in media.Part) {
                     tmpList.AddRange(Transcoding.GetM3U8PlaylistItems(server, part.key, offset, quality, is3G));
                 }
             }

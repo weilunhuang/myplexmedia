@@ -78,7 +78,8 @@ namespace PlexMediaCenter.Plex.Data {
         }
 
         public static string GetSafeFilenameFromUrl(string url, char replaceChar) {
-            return System.IO.Path.GetInvalidFileNameChars().Aggregate(url, (current, c) => current.Replace(c, replaceChar));
+            return System.IO.Path.GetInvalidFileNameChars().Aggregate(url,
+                                                                      (current, c) => current.Replace(c, replaceChar));
         }
 
         #region Nested type: ArtworkQueueItem

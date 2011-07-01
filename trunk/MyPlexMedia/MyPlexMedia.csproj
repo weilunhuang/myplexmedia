@@ -118,15 +118,6 @@
     <EmbeddedResource Include="Resources\img\MyPlexMedia_disabled.png" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_enabled.png" />
     <None Include="Resources\img\config_ctripes.png" />
-    <Content Include="Skin\MyPlexMedia.Photos.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Skin\MyPlexMedia.Videos.xml">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Skin\MyPlexMedia.Music.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Skin\Media\MyPlexMedia\icon_back.png" />
     <Content Include="Skin\Media\MyPlexMedia\icon_bonjour.png" />
     <None Include="Skin\Media\MyPlexMedia\icon_default.png" />

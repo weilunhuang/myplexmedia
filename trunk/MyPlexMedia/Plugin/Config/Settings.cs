@@ -27,6 +27,16 @@ using MediaPortal.GUI.Library;
 
 namespace MyPlexMedia.Plugin.Config {
     public static class Settings {
+        #region SectionType enum
+
+        public enum SectionType {
+            Music,
+            Video,
+            Photo
+        }
+
+        #endregion
+
         public const string PLUGIN_NAME = "MyPlexMedia";
         public const string PLUGIN_AUTHOR = "Anthrax";
         public const string PLUGIN_VERSION = "0.5.0 (Preview)";
@@ -52,6 +62,10 @@ namespace MyPlexMedia.Plugin.Config {
                          PLUGIN_NAME);
 
         public static string SKINFILE_MAIN_WINDOW = GUIGraphicsContext.Skin + @"\MyPlexMedia.xml";
+
+        public static string SKINFILE_DIALOG_BUFFERING = GUIGraphicsContext.Skin +
+                                                         @"\MyPlexMedia.GuiDialogBufferingProgress.xml";
+
         public static string PLEX_ICON_DEFAULT_SEARCH = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.png");
 
         static Settings() {
@@ -73,29 +87,57 @@ namespace MyPlexMedia.Plugin.Config {
         private static PlexSectionLayout CreatePreferredLayouts() {
             PreferredLayouts = new Dictionary<string, PlexSectionLayout>
                                    {
-                                       {"default", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.List, Section =  SectionType.Music}},
-                                       {"secondary", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.List, Section =  SectionType.Music}},
-                                       {"artist", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.LargeIcons, Section =  SectionType.Music}},
-                                       {"album", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.CoverFlow, Section =  SectionType.Music}},
-                                       {"show", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.CoverFlow, Section =  SectionType.Video}},
-                                       {"season", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.Filmstrip, Section =  SectionType.Video}},
-                                       {"episode", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.List, Section =  SectionType.Photo}},
-                                       {"track", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.Playlist, Section =  SectionType.Music}},
-                                       {"movie", new PlexSectionLayout {Layout = GUIFacadeControl.Layout.CoverFlow, Section =  SectionType.Video}},
+                                       {
+                                           "default",
+                                           new PlexSectionLayout
+                                               {Layout = GUIFacadeControl.Layout.List, Section = SectionType.Music}
+                                           },
+                                       {
+                                           "secondary",
+                                           new PlexSectionLayout
+                                               {Layout = GUIFacadeControl.Layout.List, Section = SectionType.Music}
+                                           },
+                                       {
+                                           "artist",
+                                           new PlexSectionLayout
+                                               {
+                                                   Layout = GUIFacadeControl.Layout.LargeIcons,
+                                                   Section = SectionType.Music
+                                               }
+                                           },
+                                       {
+                                           "album",
+                                           new PlexSectionLayout
+                                               {Layout = GUIFacadeControl.Layout.CoverFlow, Section = SectionType.Music}
+                                           },
+                                       {
+                                           "show",
+                                           new PlexSectionLayout
+                                               {Layout = GUIFacadeControl.Layout.CoverFlow, Section = SectionType.Video}
+                                           },
+                                       {
+                                           "season",
+                                           new PlexSectionLayout
+                                               {Layout = GUIFacadeControl.Layout.Filmstrip, Section = SectionType.Video}
+                                           },
+                                       {
+                                           "episode",
+                                           new PlexSectionLayout
+                                               {Layout = GUIFacadeControl.Layout.List, Section = SectionType.Photo}
+                                           },
+                                       {
+                                           "track",
+                                           new PlexSectionLayout
+                                               {Layout = GUIFacadeControl.Layout.Playlist, Section = SectionType.Music}
+                                           },
+                                       {
+                                           "movie",
+                                           new PlexSectionLayout
+                                               {Layout = GUIFacadeControl.Layout.CoverFlow, Section = SectionType.Video}
+                                           },
                                    };
             //return default Layout
-            return new PlexSectionLayout() {Layout = GUIFacadeControl.Layout.List, Section =  SectionType.Video};
-        }
-
-        public struct PlexSectionLayout {
-            public SectionType Section { get; set; }
-            public GUIFacadeControl.Layout Layout { get; set; }
-            }
-
-        public enum SectionType {
-            Music,
-            Video,
-            Photo
+            return new PlexSectionLayout {Layout = GUIFacadeControl.Layout.List, Section = SectionType.Video};
         }
 
         public static PlexSectionLayout GetPreferredLayout(string viewGroup) {
@@ -134,5 +176,14 @@ namespace MyPlexMedia.Plugin.Config {
                 xmlwriter.SetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
             }
         }
+
+        #region Nested type: PlexSectionLayout
+
+        public struct PlexSectionLayout {
+            public SectionType Section { get; set; }
+            public GUIFacadeControl.Layout Layout { get; set; }
+        }
+
+        #endregion
     }
 }

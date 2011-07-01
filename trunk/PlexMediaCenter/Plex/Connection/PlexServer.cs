@@ -122,7 +122,7 @@ namespace PlexMediaCenter.Plex.Connection {
                     socket.Close();
                     return false;
                 }
-            }            
+            }
         }
 
         private static PlexCapabilitiesServer GetServerCapabilities(MediaContainer serverResponse) {

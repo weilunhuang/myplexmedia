@@ -32,7 +32,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
             PlexServer = plexServer;
             SetIcon(PlexServer.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE);
-            Label2 =(String.IsNullOrEmpty(plexServer.FriendlyName) ? plexServer.HostName : plexServer.FriendlyName);
+            Label2 = (String.IsNullOrEmpty(plexServer.FriendlyName) ? plexServer.HostName : plexServer.FriendlyName);
         }
 
         private PlexServer PlexServer { get; set; }
