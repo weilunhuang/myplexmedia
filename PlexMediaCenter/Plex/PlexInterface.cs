@@ -188,7 +188,8 @@ namespace PlexMediaCenter.Plex {
         }
 
         public static bool Login(PlexServer plexServer) {
-            return !String.IsNullOrEmpty(plexServer.HostAdress) && ServerManager.Authenticate(ref _webClient, plexServer);
+            return !String.IsNullOrEmpty(plexServer.HostAdress) &&
+                   ServerManager.Authenticate(ref _webClient, plexServer);
         }
 
         public static void RefreshBonjourServers() {

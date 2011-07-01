@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using MediaPortal.GUI.Library;
 using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Items {

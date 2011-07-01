@@ -88,8 +88,6 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private static void PlexVideoPlayer_OnPlexVideoPlayBack(MediaContainerVideo nowPlaying) {
-            
-          
         }
     }
 }

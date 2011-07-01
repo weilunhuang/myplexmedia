@@ -20,15 +20,13 @@
 
 #endregion
 
-using System;
 using MediaPortal.GUI.Library;
 using MyPlexMedia.Plugin.Config;
+using MyPlexMedia.Plugin.Window.Dialogs;
 using MyPlexMedia.Plugin.Window.Items;
+using MyPlexMedia.Plugin.Window.Playback;
 using PlexMediaCenter.Plex;
 using WindowPlugins;
-using MyPlexMedia.Plugin.Window.Playback;
-using PlexMediaCenter.Plex.Data.Types;
-using MyPlexMedia.Plugin.Window.Dialogs;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main : WindowPluginBase {
@@ -49,9 +47,7 @@ namespace MyPlexMedia.Plugin.Window {
         #region GUIWindow Base Class Overrides
 
         public override bool SupportsDelayedLoad {
-            get {
-                return true;
-            }
+            get { return true; }
         }
 
         protected override string SerializeName {
@@ -90,8 +86,6 @@ namespace MyPlexMedia.Plugin.Window {
             }
         }
 
-
-
         protected override void OnPageDestroy(int new_windowId) {
             UnRegisterEventHandlers();
             base.OnPageDestroy(new_windowId);
@@ -122,6 +116,7 @@ namespace MyPlexMedia.Plugin.Window {
             //}
             base.SwitchLayout();
         }
+
         protected override bool AllowLayout(GUIFacadeControl.Layout layout) {
             switch (layout) {
                 case GUIFacadeControl.Layout.CoverFlow:
@@ -159,7 +154,6 @@ namespace MyPlexMedia.Plugin.Window {
                     break;
             }
         }
-             
 
         protected override void OnClick(int iItem) {
             CommonDialogs.ShowProgressDialog(50);
@@ -191,8 +185,6 @@ namespace MyPlexMedia.Plugin.Window {
             Navigation.OnMenuItemsFetchCompleted += Navigation_OnMenuItemsFetchCompleted;
             Navigation.OnErrorOccured += PlexInterface_OnPlexError;
         }
-
-        
 
         private void UnRegisterEventHandlers() {
             PlexInterface.OnPlexError -= PlexInterface_OnPlexError;
