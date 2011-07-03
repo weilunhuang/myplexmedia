@@ -85,8 +85,9 @@ namespace PlexMediaCenter.Util {
             using (WebClient plexClient = new WebClient()) {
                 string response = plexClient.DownloadString(GetM3U8PlaylistUrl(plexServer, partKey, offset,
                                                                                quality, is3G));
-                string session = response.Substring(response.IndexOf("session")).Replace("\n", "");
+                string session = response.Substring(response.IndexOf("session")).Replace("\n", "");                
                 playListRequest += session;
+
                 plexClient.Headers[HttpRequestHeader.Cookie] = plexClient.ResponseHeaders[HttpResponseHeader.SetCookie];
                 string playList = plexClient.DownloadString(playListRequest);
                 playListItems = playList.Split(new[] {'\n'}).Where(item => item.EndsWith(".ts")).ToList();
@@ -99,7 +100,7 @@ namespace PlexMediaCenter.Util {
             string transcodePath = "/video/:/transcode/segmented/start.m3u8?";
             transcodePath += "identifier=com.plexapp.plugins.library";
             transcodePath += "&offset=" + offset;
-            transcodePath += "&qualitiy=" + quality;
+            transcodePath += "&quality=" + quality;
             //transcodePath += "&minquality=0";
             //transcodePath += "&maxquality=1";
             transcodePath += "&3g=" + (is3G ? "1" : "0");
@@ -108,6 +109,7 @@ namespace PlexMediaCenter.Util {
             transcodePath += PlexCapabilitiesClient.GetClientCapabilities();
             //transcodePath += "&httpCookies=";
             //transcodePath += "&userAgent=";
+            transcodePath += "&session="+Guid.NewGuid();
             return new Uri(plexServer.UriPlexBase + transcodePath.Remove(0, 1));
         }
 

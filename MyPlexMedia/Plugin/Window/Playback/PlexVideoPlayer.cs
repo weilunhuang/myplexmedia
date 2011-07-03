@@ -42,6 +42,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             BufferCheckTimer = new Timer {Interval = 1000};
             BufferCheckTimer.Elapsed += _bufferCheckTimer_Tick;
 
+            g_Player.Init();
             g_Player.PlayBackStarted += g_Player_PlayBackStarted;
             g_Player.PlayBackStopped += g_Player_PlayBackStopped;
             g_Player.PlayBackEnded += g_Player_PlayBackEnded;
@@ -92,6 +93,12 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                     }
                 }
             }
+
+            GUIPropertyManager.SetProperty("#duration", CurrentJob.VideoDuration.ToString());
+            GUIPropertyManager.SetProperty("#TV.View.Percentage",
+                                           ((int)(g_Player.CurrentPosition * 100 / CurrentJob.VideoDuration)).ToString());
+            GUIPropertyManager.SetProperty("#TV.Record.percent1",
+                                           ((int)(g_Player.CurrentPosition * 100 / CurrentJob.VideoDuration)).ToString());
         }
 
         private static int GetRemainingBufferedPlayTimePercentage() {
@@ -102,34 +109,29 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
         }
 
+        static BufferJob CurrentJob { get; set; }
         public static void PlayBackMedia(Uri itemPath, MediaContainerVideo video) {
-            Buffering.BufferMedia(itemPath, video, 0, PlexQualities._1_320kbps240p, false);
+            CurrentJob = Buffering.BufferMedia(itemPath, video, 0, PlexQualities._1_320kbps240p , false);
             //CommonDialogs.ShowProgressDialog(0, "Buffering...", video.title, true);
         }
 
         private static void Buffering_OnBufferingProgress(int currentProgress, BufferJob bufferJob) {
-            GUIPropertyManager.SetProperty("#duration", bufferJob.VideoDuration.ToString());
-            GUIPropertyManager.SetProperty("#TV.View.Percentage",
-                                           ((int) (g_Player.CurrentPosition*100/bufferJob.VideoDuration)).ToString());
-            GUIPropertyManager.SetProperty("#TV.Record.percent1",
-                                           ((int) (g_Player.CurrentPosition*100/bufferJob.VideoDuration)).ToString());
             GUIPropertyManager.SetProperty("#TV.Record.percent2", bufferJob.BufferingProgress.ToString());
             GUIPropertyManager.SetProperty("#TV.Record.percent3", "100");
-            //if (g_Player.Paused) {
-            //    //Activate new window
-            //    GUIWindowManager.ActivateWindow((int)GUIWindow.Window.WINDOW_TVOSD);
+            if (g_Player.Paused) {
+                //Activate new window
+               
 
-            //    CommonDialogs.ShowProgressDialog(currentProgress, "Buffering...", bufferJob.Video.title, false);
-            //    GUIWindowManager.Process();
-            //}
+               // CommonDialogs.ShowProgressDialog(currentProgress, "Buffering...", bufferJob.Video.title, false);
+                
+            }
+            GUIWindowManager.Process();
         }
 
         private static void Buffering_OnPlayBufferedMedia(string localBufferPath, BufferJob bufferJob) {
-            BufferingPause = false;
+            BufferingPause = false;           
+            
             g_Player.PlayVideoStream(localBufferPath, bufferJob.Video.title);
-            g_Player.ShowFullScreenWindowOther = g_Player.ShowFullScreenWindowTV;
-            g_Player.ShowFullScreenWindowVideo = g_Player.ShowFullScreenWindowTV;
-            g_Player.ShowFullScreenWindowTVDefault();
             BufferCheckTimer.Start();
             new System.Threading.Thread(delegate(object o) {
                                             System.Threading.Thread.Sleep(2000);
