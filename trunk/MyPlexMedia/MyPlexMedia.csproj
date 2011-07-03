@@ -63,6 +63,7 @@
       <DependentUpon>ConfigurationForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Plugin\Config\Settings.cs" />
+    <Compile Include="Plugin\Window\Dialogs\GuiDialogBufferingProgress.cs" />
     <Compile Include="Plugin\Window\Dialogs\ContextMenu.cs" />
     <Compile Include="Plugin\Window\Dialogs\CommonDialogs.cs" />
     <Compile Include="Plugin\Window\Items\ActionItem.cs" />

@@ -53,7 +53,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         private static readonly BackgroundWorker MediaBufferer;
 
         static Buffering() {
-            //logger.Info(" started...");
+            //logger.Info(" started...");       
             DeleteBufferFile();
             MediaBufferer = new BackgroundWorker {WorkerSupportsCancellation = true, WorkerReportsProgress = true};
             MediaBufferer.RunWorkerCompleted += _mediaBufferer_RunWorkerCompleted;
@@ -79,19 +79,23 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
         }
 
-        internal static void BufferMedia(Uri plexUriPath, MediaContainerVideo video, long offset = 0,
+        internal static BufferJob BufferMedia(Uri plexUriPath, MediaContainerVideo video, long offset = 0,
                                          PlexQualities quality = DefaultQuality, bool is3G = false) {
             StopBuffering();
             Offset = offset;
             Is3G = is3G;
             Quality = quality;
             Buffer = (int) Quality;
-            MediaBufferer.RunWorkerAsync(new BufferJob {ServerPath = plexUriPath, Video = video});
+            BufferJob nextJob = new BufferJob { ServerPath = plexUriPath, Video = video };
+            MediaBufferer.RunWorkerAsync(nextJob);
+            return nextJob;
         }
 
         private static void DeleteBufferFile() {
             if (File.Exists(BufferFile)) {
-                File.Delete(BufferFile);
+                try {
+                    File.Delete(BufferFile);
+                }catch{}
             }
         }
 
@@ -99,6 +103,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             //logger.Info("BackGroundWorker - Buffering...");
             if (!(e.Argument is BufferJob)) return;
             CurrentJob = (BufferJob) e.Argument;
+            MediaBufferer.ReportProgress(0, CurrentJob);
             List<string> segments = Transcoding.GetVideoSegmentedPlayList(CurrentJob.ServerPath, CurrentJob.Video,
                                                                           Offset, (int) Quality, Is3G);
             CurrentJob.SegmentsBuffered = 0;
@@ -110,7 +115,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             using (
                 FileStream bufferedMedia = new FileStream(BufferFile, FileMode.Create, FileAccess.Write, FileShare.Read)
                 ) {
-                foreach (string segment in segments) {
+                  foreach (string segment in segments) {
                     if (MediaBufferer.CancellationPending) {
                         //logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
                         e.Cancel = true;
@@ -118,31 +123,31 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                         bufferedMedia.Close();
                         return;
                     }
-                    //using (WebClient segmentFetcher = new WebClient()) {
-                    //    byte[] data = segmentFetcher.DownloadData(segment);
-                    //    bufferedMedia.Write(data, 0, data.Length);
-                    //    bufferedMedia.Flush();
-                    //}
-                    HttpWebRequest request = (HttpWebRequest) WebRequest.Create(segment);
-                    request.Timeout = 5000; // milliseconds, adjust as needed
-                    request.ReadWriteTimeout = 10000; // milliseconds, adjust as needed
-                    using (WebResponse response = request.GetResponse()) {
-                        using (Stream responseStream = response.GetResponseStream()) {
-                            // Process the stream
-                            try {
-                                byte[] data = new byte[1024];
-                                int count;
-                                do {
-                                    count = responseStream.Read(data, 0, data.Length);
-                                    bufferedMedia.Write(data, 0, data.Length);
-                                    bufferedMedia.Flush();
-                                } while (count > 0 || MediaBufferer.CancellationPending);
-                            } finally {
-                                responseStream.Close();
-                                response.Close();
-                            }
-                        }
+                    using (WebClient segmentFetcher = new WebClient()) {
+                        byte[] data = segmentFetcher.DownloadData(segment);
+                        bufferedMedia.Write(data, 0, data.Length);
+                        bufferedMedia.Flush();                        
                     }
+                    //HttpWebRequest request = (HttpWebRequest) WebRequest.Create(segment);
+                    //request.Timeout = 5000; // milliseconds, adjust as needed
+                    //request.ReadWriteTimeout = 10000; // milliseconds, adjust as needed
+                    //using (WebResponse response = request.GetResponse()) {
+                    //    using (Stream responseStream = response.GetResponseStream()) {
+                    //        // Process the stream
+                    //        try {
+                    //            byte[] data = new byte[1024];
+                    //            int count;
+                    //            do {
+                    //                count = responseStream.Read(data, 0, data.Length);
+                    //                bufferedMedia.Write(data, 0, data.Length);
+                    //                bufferedMedia.Flush();
+                    //            } while (count > 0 || MediaBufferer.CancellationPending);
+                    //        } finally {
+                    //            responseStream.Close();
+                    //            response.Close();
+                    //        }
+                    //    }
+                    //}
                     MediaBufferer.ReportProgress((CurrentJob.SegmentsBuffered*100/CurrentJob.SegmentsCount), CurrentJob);
                     if (++CurrentJob.SegmentsBuffered == Buffer) {
                         OnPlayPreBufferedMedia(BufferFile, CurrentJob);

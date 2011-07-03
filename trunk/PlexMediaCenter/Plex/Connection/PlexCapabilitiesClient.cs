@@ -41,8 +41,7 @@ namespace PlexMediaCenter.Plex.Connection {
                                 "http-mp4-video-320p",
                                 "http-mp4-video-480p",
                                 "http-mp4-video-720p",
-                                "http-mp4-video-1080p",
-                                "webkit",
+                                "http-mp4-video-1080p",                                
                             };
 
             VideoDecoders = new List<string>
@@ -52,8 +51,7 @@ namespace PlexMediaCenter.Plex.Connection {
 
             AudioDecoders = new List<string>
                                 {
-                                    "mp3",
-                                    "aac"
+                                    "mp3"                                    
                                 };
         }
 
@@ -68,17 +66,5 @@ namespace PlexMediaCenter.Plex.Connection {
                                                       String.Join(",", VideoDecoders.ToArray()),
                                                       String.Join(",", AudioDecoders.ToArray())));
         }
-
-        /* http-live-streaming,
-         * http-mp4-streaming,
-         * http-streaming-video,
-         * http-streaming-video-720p,
-         * * http-streaming-video-1080p,
-         * http-mp4-video,
-         * http-mp4-video-720p,
-         * http-mp4-video-1080p
-         * ;videoDecoders=h264{profile:high&resolution:1080&level:51};
-         * audioDecoders=mp3,aac         
-         */
     }
 }
