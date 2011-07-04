@@ -116,6 +116,7 @@
     <Content Include="Resources\dll\dialogs.dll" />
     <Content Include="Resources\dll\utils.dll" />
     <Content Include="Resources\dll\WindowPlugins.dll" />
+    <Content Include="Skin\MyPlexMedia.GuiDialogBufferingProgress.xml" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_disabled.png" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_enabled.png" />
     <None Include="Resources\img\config_ctripes.png" />

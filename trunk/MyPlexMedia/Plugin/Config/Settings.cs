@@ -43,6 +43,8 @@ namespace MyPlexMedia.Plugin.Config {
         public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin to browse your Plex Media Server(s).";
 
         public const int PLUGIN_WINDOW_ID = 20110614;
+        public const int DIALOG_BUFFERING_WINDOW_ID = 20110615;
+
         public static string SKIN_FOLDER_MEDIA = Path.Combine(GUIGraphicsContext.Skin, @"Media\" + PLUGIN_NAME);
         public static string PLUGIN_MEDIA_HOVER = @"hover_MyPlexMedia.png";
         public static string PLEX_ICON_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "icon_default.png");
@@ -137,7 +139,7 @@ namespace MyPlexMedia.Plugin.Config {
                                            },
                                    };
             //return default Layout
-            return new PlexSectionLayout {Layout = GUIFacadeControl.Layout.List, Section = SectionType.Video};
+            return new PlexSectionLayout { Layout = GUIFacadeControl.Layout.List, Section = SectionType.Video };
         }
 
         public static PlexSectionLayout GetPreferredLayout(string viewGroup) {
@@ -185,5 +187,7 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         #endregion
+
+       
     }
 }
