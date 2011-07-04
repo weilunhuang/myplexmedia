@@ -15,7 +15,7 @@
       <texture>osd_progress_background.png</texture>
     </control>
     <control>
-      <id>12</id>
+      <id>20110616</id>
       <description>TV Progress Bar</description>
       <type>tvprogress</type>
       <posX>360</posX>

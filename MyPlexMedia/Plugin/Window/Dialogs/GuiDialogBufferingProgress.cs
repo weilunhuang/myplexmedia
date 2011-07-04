@@ -9,15 +9,17 @@ using MyPlexMedia.Plugin.Config;
 namespace MyPlexMedia.Plugin.Window.Dialogs {
     class GuiDialogBufferingProgress : GUIDialogProgress {
 
-        [SkinControl(12)]
-        protected GUITVProgressControl _bufferingProgress = null;
+        [SkinControlAttribute(20110616)]
+        protected GUITVProgressControl _bufferingProgress;
 
         public GuiDialogBufferingProgress() {
             GetID = Settings.DIALOG_BUFFERING_WINDOW_ID;
         }
 
         public override bool Init() {
-            return Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.GuiDialogBufferingProgress.xml");
+          bool test = Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.GuiDialogBufferingProgress.xml");
+          
+          return test;
         }
 
         public override bool OnMessage(GUIMessage message) {
@@ -39,9 +41,9 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             SetLine(2, line2);
             SetLine(3, line3);
             SetLine(4, line4);
-            _bufferingProgress.Percentage1 = percentageCurrentPosition;
-            _bufferingProgress.Percentage2 = percentageBuffered;
-            _bufferingProgress.Percentage3 = percentageOverall;
+            //_bufferingProgress.Percentage1 = percentageCurrentPosition;
+            //_bufferingProgress.Percentage2 = percentageBuffered;
+            //_bufferingProgress.Percentage3 = percentageOverall;
         }
 
         public override void Reset() {
@@ -50,9 +52,7 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             SetLine(2, string.Empty);
             SetLine(3, string.Empty);
             SetLine(4, string.Empty);
-            _bufferingProgress.Percentage1 = 0;
-            _bufferingProgress.Percentage2 = 0;
-            _bufferingProgress.Percentage3 = 0;
+          
         }
 
 

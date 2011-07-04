@@ -175,7 +175,7 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             GuiDialogBufferingProgress dialogBufferingProgress = (GuiDialogBufferingProgress)GUIWindowManager.GetWindow(Settings.DIALOG_BUFFERING_WINDOW_ID);
             dialogBufferingProgress.SetBufferingProgress(headerText, line1, line2, line3, line4,
                                  percentageCurrentPosition, percentageBuffered, percentageOverall);
-            dialogBufferingProgress.StartModal(Settings.PLUGIN_WINDOW_ID);
+            dialogBufferingProgress.DoModal(Settings.PLUGIN_WINDOW_ID);
             dialogBufferingProgress.Progress();
         }
 
