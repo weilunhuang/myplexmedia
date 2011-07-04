@@ -111,11 +111,12 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         static BufferJob CurrentJob { get; set; }
         public static void PlayBackMedia(Uri itemPath, MediaContainerVideo video) {
-            CurrentJob = Buffering.BufferMedia(itemPath, video, 0, PlexQualities._1_320kbps240p , false);
+            CurrentJob = Buffering.BufferMedia(itemPath, video, 0, PlexQualities._3_1500kbps480p , false);
             //CommonDialogs.ShowProgressDialog(0, "Buffering...", video.title, true);
         }
 
         private static void Buffering_OnBufferingProgress(int currentProgress, BufferJob bufferJob) {
+            CommonDialogs.ShowBufferingProgressDialog("Buffering...", bufferJob.Video.title, bufferJob.SegmentsBuffered.ToString(), bufferJob.SegmentsCount.ToString(), "Progress:", ((int)(g_Player.CurrentPosition * 100 / CurrentJob.VideoDuration)), (int)CurrentJob.BufferingProgress);
             GUIPropertyManager.SetProperty("#TV.Record.percent2", bufferJob.BufferingProgress.ToString());
             GUIPropertyManager.SetProperty("#TV.Record.percent3", "100");
             if (g_Player.Paused) {
