@@ -58,7 +58,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             BufferingPause = false;
             PlayPlayerMainThread(localBufferPath, bufferJob.Video.title);
             new System.Threading.Thread(delegate(object o) {
-                System.Threading.Thread.Sleep(2000);
+                System.Threading.Thread.Sleep(1000);
                 SetGuiProperties(o);
             }).Start(bufferJob.Video);
         }
@@ -67,12 +67,11 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             GUIPropertyManager.SetProperty("#TV.Record.percent2", bufferJob.BufferingProgress.ToString());
             GUIPropertyManager.SetProperty("#TV.Record.percent3", "100");
             if (Buffering.IsPreBuffering || g_Player.Paused) {
-                CommonDialogs.ShowBufferingProgressDialog("Buffering...", bufferJob.Video.title, bufferJob.SegmentsBuffered.ToString(), bufferJob.SegmentsCount.ToString(), "Progress:", ((int)(g_Player.CurrentPosition * 100 / Buffering.CurrentJob.VideoDuration)), (int)Buffering.CurrentJob.BufferingProgress);
+                //CommonDialogs.ShowBufferingProgressDialog("Buffering...", bufferJob.Video.title, bufferJob.SegmentsBuffered.ToString(), bufferJob.SegmentsCount.ToString(), "Progress:", ((int)(g_Player.CurrentPosition * 100 / Buffering.CurrentJob.VideoDuration)), (int)Buffering.CurrentJob.BufferingProgress);
             }
         }
 
         private static void CommonDialogs_OnProgressCancelled() {
-            Buffering.StopBuffering();
             StopPlayerMainThread();
         }
 
@@ -131,12 +130,13 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         private delegate void StopPlayerMainThreadDelegate();
 
         private static void StopPlayerMainThread() {
+            
             //call g_player.stop only on main thread.
             if (GUIGraphicsContext.form.InvokeRequired) {
                 StopPlayerMainThreadDelegate d = new StopPlayerMainThreadDelegate(StopPlayerMainThread);
                 GUIGraphicsContext.form.Invoke(d);
                 return;
-            }
+            }            
             g_Player.Stop();
         }
 

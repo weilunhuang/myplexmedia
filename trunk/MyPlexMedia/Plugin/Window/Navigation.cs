@@ -113,7 +113,7 @@ namespace MyPlexMedia.Plugin.Window {
         internal static void ShowCurrentMenu(IMenuItem parentItem, int selectFacadeIndex) {
             if (parentItem.ChildItems != null && parentItem.ChildItems.Count > 0) {
                 CurrentItem = parentItem;
-                PlexPlayList.CreateMusicPlayList(
+                PlexAudioPlayer.CreateMusicPlayList(
                     parentItem.ChildItems.Where(item => item is PlexItemTrack).ToList().ConvertAll(
                         item => item as PlexItemTrack), parentItem.Name);
                 OnMenuItemsFetchCompleted(parentItem.ChildItems, selectFacadeIndex, parentItem.PreferredLayout);
@@ -154,7 +154,7 @@ namespace MyPlexMedia.Plugin.Window {
                 tmpList.AddRange(
                     plexResponseConatiner.Track.ConvertAll<IMenuItem>(
                         track =>
-                        new PlexItemTrack(parentItem, track.title, new Uri(parentItem.UriPath, track.key), track)));
+                        new PlexItemTrack(parentItem, track.title, new Uri(parentItem.UriPath, track.key), plexResponseConatiner.title1 , plexResponseConatiner.title2, track)));
             } catch (Exception e) {
                 OnErrorOccured(new PlexException(typeof (Navigation), "Creating submenu failed!", e));
             }
@@ -168,7 +168,13 @@ namespace MyPlexMedia.Plugin.Window {
             }
             if (userToken is PlexItemBase) {
                 PlexItemBase item = userToken as PlexItemBase;
-                item.SetChildItems(GetCreateSubMenuItems(item, response));
+                List<IMenuItem> tmpChilds = GetCreateSubMenuItems(item, response);
+                if (tmpChilds.Count > 0) {
+                    item.SetChildItems(tmpChilds);
+                } else {
+                    CommonDialogs.ShowNotifyDialog(10, "Plex Request", "Nothing found...", Settings.PLEX_ICON_DEFAULT_SEARCH, CommonDialogs.PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_OK);
+                    return;
+                }
                 History.Add(item.Name);
                 ShowCurrentMenu(item, item.LastSelectedChildIndex);
             } else {

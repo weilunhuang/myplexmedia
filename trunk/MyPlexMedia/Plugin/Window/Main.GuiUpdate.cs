@@ -36,17 +36,14 @@ namespace MyPlexMedia.Plugin.Window {
         private static void PlexInterface_OnPlexError(PlexException plexError) {
             Log.Error(plexError);
             CommonDialogs.HideProgressDialog();
-            CommonDialogs.ShowNotifyDialog(30, Settings.PLUGIN_NAME + " Error!", plexError.ErrorSource.ToString() + ": "+ plexError.Message, Settings.PLEX_ICON_DEFAULT_OFFLINE, CommonDialogs.PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_AUTO );
+            CommonDialogs.ShowNotifyDialog(30, Settings.PLUGIN_NAME + " Error!", plexError.ErrorSource.ToString() + ": " + plexError.Message, Settings.PLEX_ICON_DEFAULT_OFFLINE, CommonDialogs.PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_AUTO);
         }
 
         private static void PlexInterface_OnResponseProgress(object userToken, int progress) {
-            if (progress < 100) {
-                CommonDialogs.ShowProgressDialog(progress, Settings.PLUGIN_NAME, "Fetching Plex Items...",
-                                                 ((IMenuItem) userToken).Name,
-                                                 String.Format("Current Progress: {0,3}%", progress.ToString()));
-            }else {
-                CommonDialogs.HideProgressDialog();
-            }
+            CommonDialogs.ShowProgressDialog(progress, Settings.PLUGIN_NAME, "Fetching Plex Items...",
+                                             ((IMenuItem)userToken).Parent.Name + " > " + ((IMenuItem)userToken).Name,
+                                             String.Format("Current Progress: {0,3}%", progress.ToString()));
+
         }
 
         private void MenuItem_OnHasBackground(string imagePath) {
@@ -61,15 +58,11 @@ namespace MyPlexMedia.Plugin.Window {
 
         private static void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
             CommonDialogs.ShowWaitCursor();
-            while(PlexInterface.IsBusy) {
-                GUIWindowManager.Process();
-            }
+
         }
 
         private void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex,
                                                           Settings.PlexSectionLayout preferredLayout) {
-            CommonDialogs.HideWaitCursor();
-            CommonDialogs.HideProgressDialog();
             GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", Navigation.History.ToArray()));
             facadeLayout.Clear();
             facadeLayout.ListLayout.Clear();
@@ -86,7 +79,8 @@ namespace MyPlexMedia.Plugin.Window {
             facadeLayout.RefreshCoverArt();
             facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
             facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
-            //facadeLayout.DoUpdate();                
+            CommonDialogs.HideWaitCursor();
+            CommonDialogs.HideProgressDialog();
         }
 
         private static void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {
@@ -97,6 +91,6 @@ namespace MyPlexMedia.Plugin.Window {
             //TODO: add custom skin properties
         }
 
-      
+
     }
 }

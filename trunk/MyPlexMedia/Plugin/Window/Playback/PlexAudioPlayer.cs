@@ -26,12 +26,13 @@ using MediaPortal.GUI.Library;
 using MediaPortal.Playlists;
 using MyPlexMedia.Plugin.Window.Items;
 using Action = System.Action;
+using MediaPortal.Music.Database;
 
 namespace MyPlexMedia.Plugin.Window.Playback {
-    public static class PlexPlayList {
+    public static class PlexAudioPlayer {
         private static readonly PlayListPlayer PlexPlayListPlayer;
 
-        static PlexPlayList() {
+        static PlexAudioPlayer() {
             PlexPlayListPlayer = PlayListPlayer.SingletonPlayer;
             PlexPlayListPlayer.Init();
         }
@@ -40,15 +41,16 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             if (currentTracks == null || currentTracks.Count < 1) {
                 return;
             }
-            PlayList newPlayList = new PlayList {Name = listTitle};
-            foreach (
-                var newItem in
-                    currentTracks.Select(
-                        currentTrack =>
-                        new PlayListItem(currentTrack.Track.title, currentTrack.PlaybackAuthUrl.AbsoluteUri,
-                                         int.Parse(currentTrack.Track.duration))
-                            {Type = PlayListItem.PlayListItemType.AudioStream})) {
-                newPlayList.Add(newItem);
+            PlayList newPlayList = new PlayList { Name = listTitle };
+            foreach (PlexItemTrack currentTrack in currentTracks) {
+                int duration = 0;
+                int.TryParse(currentTrack.Track.duration, out duration);
+                PlayListItem tmp = new PlayListItem(currentTrack.Track.title, currentTrack.PlaybackAuthUrl.AbsoluteUri, duration) {
+                    Type = PlayListItem.PlayListItemType.AudioStream,
+                    Description = currentTrack.Track.summary,
+                    MusicTag = currentTrack.MusicTag
+                };
+                newPlayList.Add(tmp);
             }
             PlexPlayListPlayer.ReplacePlaylist(PlayListType.PLAYLIST_MUSIC, newPlayList);
             PlexPlayListPlayer.Reset();
@@ -56,6 +58,10 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         public static void PlayItem(PlexItemTrack track) {
             PlayItem(track.PlaybackAuthUrl.AbsoluteUri);
+            new System.Threading.Thread(delegate(object o) {
+                System.Threading.Thread.Sleep(2000);
+                SetGuiProperties(o);
+            }).Start(track.MusicTag);
         }
 
         private static void PlayItem(string fileNameUri) {
@@ -63,6 +69,20 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 GUIGraphicsContext.form.Invoke(new Action(() => PlayItem(fileNameUri)));
             }
             PlexPlayListPlayer.g_Player.PlayAudioStream(fileNameUri);
+            
+        }
+
+        private static void SetGuiProperties(object song) {
+            Song nowPlaying = song as Song;
+            GUIPropertyManager.SetProperty("#Play.Current.Title", nowPlaying.Title);
+            GUIPropertyManager.SetProperty("#Play.Current.File", nowPlaying.FileName);
+            GUIPropertyManager.SetProperty("#Play.Current.Thumb", nowPlaying.WebImage);
+            GUIPropertyManager.SetProperty("#Play.Current.Artist", nowPlaying.Artist);
+            GUIPropertyManager.SetProperty("#Play.Current.Album", nowPlaying.Album);
+            GUIPropertyManager.SetProperty("#Play.Current.Track", nowPlaying.Track.ToString());
+            GUIPropertyManager.SetProperty("#Play.Current.Duration", nowPlaying.Duration.ToString());
+            GUIPropertyManager.SetProperty("#Play.Current.Year", nowPlaying.Year.ToString());
+          
         }
     }
 }

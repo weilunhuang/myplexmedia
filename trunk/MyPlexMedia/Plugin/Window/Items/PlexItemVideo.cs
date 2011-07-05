@@ -56,6 +56,17 @@ namespace MyPlexMedia.Plugin.Window.Items {
                 FileInfo.CreationTime = DateTime.Parse(Video.originallyAvailableAt);
                 Label2 = FileInfo.CreationTime.ToShortDateString();
             }
+            IMDBMovie movieDetails = new IMDBMovie {
+                Plot = Video.summary,
+                ThumbURL = IconImage,
+                PlotOutline = Video.tagline,
+                Title = Video.title,
+                RunTime = Duration,
+                Rating = Rating,
+                Year = Year,
+                MPARating = Video.contentRating
+            };
+            TVTag = movieDetails;
         }
 
         public MediaContainerVideo Video { get; set; }
@@ -68,20 +79,9 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         public override void OnInfo() {
-            IMDBMovie movieDetails = new IMDBMovie
-                                         {
-                                             Plot = Video.summary,
-                                             ThumbURL = IconImage,
-                                             PlotOutline = Video.tagline,
-                                             Title = Video.title,
-                                             RunTime = Duration,
-                                             Rating = Rating,
-                                             Year = Year,
-                                             MPARating = Video.contentRating
-                                         };
-
+            
             GUIVideoInfo videoInfo = (GUIVideoInfo) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_VIDEO_INFO);
-            videoInfo.Movie = movieDetails;
+            videoInfo.Movie = (IMDBMovie)TVTag;
             GUIWindowManager.ActivateWindow((int) GUIWindow.Window.WINDOW_VIDEO_INFO);
         }
     }
