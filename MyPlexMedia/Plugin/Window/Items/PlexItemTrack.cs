@@ -25,15 +25,34 @@ using MediaPortal.Music.Database;
 using MyPlexMedia.Plugin.Window.Playback;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
+using MediaPortal.GUI.Music;
+using MediaPortal.GUI.Library;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     public class PlexItemTrack : PlexItemBase {
-        public PlexItemTrack(IMenuItem parentItem, string title, Uri path, MediaContainerTrack track)
+        public PlexItemTrack(IMenuItem parentItem, string title, Uri path, string artist, string album, MediaContainerTrack track)
             : base(parentItem, title, path) {
             Track = track;
             PlaybackAuthUrl = Transcoding.GetTrackPlaybackUrl(UriPath, Track);
-            IconImage = ThumbnailImage = ((PlexItemBase) parentItem).IconImage;
+            IconImage = ThumbnailImage = ((PlexItemBase)parentItem).IconImage;
             if (parentItem != null) IconImageBig = (parentItem as PlexItemBase).IconImageBig;
+            int duration = 0;
+            int.TryParse(track.duration, out duration);
+            Label2 = album;
+            int index = 0;
+            int.TryParse(track.index, out index);
+            Song song = new Song() {
+                Artist = artist,
+                Album = album,
+                Duration = duration,
+                Track = index,
+                WebImage = IconImage,
+                Title = title,
+                Codec = track.Media[0].audioCodec,
+                FileType = track.Media[0].container,
+                FileName = track.Media[0].Part[0].file
+            };
+            MusicTag = song;
         }
 
         public MediaContainerTrack Track { get; set; }
@@ -43,15 +62,8 @@ namespace MyPlexMedia.Plugin.Window.Items {
             //MyPlexMediaPlayer myPlayer = new MyPlexMediaPlayer();           
             //myPlayer.PlayPlexItem(this);
             //g_Player.PlayAudioStream(PlaybackAuthUrl.AbsoluteUri);
-            PlexPlayList.PlayItem(this);
+            PlexAudioPlayer.PlayItem(this);
             //g_Player.PlayAudioStream(PlexInterface.GetPlayBackProxyUrl(PlexInterface.PlexServerCurrent.UriPlexBase + Track.Media[0].Part[0].key));
-        }
-
-        public override void OnSelected() {
-        }
-
-        public override void OnInfo() {
-            Song track = new Song {Album = Parent.Name};
         }
     }
 }

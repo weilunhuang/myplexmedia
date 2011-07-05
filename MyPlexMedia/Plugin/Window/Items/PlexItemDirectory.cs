@@ -48,7 +48,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             }
         }
 
-        private MediaContainerDirectory Directory { get; set; }
+        public MediaContainerDirectory Directory { get; set; }
 
         public override void OnInfo() {
             if (String.IsNullOrEmpty(Directory.type)) return;

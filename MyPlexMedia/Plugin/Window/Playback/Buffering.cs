@@ -28,6 +28,7 @@ using System.IO;
 using System.Net;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
+using MediaPortal.GUI.Library;
 
 namespace MyPlexMedia.Plugin.Window.Playback {
     public enum PlexQualities {
@@ -83,6 +84,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         internal static void BufferMedia(Uri plexUriPath, MediaContainerVideo video, long offset = 0,
                                          PlexQualities quality = DefaultQuality, bool is3G = false) {
             StopBuffering();
+            IsPreBuffering = true;
             Buffer = (int)quality;
             CurrentJob = new BufferJob { ServerPath = plexUriPath, Video = video, Quality = quality, Is3G = is3G, Offset = offset };
             MediaBufferer.RunWorkerAsync(CurrentJob);
@@ -104,8 +106,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             currentJob.SegmentsBuffered = 0;
             currentJob.SegmentsCount = segments.Count;
             currentJob.SpeedIssues = false;
-            IsBuffering = true;
-            IsPreBuffering = true;
+            IsBuffering = true;            
             DeleteBufferFile();
             using (
                 FileStream bufferedMedia = new FileStream(BufferFile, FileMode.Create, FileAccess.Write, FileShare.Read)
@@ -124,7 +125,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                         timer.Start();
                         byte[] data = segmentFetcher.DownloadData(segment);
                         timer.Stop();
-                        currentJob.SpeedIssues = CheckSpeedQuality((data.Length * 8) / (timer.ElapsedMilliseconds / 1000), currentJob.Quality);
+                        currentJob.SpeedIssues = CheckSpeedQuality(data.Length, timer.Elapsed.TotalSeconds, currentJob.Quality);
                         bufferedMedia.Write(data, 0, data.Length);
                         bufferedMedia.Flush();
                     }
@@ -137,14 +138,20 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
         }
 
-        private static long CurrentSpeedAverage { get; set; }
-        private static bool CheckSpeedQuality(long currentSpeed, PlexQualities plexQuality) {
+        private static int CurrentSpeedAverage { get; set; }
+        private static bool CheckSpeedQuality(double dataLength, double totalSeconds, PlexQualities plexQuality) {
+            if (totalSeconds < 1) {
+                totalSeconds = 1;
+            }
+            int currentSpeed = (int)((dataLength * 8) / totalSeconds);
+            
             if(CurrentSpeedAverage == 0) {
-                CurrentSpeedAverage = currentSpeed;
+                CurrentSpeedAverage = (int)(currentSpeed / 1024);
             }else {
-                CurrentSpeedAverage += currentSpeed;
+                CurrentSpeedAverage += (int)(currentSpeed / 1024);
                 CurrentSpeedAverage /= 2;
             }
+            Log.Debug("Current download speed: {0, 15} kbps", new object[]{CurrentSpeedAverage});
             switch (plexQuality) {
                 case PlexQualities._1_320kbps240p:
                     break;

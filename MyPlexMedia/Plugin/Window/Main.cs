@@ -84,6 +84,7 @@ namespace MyPlexMedia.Plugin.Window {
             } else {
                 Navigation.ShowCurrentMenu(Navigation.CurrentItem, 0);
             }
+            MenuItem_OnHasBackground(Settings.PLEX_BACKGROUND_DEFAULT);
         }
 
         protected override void OnPageDestroy(int new_windowId) {

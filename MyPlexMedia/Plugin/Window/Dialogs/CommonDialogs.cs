@@ -38,6 +38,7 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
         #endregion
 
         private static GUIDialogProgress DialogProgress;
+        //static GuiDialogBufferingProgress dialogBufferingProgress = new GuiDialogBufferingProgress();
 
         public static string GetKeyBoardInput(string defaultText, string labelText) {
             VirtualKeyboard keyboard =
@@ -63,20 +64,20 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
 
         public static void ShowNotifyDialog(int timeOut, string header, string text, string icon, PLUGIN_NOTIFY_WINDOWS notifyType = PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_AUTO) {
             try {
-                GUIWindow guiWindow = GUIWindowManager.GetWindow((int) notifyType);
+                GUIWindow guiWindow = GUIWindowManager.GetWindow((int)notifyType);
                 switch (notifyType) {
                     default:
                     case PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_AUTO:
                         if (text.Length <= 60) {
-                            ShowNotifyDialog(timeOut, header, icon, text,
+                            ShowNotifyDialog(timeOut, header, text, icon,
                                              PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_NOTIFY);
                         } else {
-                            ShowNotifyDialog(timeOut, header, icon, text,
+                            ShowNotifyDialog(timeOut, header, text, icon,
                                              PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_TEXT);
                         }
                         break;
                     case PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_NOTIFY:
-                        GUIDialogNotify notifyDialog = (GUIDialogNotify) guiWindow;
+                        GUIDialogNotify notifyDialog = (GUIDialogNotify)guiWindow;
                         notifyDialog.Reset();
                         notifyDialog.TimeOut = timeOut;
                         notifyDialog.SetImage(icon);
@@ -85,14 +86,14 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                         notifyDialog.DoModal(GUIWindowManager.ActiveWindow);
                         break;
                     case PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_OK:
-                        GUIDialogOK okDialog = (GUIDialogOK) guiWindow;
+                        GUIDialogOK okDialog = (GUIDialogOK)guiWindow;
                         okDialog.Reset();
                         okDialog.SetHeading(header);
-                        okDialog.SetLine(1, (text.Split(new char[] {'\n'}, StringSplitOptions.RemoveEmptyEntries))[0]);
+                        okDialog.SetLine(1, (text.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries))[0]);
                         okDialog.DoModal(GUIWindowManager.ActiveWindow);
                         break;
                     case PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_TEXT:
-                        GUIDialogText textDialog = (GUIDialogText) guiWindow;
+                        GUIDialogText textDialog = (GUIDialogText)guiWindow;
                         textDialog.Reset();
                         try {
                             textDialog.SetImage(icon);
@@ -153,7 +154,7 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
 
 
         public static void ShowProgressDialog(int progressPercentage, string headerText, string line1 = "", string line2 = "", string line3 = "",
-                                              bool doModal = true) {
+                                              bool doModal = false) {
             if (GUIGraphicsContext.form.InvokeRequired) {
                 ShowProgressDialogCallback callback = ShowProgressDialog;
                 GUIGraphicsContext.form.Invoke(callback,
@@ -161,9 +162,10 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                 return;
             }
             DialogProgress = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
-            if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled) {
-                if (progressPercentage < 100) {
+            if (progressPercentage <= 100) {
+                if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled) {
                     DialogProgress.Reset();
+                    DialogProgress.IsVisible = true;
                     if (!String.IsNullOrEmpty(headerText)) {
                         DialogProgress.SetHeading(headerText);
                     }
@@ -179,23 +181,20 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                     } else {
                         DialogProgress.DisableCancel(true);
                         DialogProgress.StartModal(GUIWindowManager.ActiveWindow);
-                    }
+                    }                 
                 }
+                DialogProgress.Percentage = progressPercentage;
+                DialogProgress.SetLine(1, line1);
+                DialogProgress.SetLine(2, line2);
+                DialogProgress.SetLine(3, line3);
             }
-            DialogProgress.Percentage = progressPercentage;
-            DialogProgress.SetLine(1, line1);
-            DialogProgress.SetLine(2, line2);
-            DialogProgress.SetLine(3, line3);
-            DialogProgress.Progress();
-            DialogProgress.ProcessDoModal();
         }
 
         public static void HideProgressDialog() {
             DialogProgress =
                 (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
-            if (DialogProgress.IsVisible) {
-                DialogProgress.Close();
-            }
+            DialogProgress.IsVisible = false;
+            DialogProgress.Close();
             HideWaitCursor();
             GUIWindowManager.Process();
         }
@@ -213,12 +212,13 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                                      percentageCurrentPosition,  percentageBuffered,  percentageOverall });
                 return;
             }
-            DialogProgress.controlList.Add(new GUITVProgressControl(DialogProgress.GetID));
-            GuiDialogBufferingProgress dialogBufferingProgress = (GuiDialogBufferingProgress)GUIWindowManager.GetWindow(Settings.DIALOG_BUFFERING_WINDOW_ID);
-            dialogBufferingProgress.SetBufferingProgress(headerText, line1, line2, line3, line4,
-                                 percentageCurrentPosition, percentageBuffered, percentageOverall);
-            dialogBufferingProgress.StartModal(Settings.PLUGIN_WINDOW_ID);
-            dialogBufferingProgress.Progress();
+            
+            //dialogBufferingProgress.Init();
+            //dialogBufferingProgress.InitControls();
+            //dialogBufferingProgress.SetBufferingProgress(headerText, line1, line2, line3, line4,
+            //                     percentageCurrentPosition, percentageBuffered, percentageOverall);
+            //dialogBufferingProgress.StartModal(Settings.PLUGIN_WINDOW_ID);
+            //dialogBufferingProgress.Progress();
         }
 
 

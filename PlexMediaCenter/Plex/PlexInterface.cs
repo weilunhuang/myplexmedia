@@ -132,6 +132,7 @@ namespace PlexMediaCenter.Plex {
                 OnPlexError(new PlexException(typeof (PlexInterface), "Another Request in progress!", null));
                 return;
             }
+            OnResponseProgress(userToken, 0);
             _webClient.DownloadDataAsync(path, userToken);
         }
 
