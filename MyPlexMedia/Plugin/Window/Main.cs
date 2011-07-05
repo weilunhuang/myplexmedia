@@ -156,11 +156,9 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         protected override void OnClick(int iItem) {
-            CommonDialogs.ShowProgressDialog(50);
             GUIListItem item = facadeLayout[iItem];
             if (facadeLayout[iItem] is IMenuItem) {
                 ((IMenuItem) facadeLayout[iItem]).Parent.LastSelectedChildIndex = iItem;
-                CommonDialogs.HideWaitCursor();
                 ((IMenuItem) facadeLayout[iItem]).OnClicked(this, null);
             } else {
                 base.OnClick(iItem);
@@ -179,7 +177,6 @@ namespace MyPlexMedia.Plugin.Window {
             PlexInterface.OnPlexError += PlexInterface_OnPlexError;
             PlexInterface.OnResponseProgress += PlexInterface_OnResponseProgress;
             PlexItemBase.OnHasBackground += MenuItem_OnHasBackground;
-            PlexVideoPlayer.OnPlexVideoPlayBack += PlexVideoPlayer_OnPlexVideoPlayBack;
             MenuItem.OnMenuItemSelected += MenuItem_OnMenuItemSelected;
             Navigation.OnMenuItemsFetchStarted += Navigation_OnMenuItemsFetchStarted;
             Navigation.OnMenuItemsFetchCompleted += Navigation_OnMenuItemsFetchCompleted;
@@ -190,7 +187,6 @@ namespace MyPlexMedia.Plugin.Window {
             PlexInterface.OnPlexError -= PlexInterface_OnPlexError;
             PlexInterface.OnResponseProgress -= PlexInterface_OnResponseProgress;
             PlexItemBase.OnHasBackground -= MenuItem_OnHasBackground;
-            PlexVideoPlayer.OnPlexVideoPlayBack -= PlexVideoPlayer_OnPlexVideoPlayBack;
             MenuItem.OnMenuItemSelected -= MenuItem_OnMenuItemSelected;
             Navigation.OnMenuItemsFetchStarted -= Navigation_OnMenuItemsFetchStarted;
             Navigation.OnMenuItemsFetchCompleted -= Navigation_OnMenuItemsFetchCompleted;

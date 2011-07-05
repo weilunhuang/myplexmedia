@@ -87,8 +87,6 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         internal static void CreateStartupMenu(PlexServer lastSelectedOrDefaultServer) {
-            CommonDialogs.ShowWaitCursor();
-            //ServerManager_OnPlexServersChanged(PlexInterface.ServerManager.PlexServers);
             RefreshServerMenu();
             if (lastSelectedOrDefaultServer != null) {
                 try {
@@ -166,7 +164,7 @@ namespace MyPlexMedia.Plugin.Window {
         private static void PlexInterface_OnResponseReceived(object userToken, MediaContainer response) {
             if (userToken is PlexItemSearch && response.Directory.Count < 1 && response.Video.Count < 1 &&
                 response.Track.Count < 1) {
-                CommonDialogs.ShowNotifyDialog(10, "Plex Search", "Nothing found...");
+                CommonDialogs.ShowNotifyDialog(10, "Plex Search", "Nothing found...", Settings.PLEX_ICON_DEFAULT_SEARCH,  CommonDialogs.PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_OK);
             }
             if (userToken is PlexItemBase) {
                 PlexItemBase item = userToken as PlexItemBase;

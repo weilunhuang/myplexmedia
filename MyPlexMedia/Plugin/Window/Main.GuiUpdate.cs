@@ -24,6 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using MediaPortal.GUI.Library;
+using MediaPortal.Util;
 using MyPlexMedia.Plugin.Config;
 using MyPlexMedia.Plugin.Window.Dialogs;
 using MyPlexMedia.Plugin.Window.Items;
@@ -35,11 +36,17 @@ namespace MyPlexMedia.Plugin.Window {
         private static void PlexInterface_OnPlexError(PlexException plexError) {
             Log.Error(plexError);
             CommonDialogs.HideProgressDialog();
-            CommonDialogs.ShowNotifyDialog(30, plexError.ErrorSource.ToString(), plexError.Message);
+            CommonDialogs.ShowNotifyDialog(30, Settings.PLUGIN_NAME + " Error!", plexError.ErrorSource.ToString() + ": "+ plexError.Message, Settings.PLEX_ICON_DEFAULT_OFFLINE, CommonDialogs.PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_AUTO );
         }
 
         private static void PlexInterface_OnResponseProgress(object userToken, int progress) {
-            CommonDialogs.ShowProgressDialog(progress, "Fetching Plex Items...", ((IMenuItem) userToken).Name, true);
+            if (progress < 100) {
+                CommonDialogs.ShowProgressDialog(progress, Settings.PLUGIN_NAME, "Fetching Plex Items...",
+                                                 ((IMenuItem) userToken).Name,
+                                                 String.Format("Current Progress: {0,3}%", progress.ToString()));
+            }else {
+                CommonDialogs.HideProgressDialog();
+            }
         }
 
         private void MenuItem_OnHasBackground(string imagePath) {
@@ -53,11 +60,15 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private static void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
-            CommonDialogs.HideProgressDialog();
+            CommonDialogs.ShowWaitCursor();
+            while(PlexInterface.IsBusy) {
+                GUIWindowManager.Process();
+            }
         }
 
         private void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex,
                                                           Settings.PlexSectionLayout preferredLayout) {
+            CommonDialogs.HideWaitCursor();
             CommonDialogs.HideProgressDialog();
             GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", Navigation.History.ToArray()));
             facadeLayout.Clear();
@@ -69,7 +80,6 @@ namespace MyPlexMedia.Plugin.Window {
             facadeLayout.PlayListLayout.Clear();
             CurrentLayout = preferredLayout.Layout;
             SwitchLayout();
-
             foreach (var item in fetchedMenuItems) {
                 facadeLayout.Add(item as MenuItem);
             }
@@ -87,7 +97,6 @@ namespace MyPlexMedia.Plugin.Window {
             //TODO: add custom skin properties
         }
 
-        private static void PlexVideoPlayer_OnPlexVideoPlayBack(MediaContainerVideo nowPlaying) {
-        }
+      
     }
 }
