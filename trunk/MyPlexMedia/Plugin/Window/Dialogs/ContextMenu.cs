@@ -26,18 +26,19 @@ using MyPlexMedia.Plugin.Window.Items;
 
 namespace MyPlexMedia.Plugin.Window.Dialogs {
     public static class ContextMenu {
-        internal static IDialogbox contextMenu =
-            (IDialogbox) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_MENU);
 
         private static List<IMenuItem> CurrentMenuItems { get; set; }
 
         internal static void ShowContextMenu(string headerLabel, List<IMenuItem> listCurrentContextMenuItems) {
+            IDialogbox contextMenu =
+            (IDialogbox) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_DIALOG_MENU);
             if (contextMenu == null) {
                 return;
             }
             if (CurrentMenuItems == null) {
                 return;
             }
+            contextMenu.Reset();
             if (listCurrentContextMenuItems == null || listCurrentContextMenuItems.Count <= 0) {
                 listCurrentContextMenuItems = CurrentMenuItems;
             }
