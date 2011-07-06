@@ -86,6 +86,7 @@ namespace MyPlexMedia.Plugin.Config {
         public static int FetchCount { get; set; }
         public static string CacheFolder { get; set; }
         public static bool DeleteCacheOnExit { get; set; }
+        public static bool SelectQualityPriorToPlayback { get; set; }
 
         private static PlexSectionLayout CreatePreferredLayouts() {
             PreferredLayouts = new Dictionary<string, PlexSectionLayout>
@@ -189,6 +190,8 @@ namespace MyPlexMedia.Plugin.Config {
 
         #endregion
 
-       
+
+
+        
     }
 }

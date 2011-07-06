@@ -26,21 +26,11 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Net;
+using MediaPortal.GUI.Library;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
-using MediaPortal.GUI.Library;
 
 namespace MyPlexMedia.Plugin.Window.Playback {
-    public enum PlexQualities {
-        _1_320kbps240p = 3,
-        _2_720kbps320p,
-        _3_1500kbps480p,
-        _4_2000kbps720p,
-        _5_3000kbps720p,
-        _6_4000kbps720p,
-        _7_8000kbps1080p
-    }
-
     internal static class Buffering {
         #region Delegates
 
@@ -63,13 +53,10 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             MediaBufferer.ProgressChanged += MediaBufferer_ProgressChanged;
         }
 
-
-        public static int Buffer { get; set; }
-
-
         public static bool IsBuffering { get; set; }
         public static bool IsPreBuffering { get; set; }
         public static BufferJob CurrentJob { get; private set; }
+        private static int CurrentSpeedAverage { get; set; }
 
         public static event OnBufferingProgressEventHandler OnBufferingProgress;
         public static event OnPlayPreBufferedMediaEventHandler OnPlayPreBufferedMedia;
@@ -81,12 +68,17 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
         }
 
-        internal static void BufferMedia(Uri plexUriPath, MediaContainerVideo video, long offset = 0,
-                                         PlexQualities quality = DefaultQuality, bool is3G = false) {
+        internal static void BufferMedia(Uri plexUriPath, MediaContainerVideo video, PlexQualities quality = DefaultQuality, long offset = 0, bool is3G = false) {
             StopBuffering();
             IsPreBuffering = true;
-            Buffer = (int)quality;
-            CurrentJob = new BufferJob { ServerPath = plexUriPath, Video = video, Quality = quality, Is3G = is3G, Offset = offset };
+            CurrentJob = new BufferJob {
+                ServerPath = plexUriPath,
+                Video = video,
+                Quality = quality,
+                Is3G = is3G,
+                Offset = offset,
+                PreBufferSize = (int)quality
+            };
             MediaBufferer.RunWorkerAsync(CurrentJob);
         }
 
@@ -102,11 +94,12 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             BufferJob currentJob = (BufferJob)e.Argument;
             MediaBufferer.ReportProgress(0, currentJob);
             List<string> segments = Transcoding.GetVideoSegmentedPlayList(currentJob.ServerPath, currentJob.Video,
-                                                                          currentJob.Offset, (int)currentJob.Quality, currentJob.Is3G);
+                                                                          currentJob.Offset, (int)currentJob.Quality,
+                                                                          currentJob.Is3G);
             currentJob.SegmentsBuffered = 0;
             currentJob.SegmentsCount = segments.Count;
             currentJob.SpeedIssues = false;
-            IsBuffering = true;            
+            IsBuffering = true;
             DeleteBufferFile();
             using (
                 FileStream bufferedMedia = new FileStream(BufferFile, FileMode.Create, FileAccess.Write, FileShare.Read)
@@ -125,12 +118,13 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                         timer.Start();
                         byte[] data = segmentFetcher.DownloadData(segment);
                         timer.Stop();
-                        currentJob.SpeedIssues = CheckSpeedQuality(data.Length, timer.Elapsed.TotalSeconds, currentJob.Quality);
+                        currentJob.SpeedIssues = CheckSpeedQuality(data.Length, timer.Elapsed.TotalSeconds,
+                                                                   currentJob.Quality);
                         bufferedMedia.Write(data, 0, data.Length);
                         bufferedMedia.Flush();
                     }
                     MediaBufferer.ReportProgress((currentJob.SegmentsBuffered * 100 / currentJob.SegmentsCount), currentJob);
-                    if (++currentJob.SegmentsBuffered == Buffer) {
+                    if (++currentJob.SegmentsBuffered == currentJob.PreBufferSize) {
                         IsPreBuffering = false;
                         OnPlayPreBufferedMedia(BufferFile, currentJob);
                     }
@@ -138,20 +132,19 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
         }
 
-        private static int CurrentSpeedAverage { get; set; }
         private static bool CheckSpeedQuality(double dataLength, double totalSeconds, PlexQualities plexQuality) {
             if (totalSeconds < 1) {
                 totalSeconds = 1;
             }
-            int currentSpeed = (int)((dataLength * 8) / totalSeconds);
-            
-            if(CurrentSpeedAverage == 0) {
-                CurrentSpeedAverage = (int)(currentSpeed / 1024);
-            }else {
-                CurrentSpeedAverage += (int)(currentSpeed / 1024);
+            int currentSpeed = (int)(dataLength * 8 / totalSeconds); //bps
+
+            if (CurrentSpeedAverage == 0) {
+                CurrentSpeedAverage = (currentSpeed / 1024); //kbps
+            } else {
+                CurrentSpeedAverage += (currentSpeed / 1024);
                 CurrentSpeedAverage /= 2;
             }
-            Log.Debug("Current download speed: {0, 15} kbps", new object[]{CurrentSpeedAverage});
+            Log.Debug("Current download speed: {0, 15} kbps / selected quality: {1}", new object[] { CurrentSpeedAverage , plexQuality});
             switch (plexQuality) {
                 case PlexQualities._1_320kbps240p:
                     break;
@@ -198,6 +191,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         public bool SpeedIssues { get; set; }
         public PlexQualities Quality { get; set; }
 
+        public int PreBufferSize { get; set; }
         public int SegmentsBuffered { get; set; }
         public int SegmentsCount { get; set; }
 
@@ -207,6 +201,15 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                     return 0;
                 }
                 return (((VideoDuration / SegmentsCount) * SegmentsBuffered) * 100) / VideoDuration;
+            }
+        }
+
+        public double PreBufferingProgress {
+            get {
+                if (SegmentsCount == 0) {
+                    return 0;
+                }
+                return (SegmentsBuffered * 100) / PreBufferSize;
             }
         }
 
