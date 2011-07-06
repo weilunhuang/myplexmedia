@@ -62,6 +62,11 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         private static bool BufferingPause { get; set; }
 
         public static void PlayBackMedia(Uri itemPath, MediaContainerVideo video) {
+            if (Buffering.IsBuffering) {
+                if (CommonDialogs.ShowCustomYesNo("Buffering in progress...", "Cancel previous buffering process and start a new one?", "Yes", "No", true)) {
+                    Buffering.StopBuffering();
+                } else { return; }
+            }
             CommonDialogs.ShowWaitCursor();
             Settings.SelectQualityPriorToPlayback = true; //TODO: add proper settings handling
             if (Settings.SelectQualityPriorToPlayback) {
@@ -70,13 +75,15 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 Buffering.BufferMedia(itemPath, video);
             }
             BufferCheckTimer.Start();
+            GUIWaitCursor.Init();
+            GUIWaitCursor.Show();
             while(Buffering.IsBuffering && Buffering.IsPreBuffering) {
                 GUIWindowManager.Process();
             }
             CommonDialogs.HideWaitCursor();
         }
 
-        private static void Buffering_OnPlayBufferedMedia(string localBufferPath, BufferJob bufferJob) {
+        private static void Buffering_OnPlayBufferedMedia(string localBufferPath, BufferJob bufferJob) {           
             BufferingPause = false;
             PlayPlayerMainThread(localBufferPath, bufferJob.Video.title);
             new System.Threading.Thread(delegate(object o) {
@@ -90,15 +97,18 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             GUIPropertyManager.SetProperty("#TV.Record.percent3", "100");
             if (Buffering.IsPreBuffering){
                 CommonDialogs.ShowProgressDialog((int)bufferJob.PreBufferingProgress, "Pre-Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1}",bufferJob.SegmentsBuffered, bufferJob.PreBufferSize), String.Format("Completed: {0}%", bufferJob.PreBufferingProgress.ToString()),true);
-                GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Pre-Buffering:");
-            } else if (g_Player.Paused) {
-                CommonDialogs.ShowProgressDialog(currentProgress, "Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1}",bufferJob.SegmentsBuffered, bufferJob.SegmentsCount), String.Format("Completed: {0}%", currentProgress.ToString()));
-                GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Buffering:");
+                GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Pre-Buffering...");
+            } else {
+                if (g_Player.Paused) {
+                    CommonDialogs.ShowProgressDialog(currentProgress, "Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1} ({2}%)", bufferJob.SegmentsBuffered, bufferJob.SegmentsCount, currentProgress.ToString() ),"Current Buffer Status:");
+                }
+                GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Buffering...");
             }
         }
 
         private static void CommonDialogs_OnProgressCancelled() {
             GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", String.Empty);
+            Buffering.StopBuffering();
             StopPlayerMainThread();
         }
 
@@ -123,6 +133,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                     if (g_Player.Paused && BufferingPause) {
                         BufferingPause = false;
                         PausePlayerMainThread();
+
                     }
                 }
             }
@@ -188,7 +199,9 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 GUIGraphicsContext.form.Invoke(d,new object[]{file,title});
                 return;
             }
-            g_Player.PlayVideoStream(file, title);
+            if (!g_Player.PlayVideoStream(file, title)) {
+                Buffering.StopBuffering();
+            }
         }
 
     }

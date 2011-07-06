@@ -29,6 +29,7 @@ using System.Net;
 using MediaPortal.GUI.Library;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
+using System.Threading;
 
 namespace MyPlexMedia.Plugin.Window.Playback {
     internal static class Buffering {
@@ -41,7 +42,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         #endregion
 
         private const string BufferFile = @"D:\buffer.ts";
-        private const PlexQualities DefaultQuality = PlexQualities._1_320kbps240p;
+        private const PlexQualities DefaultQuality = PlexQualities._1_320kbps_240p;
         private static readonly BackgroundWorker MediaBufferer;
 
         static Buffering() {
@@ -53,7 +54,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             MediaBufferer.ProgressChanged += MediaBufferer_ProgressChanged;
         }
 
-        public static bool IsBuffering { get; set; }
+        public static bool IsBuffering { get { return MediaBufferer.IsBusy; } }
         public static bool IsPreBuffering { get; set; }
         public static BufferJob CurrentJob { get; private set; }
         private static int CurrentSpeedAverage { get; set; }
@@ -61,10 +62,10 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         public static event OnBufferingProgressEventHandler OnBufferingProgress;
         public static event OnPlayPreBufferedMediaEventHandler OnPlayPreBufferedMedia;
 
-        public static void StopBuffering() {
+        public static void StopBuffering() {           
             if (MediaBufferer.IsBusy) {
                 //logger.Info("Request Buffering Cancellation");
-                MediaBufferer.CancelAsync();
+                MediaBufferer.CancelAsync();             
             }
         }
 
@@ -98,8 +99,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                                                                           currentJob.Is3G);
             currentJob.SegmentsBuffered = 0;
             currentJob.SegmentsCount = segments.Count;
-            currentJob.SpeedIssues = false;
-            IsBuffering = true;
+            currentJob.SpeedIssues = false;           
             DeleteBufferFile();
             using (
                 FileStream bufferedMedia = new FileStream(BufferFile, FileMode.Create, FileAccess.Write, FileShare.Read)
@@ -146,19 +146,19 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
             Log.Debug("Current download speed: {0, 15} kbps / selected quality: {1}", new object[] { CurrentSpeedAverage , plexQuality});
             switch (plexQuality) {
-                case PlexQualities._1_320kbps240p:
+                case PlexQualities._1_320kbps_240p:
                     break;
-                case PlexQualities._2_720kbps320p:
+                case PlexQualities._2_720kbps_320p:
                     break;
-                case PlexQualities._3_1500kbps480p:
+                case PlexQualities._3_1500kbps_480p:
                     break;
-                case PlexQualities._4_2000kbps720p:
+                case PlexQualities._4_2000kbps_720p:
                     break;
-                case PlexQualities._5_3000kbps720p:
+                case PlexQualities._5_3000kbps_720p:
                     break;
-                case PlexQualities._6_4000kbps720p:
+                case PlexQualities._6_4000kbps_720p:
                     break;
-                case PlexQualities._7_8000kbps1080p:
+                case PlexQualities._7_8000kbps_1080p:
                     break;
                 default:
                     throw new ArgumentOutOfRangeException("plexQuality");
@@ -178,7 +178,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             } else {
                 //logger.Info("BackGroundWorker -Buffering completed and was successful");
             }
-            IsBuffering = false;
+           
         }
     }
 
