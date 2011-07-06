@@ -26,6 +26,7 @@ using MediaPortal.Dialogs;
 using MediaPortal.GUI.Library;
 using Action = System.Action;
 using MyPlexMedia.Plugin.Config;
+using MyPlexMedia.Plugin.Window.Playback;
 
 namespace MyPlexMedia.Plugin.Window.Dialogs {
     internal static class CommonDialogs {
@@ -61,6 +62,15 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             WINDOW_DIALOG_TEXT = GUIWindow.Window.WINDOW_DIALOG_TEXT
         }
 
+        
+
+        public static T ShowSelectionDialog<T>() {
+            GUIDialogSelect2 dlgSelect = (GUIDialogSelect2)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_SELECT2);
+            dlgSelect.Reset();
+            Enum.GetNames(typeof (T)).ToList().ForEach(dlgSelect.Add);
+            dlgSelect.DoModal(GUIWindowManager.ActiveWindow);
+            return Enum<T>.Parse(dlgSelect.SelectedLabelText);
+        }
 
         public static void ShowNotifyDialog(int timeOut, string header, string text, string icon, PLUGIN_NOTIFY_WINDOWS notifyType = PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_AUTO) {
             try {
@@ -181,7 +191,7 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                     } else {
                         DialogProgress.DisableCancel(true);
                         DialogProgress.StartModal(GUIWindowManager.ActiveWindow);
-                    }                 
+                    }
                 }
                 DialogProgress.Percentage = progressPercentage;
                 DialogProgress.SetLine(1, line1);
@@ -198,29 +208,6 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             HideWaitCursor();
             GUIWindowManager.Process();
         }
-
-
-        private delegate void ShowBufferingProgressDialogCallback(string headerText, string line1, string line2, string line3, string line4,
-                                    int percentageCurrentPosition, int percentageBuffered, int percentageOverall = 100);
-
-        public static void ShowBufferingProgressDialog(string headerText, string line1, string line2, string line3, string line4,
-                                    int percentageCurrentPosition, int percentageBuffered, int percentageOverall = 100) {
-            if (GUIGraphicsContext.form.InvokeRequired) {
-                ShowBufferingProgressDialogCallback callback = ShowBufferingProgressDialog;
-                GUIGraphicsContext.form.Invoke(callback,
-                                               new object[] { headerText, line1, line2, line3, line4,
-                                     percentageCurrentPosition,  percentageBuffered,  percentageOverall });
-                return;
-            }
-            
-            //dialogBufferingProgress.Init();
-            //dialogBufferingProgress.InitControls();
-            //dialogBufferingProgress.SetBufferingProgress(headerText, line1, line2, line3, line4,
-            //                     percentageCurrentPosition, percentageBuffered, percentageOverall);
-            //dialogBufferingProgress.StartModal(Settings.PLUGIN_WINDOW_ID);
-            //dialogBufferingProgress.Progress();
-        }
-
 
         public static void ShowWaitCursor() {
             if (GUIGraphicsContext.form.InvokeRequired) {

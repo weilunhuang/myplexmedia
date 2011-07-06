@@ -36,17 +36,39 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         static PlexVideoPlayer() {
             BufferCheckTimer = new Timer {Interval = 1000};
             BufferCheckTimer.Tick += _bufferCheckTimer_Tick;
-            
+
+            g_Player.PlayBackStarted += new g_Player.StartedHandler(g_Player_PlayBackStarted);
+            g_Player.PlayBackStopped += new g_Player.StoppedHandler(g_Player_PlayBackStopped);
+            g_Player.PlayBackEnded += new g_Player.EndedHandler(g_Player_PlayBackEnded);
             Buffering.OnPlayPreBufferedMedia += Buffering_OnPlayBufferedMedia;
             Buffering.OnBufferingProgress += Buffering_OnBufferingProgress;
             CommonDialogs.OnProgressCancelled += CommonDialogs_OnProgressCancelled;
+        }
+
+        static void g_Player_PlayBackEnded(g_Player.MediaType type, string filename) {
+            Buffering.StopBuffering();
+            GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", String.Empty);
+        }
+
+        static void g_Player_PlayBackStopped(g_Player.MediaType type, int stoptime, string filename) {
+            Buffering.StopBuffering();
+            GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", String.Empty);
+        }
+
+        static void g_Player_PlayBackStarted(g_Player.MediaType type, string filename) {
+            CommonDialogs.HideProgressDialog();
         }
 
         private static bool BufferingPause { get; set; }
 
         public static void PlayBackMedia(Uri itemPath, MediaContainerVideo video) {
             CommonDialogs.ShowWaitCursor();
-            Buffering.BufferMedia(itemPath, video, 0, PlexQualities._3_1500kbps480p, false);
+            Settings.SelectQualityPriorToPlayback = true; //TODO: add proper settings handling
+            if (Settings.SelectQualityPriorToPlayback) {
+                Buffering.BufferMedia(itemPath, video, CommonDialogs.ShowSelectionDialog<PlexQualities>());
+            } else {
+                Buffering.BufferMedia(itemPath, video);
+            }
             BufferCheckTimer.Start();
             while(Buffering.IsBuffering && Buffering.IsPreBuffering) {
                 GUIWindowManager.Process();
@@ -58,7 +80,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             BufferingPause = false;
             PlayPlayerMainThread(localBufferPath, bufferJob.Video.title);
             new System.Threading.Thread(delegate(object o) {
-                System.Threading.Thread.Sleep(1000);
+                System.Threading.Thread.Sleep(2000);
                 SetGuiProperties(o);
             }).Start(bufferJob.Video);
         }
@@ -66,12 +88,17 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         private static void Buffering_OnBufferingProgress(int currentProgress, BufferJob bufferJob) {
             GUIPropertyManager.SetProperty("#TV.Record.percent2", bufferJob.BufferingProgress.ToString());
             GUIPropertyManager.SetProperty("#TV.Record.percent3", "100");
-            if (Buffering.IsPreBuffering || g_Player.Paused) {
-                //CommonDialogs.ShowBufferingProgressDialog("Buffering...", bufferJob.Video.title, bufferJob.SegmentsBuffered.ToString(), bufferJob.SegmentsCount.ToString(), "Progress:", ((int)(g_Player.CurrentPosition * 100 / Buffering.CurrentJob.VideoDuration)), (int)Buffering.CurrentJob.BufferingProgress);
+            if (Buffering.IsPreBuffering){
+                CommonDialogs.ShowProgressDialog((int)bufferJob.PreBufferingProgress, "Pre-Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1}",bufferJob.SegmentsBuffered, bufferJob.PreBufferSize), String.Format("Completed: {0}%", bufferJob.PreBufferingProgress.ToString()),true);
+                GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Pre-Buffering:");
+            } else if (g_Player.Paused) {
+                CommonDialogs.ShowProgressDialog(currentProgress, "Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1}",bufferJob.SegmentsBuffered, bufferJob.SegmentsCount), String.Format("Completed: {0}%", currentProgress.ToString()));
+                GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Buffering:");
             }
         }
 
         private static void CommonDialogs_OnProgressCancelled() {
+            GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", String.Empty);
             StopPlayerMainThread();
         }
 

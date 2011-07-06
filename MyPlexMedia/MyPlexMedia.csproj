@@ -65,6 +65,7 @@
     <Compile Include="Plugin\Config\Settings.cs" />
     <Compile Include="Plugin\Window\Dialogs\ContextMenu.cs" />
     <Compile Include="Plugin\Window\Dialogs\CommonDialogs.cs" />
+    <Compile Include="Plugin\Window\Dialogs\Enum.cs" />
     <Compile Include="Plugin\Window\Items\ActionItem.cs" />
     <Compile Include="Plugin\Window\Dialogs\EPluginButtons.cs" />
     <Compile Include="Plugin\Window\Items\PlexItemServer.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Plugin\Window\Main.GuiUpdate.cs" />
     <Compile Include="Plugin\Window\Navigation.cs" />
     <Compile Include="Plugin\Window\Playback\Buffering.cs" />
+    <Compile Include="Plugin\Window\Playback\PlexQualities.cs" />
     <Compile Include="Plugin\Window\Playback\PlexVideoPlayer.cs" />
     <Compile Include="Plugin\Window\Playback\PlexAudioPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -115,12 +117,10 @@
     <Content Include="Resources\dll\dialogs.dll" />
     <Content Include="Resources\dll\utils.dll" />
     <Content Include="Resources\dll\WindowPlugins.dll" />
-    <Content Include="Skin\MyPlexMedia.GuiDialogBufferingProgress.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <EmbeddedResource Include="Resources\img\MyPlexMedia_disabled.png" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_enabled.png" />
     <None Include="Resources\img\config_ctripes.png" />
+    <Content Include="Skin\Media\MyPlexMedia\default_background.jpg" />
     <Content Include="Skin\Media\MyPlexMedia\icon_back.png" />
     <Content Include="Skin\Media\MyPlexMedia\icon_bonjour.png" />
     <None Include="Skin\Media\MyPlexMedia\icon_default.png" />
