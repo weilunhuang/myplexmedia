@@ -62,14 +62,18 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             WINDOW_DIALOG_TEXT = GUIWindow.Window.WINDOW_DIALOG_TEXT
         }
 
-        
+
 
         public static T ShowSelectionDialog<T>() {
             GUIDialogSelect2 dlgSelect = (GUIDialogSelect2)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_SELECT2);
             dlgSelect.Reset();
             Enum.GetNames(typeof (T)).ToList().ForEach(dlgSelect.Add);
             dlgSelect.DoModal(GUIWindowManager.ActiveWindow);
-            return Enum<T>.Parse(dlgSelect.SelectedLabelText);
+            try {
+                return Enum<T>.Parse(dlgSelect.SelectedLabelText);
+            } catch { 
+            return default (T);
+            }
         }
 
         public static void ShowNotifyDialog(int timeOut, string header, string text, string icon, PLUGIN_NOTIFY_WINDOWS notifyType = PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_AUTO) {
@@ -183,7 +187,11 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                     DialogProgress.ShowWaitCursor = true;
                     if (doModal) {
                         DialogProgress.DisableCancel(false);
-                        DialogProgress.DoModal(GUIWindowManager.ActiveWindow);
+                        DialogProgress.Percentage = progressPercentage;
+                        DialogProgress.SetLine(1, line1);
+                        DialogProgress.SetLine(2, line2);
+                        DialogProgress.SetLine(3, line3);
+                        DialogProgress.DoModal(GUIWindowManager.ActiveWindow);                        
                         if (DialogProgress.IsCanceled) {
                             HideProgressDialog();
                             OnProgressCancelled();

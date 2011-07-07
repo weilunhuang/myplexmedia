@@ -95,12 +95,14 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         private static void Buffering_OnBufferingProgress(int currentProgress, BufferJob bufferJob) {
             GUIPropertyManager.SetProperty("#TV.Record.percent2", bufferJob.BufferingProgress.ToString());
             GUIPropertyManager.SetProperty("#TV.Record.percent3", "100");
-            if (Buffering.IsPreBuffering){
+            if (bufferJob.SegmentsBuffered <= bufferJob.PreBufferSize) {
                 CommonDialogs.ShowProgressDialog((int)bufferJob.PreBufferingProgress, "Pre-Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1}",bufferJob.SegmentsBuffered, bufferJob.PreBufferSize), String.Format("Completed: {0}%", bufferJob.PreBufferingProgress.ToString()),true);
                 GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Pre-Buffering...");
             } else {
                 if (g_Player.Paused) {
-                    CommonDialogs.ShowProgressDialog(currentProgress, "Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1} ({2}%)", bufferJob.SegmentsBuffered, bufferJob.SegmentsCount, currentProgress.ToString() ),"Current Buffer Status:");
+                    CommonDialogs.ShowProgressDialog(currentProgress, "Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1} ({2}%)", bufferJob.SegmentsBuffered, bufferJob.SegmentsCount, currentProgress.ToString()), "Current Buffer Status:");
+                } else {
+                    CommonDialogs.HideProgressDialog();
                 }
                 GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Buffering...");
             }
@@ -112,9 +114,9 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             StopPlayerMainThread();
         }
 
-        private static int GetRemainingBufferedPlayTimePercentage() {
+        private static double GetRemainingBufferedPlayTimePercentage() {
             try {
-                return (int)(100 - (g_Player.CurrentPosition * 100 / g_Player.Duration));
+                return (100 - (g_Player.CurrentPosition * 100 / g_Player.Duration));
             } catch {
                 return 0;
             }

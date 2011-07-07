@@ -37,6 +37,11 @@ namespace MyPlexMedia.Plugin.Window.Items {
             PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, PlexInterface.PlexServerCurrent, Video.thumb);
             PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, PlexInterface.PlexServerCurrent, Video.art);
 
+            if(video.type.Equals("episode")){
+              
+                Label = String.Format("{0}.S{1:00}E{2:00}.{3}", new object[]{video.grandparentTitle, int.Parse(video.parentIndex), int.Parse(video.index), video.title});
+            }
+
             int duration;
             if (int.TryParse(Video.duration, out duration)) {
                 Duration = duration;
@@ -74,10 +79,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public override void OnClicked(object sender, EventArgs e) {
             PlexVideoPlayer.PlayBackMedia(UriPath, Video);
         }
-
-        public override void OnSelected() {
-        }
-
+        
         public override void OnInfo() {
             
             GUIVideoInfo videoInfo = (GUIVideoInfo) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_VIDEO_INFO);
