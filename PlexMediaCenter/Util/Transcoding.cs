@@ -52,6 +52,13 @@ namespace PlexMediaCenter.Util {
             return tmpList;
         }
 
+        public static void StopTranscoding(Uri plexUriPath) {
+            PlexServer server = PlexInterface.ServerManager.TryFindPlexServer(plexUriPath);
+            using (WebClient plexClient = new WebClient()) {
+               string result = plexClient.DownloadString(new Uri(server.UriPlexBase, "/video/:/transcode/segmented/stop"));
+            }
+        }
+
         private static string GetPlexApiToken(string url, string time) {
             // the message to hash is url + an @ + the rounded time   
             string msg = url + "@" + time;
