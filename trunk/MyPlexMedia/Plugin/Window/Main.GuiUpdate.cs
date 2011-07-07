@@ -49,8 +49,8 @@ namespace MyPlexMedia.Plugin.Window {
         private void MenuItem_OnHasBackground(string imagePath) {
             if (ctrlBackgroundImage == null || String.IsNullOrEmpty(imagePath) || !File.Exists(imagePath) ||
                 ctrlBackgroundImage.ImagePath.Equals(imagePath)) return;
-            //ctrlBackgroundImage.RemoveMemoryImageTexture();           
-            ctrlBackgroundImage.SetFileName(imagePath);
+            //ctrlBackgroundImage.RemoveMemoryImageTexture();      
+            ctrlBackgroundImage.SetFileName(imagePath);            
             ctrlBackgroundImage.DoUpdate();
             ctrlBackgroundImage.Refresh();
             GUIWindowManager.Process();

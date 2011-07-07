@@ -41,10 +41,9 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         #endregion
 
-        private const string BufferFile = @"D:\buffer.ts";
+        private const string BufferFile = @"D:\MyPlexMediaBuffer.ts";
         private const PlexQualities DefaultQuality = PlexQualities._1_320kbps_240p;
         private static readonly BackgroundWorker MediaBufferer;
-        private static AutoResetEvent CancelationDone = new AutoResetEvent(false);
 
 
         static Buffering() {
@@ -64,11 +63,10 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         public static event OnBufferingProgressEventHandler OnBufferingProgress;
         public static event OnPlayPreBufferedMediaEventHandler OnPlayPreBufferedMedia;
 
-        public static void StopBuffering() {           
+        public static void StopBuffering() {
             if (MediaBufferer.IsBusy) {
                 //logger.Info("Request Buffering Cancellation");
                 MediaBufferer.CancelAsync();
-                CancelationDone.WaitOne();
                 Transcoding.StopTranscoding(CurrentJob.ServerPath);
             }
         }
@@ -95,52 +93,51 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         private static void MediaBufferer_DoWork(object sender, DoWorkEventArgs e) {
             //logger.Info("BackGroundWorker - Buffering...");
-            try {
-                if (!(e.Argument is BufferJob)) return;
-                BufferJob currentJob = (BufferJob) e.Argument;
-                MediaBufferer.ReportProgress(0, currentJob);
-                List<string> segments = Transcoding.GetVideoSegmentedPlayList(currentJob.ServerPath, currentJob.Video,
-                                                                              currentJob.Offset,
-                                                                              (int) currentJob.Quality,
-                                                                              currentJob.Is3G);
-                currentJob.SegmentsBuffered = 0;
-                currentJob.SegmentsCount = segments.Count;
-                currentJob.SpeedIssues = false;
-                DeleteBufferFile();
-                using (
-                    FileStream bufferedMedia = new FileStream(BufferFile, FileMode.Create, FileAccess.Write,
-                                                              FileShare.Read)
-                    ) {
-                    foreach (string segment in segments) {
-                        if (MediaBufferer.CancellationPending) {
-                            //logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
-                            e.Cancel = true;
-                            IsPreBuffering = false;
-                            bufferedMedia.Flush();
-                            bufferedMedia.Close();
-                            break;
-                        }
-                        using (WebClient segmentFetcher = new WebClient()) {
-                            Stopwatch timer = new Stopwatch();
-                            timer.Start();
-                            byte[] data = segmentFetcher.DownloadData(segment);
-                            timer.Stop();
-                            currentJob.SpeedIssues = CheckSpeedQuality(data.Length, timer.Elapsed.TotalSeconds,
-                                                                       currentJob.Quality);
-                            bufferedMedia.Write(data, 0, data.Length);
-                            bufferedMedia.Flush();
-                        }
-                        MediaBufferer.ReportProgress((currentJob.SegmentsBuffered*100/currentJob.SegmentsCount),
-                                                     currentJob);
-                        if (++currentJob.SegmentsBuffered == currentJob.PreBufferSize) {
-                            IsPreBuffering = false;
-                            OnPlayPreBufferedMedia(BufferFile, currentJob);
-                        }
+
+            if (!(e.Argument is BufferJob)) return;
+            BufferJob currentJob = (BufferJob)e.Argument;
+            currentJob.SegmentsBuffered = 0;
+            MediaBufferer.ReportProgress(0, currentJob);
+            List<string> segments = Transcoding.GetVideoSegmentedPlayList(currentJob.ServerPath, currentJob.Video,
+                                                                          currentJob.Offset,
+                                                                          (int)currentJob.Quality,
+                                                                          currentJob.Is3G);           
+            currentJob.SegmentsCount = segments.Count;
+            currentJob.SpeedIssues = false;
+
+            DeleteBufferFile();
+            using (
+                FileStream bufferedMedia = new FileStream(BufferFile, FileMode.Create, FileAccess.Write,
+                                                          FileShare.Read)
+                ) {
+                foreach (string segment in segments) {
+                    if (MediaBufferer.CancellationPending) {
+                        //logger.Info("BackGroundWorker - CancellationPending detected - cancelling asynchronous buffering...");
+                        e.Cancel = true;
+                        IsPreBuffering = false;
+                        bufferedMedia.Flush();
+                        bufferedMedia.Close();
+                        break;
+                    }
+                    using (WebClient segmentFetcher = new WebClient()) {
+                        Stopwatch timer = new Stopwatch();
+                        timer.Start();
+                        byte[] data = segmentFetcher.DownloadData(segment);
+                        timer.Stop();
+                        currentJob.SpeedIssues = CheckSpeedQuality(data.Length, timer.Elapsed.TotalSeconds,
+                                                                   currentJob.Quality);
+                        bufferedMedia.Write(data, 0, data.Length);
+                        bufferedMedia.Flush();
+                    }
+                    MediaBufferer.ReportProgress((currentJob.SegmentsBuffered * 100 / currentJob.SegmentsCount),
+                                                 currentJob);
+                    if (++currentJob.SegmentsBuffered == currentJob.PreBufferSize) {
+                        IsPreBuffering = false;
+                        OnPlayPreBufferedMedia(BufferFile, currentJob);
                     }
                 }
-            }finally {
-                CancelationDone.Set();
             }
+
         }
 
         private static bool CheckSpeedQuality(double dataLength, double totalSeconds, PlexQualities plexQuality) {
@@ -155,7 +152,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 CurrentSpeedAverage += (currentSpeed / 1024);
                 CurrentSpeedAverage /= 2;
             }
-            Log.Debug("Current download speed: {0, 15} kbps / selected quality: {1}", new object[] { CurrentSpeedAverage , plexQuality});
+            Log.Debug("Current download speed: {0, 15} kbps / selected quality: {1}", new object[] { CurrentSpeedAverage, plexQuality });
             switch (plexQuality) {
                 case PlexQualities._1_320kbps_240p:
                     break;
@@ -189,7 +186,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             } else {
                 //logger.Info("BackGroundWorker -Buffering completed and was successful");
             }
-           
+
         }
     }
 

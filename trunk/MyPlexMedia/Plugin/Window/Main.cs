@@ -57,6 +57,7 @@ namespace MyPlexMedia.Plugin.Window {
         public override bool Init() {
             LoadSettings();
             GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME);
+            GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", string.Empty);
             PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH,
                                Settings.PLEX_ICON_DEFAULT);
             return Load(Settings.SKINFILE_MAIN_WINDOW);
