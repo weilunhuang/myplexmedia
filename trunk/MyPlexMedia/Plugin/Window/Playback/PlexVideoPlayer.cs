@@ -27,6 +27,7 @@ using MediaPortal.Player;
 using MyPlexMedia.Plugin.Config;
 using MyPlexMedia.Plugin.Window.Dialogs;
 using PlexMediaCenter.Plex.Data.Types;
+using PlexMediaCenter.Plex;
 
 namespace MyPlexMedia.Plugin.Window.Playback {
     internal static class PlexVideoPlayer {
@@ -67,17 +68,17 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                     Buffering.StopBuffering();
                 } else { return; }
             }
-            CommonDialogs.ShowWaitCursor();
-            Settings.SelectQualityPriorToPlayback = true; //TODO: add proper settings handling
-            if (Settings.SelectQualityPriorToPlayback) {
+            if (PlexInterface.ServerManager.TryFindPlexServer(itemPath).IsBonjour) {
+                //We're on the local network, therefore we use the LAN quality
+                Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityLAN);
+            } else if (Settings.SelectQualityPriorToPlayback) {
                 Buffering.BufferMedia(itemPath, video, CommonDialogs.ShowSelectionDialog<PlexQualities>());
             } else {
-                Buffering.BufferMedia(itemPath, video);
+                Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityWAN);
             }
+            CommonDialogs.ShowWaitCursor();
             BufferCheckTimer.Start();
-            GUIWaitCursor.Init();
-            GUIWaitCursor.Show();
-            while(Buffering.IsBuffering && Buffering.IsPreBuffering) {
+            while(Buffering.IsBuffering && Buffering.IsPreBuffering) {                
                 GUIWindowManager.Process();
             }
             CommonDialogs.HideWaitCursor();
@@ -123,6 +124,11 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         }
         
         private static void _bufferCheckTimer_Tick(object sender, EventArgs e) {
+            GUIPropertyManager.SetProperty("#duration", Buffering.CurrentJob.VideoDuration.ToString());
+            GUIPropertyManager.SetProperty("#TV.View.Percentage",
+                                           ((g_Player.CurrentPosition * 100 / Buffering.CurrentJob.VideoDuration)).ToString());
+            GUIPropertyManager.SetProperty("#TV.Record.percent1",
+                                           ((g_Player.CurrentPosition * 100 / Buffering.CurrentJob.VideoDuration)).ToString());
             if (Buffering.IsBuffering) {
                 if (GetRemainingBufferedPlayTimePercentage() < 10) {
                     //we're running out of oxygen here... pause playback to be safe!
@@ -140,11 +146,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 }
             }
 
-            GUIPropertyManager.SetProperty("#duration", Buffering.CurrentJob.VideoDuration.ToString());
-            GUIPropertyManager.SetProperty("#TV.View.Percentage",
-                                           ((int)(g_Player.CurrentPosition * 100 / Buffering.CurrentJob.VideoDuration)).ToString());
-            GUIPropertyManager.SetProperty("#TV.Record.percent1",
-                                           ((int)(g_Player.CurrentPosition * 100 / Buffering.CurrentJob.VideoDuration)).ToString());
+        
         }
         
         private static void SetGuiProperties(object video) {

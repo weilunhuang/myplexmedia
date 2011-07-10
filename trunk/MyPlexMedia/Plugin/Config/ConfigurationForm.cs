@@ -30,6 +30,8 @@ using MediaPortal.UserInterface.Controls;
 using PlexMediaCenter.Plex;
 using PlexMediaCenter.Plex.Connection;
 using PlexMediaCenter.Util;
+using MyPlexMedia.Plugin.Window.Playback;
+using MyPlexMedia.Plugin.Window.Dialogs;
 
 namespace MyPlexMedia.Plugin.Config {
     public partial class ConfigurationForm : MPConfigForm {
@@ -72,12 +74,19 @@ namespace MyPlexMedia.Plugin.Config {
             Text = String.Format("{0} - {1} - Configuration", Settings.PLUGIN_NAME, Settings.PLUGIN_VERSION);
             textBoxCheezRootFolder.Text = Settings.CacheFolder;
             checkBoxDeleteOnExit.Checked = Settings.DeleteCacheOnExit;
+            comboBoxQualityLAN.DataSource = Enum.GetValues(typeof(PlexQualities));
+            comboBoxQualityLAN.SelectedItem = Settings.DefaultQualityLAN;
+            comboBoxQualityWAN.DataSource = Enum.GetValues(typeof(PlexQualities));
+            comboBoxQualityWAN.SelectedItem = Settings.DefaultQualityWAN;
+            checkBoxSelectQualityPriorToPlayback.Checked = Settings.SelectQualityPriorToPlayback;
         }
 
         private void ConfigurationForm_FormClosing(object sender, FormClosingEventArgs e) {
             PlexInterface.ServerManager.SavePlexServers(PlexServers);
             Settings.CacheFolder = textBoxCheezRootFolder.Text;
             Settings.DeleteCacheOnExit = checkBoxDeleteOnExit.Checked;
+            Settings.DefaultQualityLAN = (PlexQualities)comboBoxQualityLAN.SelectedValue;
+            Settings.DefaultQualityWAN = (PlexQualities)comboBoxQualityWAN.SelectedValue;
             Settings.Save();
         }
 
@@ -126,6 +135,6 @@ namespace MyPlexMedia.Plugin.Config {
                 dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = PlexServers[e.RowIndex].IsOnline
                                                                                 ? Color.LightGreen
                                                                                 : Color.Tomato;
-        }
+        }       
     }
 }

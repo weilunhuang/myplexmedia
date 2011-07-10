@@ -63,11 +63,11 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
         }
 
 
-
         public static T ShowSelectionDialog<T>() {
             GUIDialogSelect2 dlgSelect = (GUIDialogSelect2)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_SELECT2);
             dlgSelect.Reset();
-            Enum.GetNames(typeof (T)).ToList().ForEach(dlgSelect.Add);
+            dlgSelect.SetHeading("Selection: " + typeof(T).ToString());
+            Enum.GetNames(typeof(T)).ToList().ForEach(dlgSelect.Add);
             dlgSelect.DoModal(GUIWindowManager.ActiveWindow);
             try {
                 return Enum<T>.Parse(dlgSelect.SelectedLabelText);
@@ -244,5 +244,7 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
         #endregion
 
         #endregion
+
+        
     }
 }

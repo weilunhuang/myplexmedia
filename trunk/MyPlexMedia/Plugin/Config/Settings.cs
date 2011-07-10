@@ -24,6 +24,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using MediaPortal.GUI.Library;
+using MyPlexMedia.Plugin.Window.Playback;
+using MyPlexMedia.Plugin.Window.Dialogs;
 
 namespace MyPlexMedia.Plugin.Config {
     public static class Settings {
@@ -39,7 +41,7 @@ namespace MyPlexMedia.Plugin.Config {
 
         public const string PLUGIN_NAME = "MyPlexMedia";
         public const string PLUGIN_AUTHOR = "Anthrax";
-        public const string PLUGIN_VERSION = "0.5.0 (Preview)";
+        public const string PLUGIN_VERSION = "1.0.0";
         public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin to browse your Plex Media Server(s).";
 
         public const int PLUGIN_WINDOW_ID = 20110614;
@@ -75,8 +77,15 @@ namespace MyPlexMedia.Plugin.Config {
             DefaultLayout = CreatePreferredLayouts();
             //Set defaults           
             CacheFolder = PLEX_ARTWORK_CACHE_ROOT_PATH;
+            DefaultQualityLAN = Window.Playback.PlexQualities._3_1500kbps_480p;
+            DefaultQualityWAN = Window.Playback.PlexQualities._3_1500kbps_480p;
+            SelectQualityPriorToPlayback = true;
             DeleteCacheOnExit = false;
         }
+
+        public static Window.Playback.PlexQualities DefaultQualityLAN { get; set; }
+
+        public static Window.Playback.PlexQualities DefaultQualityWAN { get; set; }
 
         public static Dictionary<string, PlexSectionLayout> PreferredLayouts { get; private set; }
         public static PlexSectionLayout DefaultLayout { get; private set; }
@@ -163,6 +172,9 @@ namespace MyPlexMedia.Plugin.Config {
                 if (!String.IsNullOrEmpty(reader.GetValue(PLUGIN_NAME, "CacheFolder"))) {
                     CacheFolder = reader.GetValue(PLUGIN_NAME, "CacheFolder");
                 }
+                DefaultQualityLAN = Enum<PlexQualities>.Parse(reader.GetValueAsString(PLUGIN_NAME, "DefaultQualityLAN",DefaultQualityLAN.ToString()));
+                DefaultQualityWAN = Enum<PlexQualities>.Parse(reader.GetValueAsString(PLUGIN_NAME, "DefaultQualityWAN", DefaultQualityWAN.ToString()));
+                SelectQualityPriorToPlayback = reader.GetValueAsBool(PLUGIN_NAME, "SelectQualityPriorToPlayback", true);
                 DeleteCacheOnExit = reader.GetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
             }
         }
@@ -177,7 +189,10 @@ namespace MyPlexMedia.Plugin.Config {
                         MediaPortal.Configuration.Config.GetFile(MediaPortal.Configuration.Config.Dir.Config,
                                                                  "MediaPortal.xml"))) {
                 xmlwriter.SetValue(PLUGIN_NAME, "CacheFolder", CacheFolder);
-                xmlwriter.SetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
+                xmlwriter.SetValue(PLUGIN_NAME, "DefaultQualityLAN", DefaultQualityLAN);
+                xmlwriter.SetValue(PLUGIN_NAME, "DefaultQualityWAN", DefaultQualityWAN);
+                xmlwriter.SetValueAsBool(PLUGIN_NAME, "SelectQualityPriorToPlayback", SelectQualityPriorToPlayback);
+               
             }
         }
 
@@ -191,7 +206,5 @@ namespace MyPlexMedia.Plugin.Config {
         #endregion
 
 
-
-        
     }
 }
