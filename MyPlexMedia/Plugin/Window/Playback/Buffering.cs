@@ -32,7 +32,9 @@ using PlexMediaCenter.Util;
 using System.Threading;
 
 namespace MyPlexMedia.Plugin.Window.Playback {
-    internal static class Buffering {
+
+       internal static class Buffering {      
+
         #region Delegates
 
         public delegate void OnBufferingProgressEventHandler(int currentProgress, BufferJob currentJobInfo);

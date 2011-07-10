@@ -24,7 +24,6 @@ namespace MyPlexMedia.Plugin.Config {
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ConfigurationForm));
             this.label16 = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
@@ -43,12 +42,16 @@ namespace MyPlexMedia.Plugin.Config {
             this.isBonjourDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.plexServerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabPage3 = new System.Windows.Forms.TabPage();
-            this.label1 = new System.Windows.Forms.Label();
+            this.comboBoxQualityWAN = new System.Windows.Forms.ComboBox();
+            this.comboBoxQualityLAN = new System.Windows.Forms.ComboBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.isOnlineDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.uriPlexSectionsDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.uriPlexBaseDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.serverCapabilitiesDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.labelQualityLAN = new System.Windows.Forms.Label();
+            this.label1 = new System.Windows.Forms.Label();
+            this.checkBoxSelectQualityPriorToPlayback = new System.Windows.Forms.CheckBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -241,7 +244,11 @@ namespace MyPlexMedia.Plugin.Config {
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.checkBoxSelectQualityPriorToPlayback);
             this.tabPage3.Controls.Add(this.label1);
+            this.tabPage3.Controls.Add(this.labelQualityLAN);
+            this.tabPage3.Controls.Add(this.comboBoxQualityWAN);
+            this.tabPage3.Controls.Add(this.comboBoxQualityLAN);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
@@ -250,14 +257,21 @@ namespace MyPlexMedia.Plugin.Config {
             this.tabPage3.Text = "Connection Speed && Quality";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
-            // label1
+            // comboBoxQualityWAN
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(306, 91);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(76, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "coming soon...";
+            this.comboBoxQualityWAN.FormattingEnabled = true;
+            this.comboBoxQualityWAN.Location = new System.Drawing.Point(252, 66);
+            this.comboBoxQualityWAN.Name = "comboBoxQualityWAN";
+            this.comboBoxQualityWAN.Size = new System.Drawing.Size(136, 21);
+            this.comboBoxQualityWAN.TabIndex = 2;
+            // 
+            // comboBoxQualityLAN
+            // 
+            this.comboBoxQualityLAN.FormattingEnabled = true;
+            this.comboBoxQualityLAN.Location = new System.Drawing.Point(252, 27);
+            this.comboBoxQualityLAN.Name = "comboBoxQualityLAN";
+            this.comboBoxQualityLAN.Size = new System.Drawing.Size(136, 21);
+            this.comboBoxQualityLAN.TabIndex = 1;
             // 
             // pictureBox1
             // 
@@ -301,7 +315,35 @@ namespace MyPlexMedia.Plugin.Config {
             this.serverCapabilitiesDataGridViewTextBoxColumn.DataPropertyName = "ServerCapabilities";
             this.serverCapabilitiesDataGridViewTextBoxColumn.HeaderText = "ServerCapabilities";
             this.serverCapabilitiesDataGridViewTextBoxColumn.Name = "serverCapabilitiesDataGridViewTextBoxColumn";
-            this.serverCapabilitiesDataGridViewTextBoxColumn.Width = 58;            
+            this.serverCapabilitiesDataGridViewTextBoxColumn.Width = 58;
+            // 
+            // labelQualityLAN
+            // 
+            this.labelQualityLAN.AutoSize = true;
+            this.labelQualityLAN.Location = new System.Drawing.Point(71, 30);
+            this.labelQualityLAN.Name = "labelQualityLAN";
+            this.labelQualityLAN.Size = new System.Drawing.Size(175, 13);
+            this.labelQualityLAN.TabIndex = 3;
+            this.labelQualityLAN.Text = "Transcoding Quality (LAN/Bonjour):";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(71, 69);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(180, 13);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "Transcoding Quality (WAN/Internet):";
+            // 
+            // checkBoxSelectQualityPriorToPlayback
+            // 
+            this.checkBoxSelectQualityPriorToPlayback.AutoSize = true;
+            this.checkBoxSelectQualityPriorToPlayback.Location = new System.Drawing.Point(252, 94);
+            this.checkBoxSelectQualityPriorToPlayback.Name = "checkBoxSelectQualityPriorToPlayback";
+            this.checkBoxSelectQualityPriorToPlayback.Size = new System.Drawing.Size(134, 17);
+            this.checkBoxSelectQualityPriorToPlayback.TabIndex = 5;
+            this.checkBoxSelectQualityPriorToPlayback.Text = "select before Playback";
+            this.checkBoxSelectQualityPriorToPlayback.UseVisualStyleBackColor = true;
             // 
             // ConfigurationForm
             // 
@@ -354,7 +396,11 @@ namespace MyPlexMedia.Plugin.Config {
         private System.Windows.Forms.DataGridViewTextBoxColumn FriendlyName;
         private System.Windows.Forms.DataGridViewCheckBoxColumn isBonjourDataGridViewCheckBoxColumn;
         private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.Label label1;        
+        private System.Windows.Forms.ComboBox comboBoxQualityWAN;
+        private System.Windows.Forms.ComboBox comboBoxQualityLAN;
+        private System.Windows.Forms.CheckBox checkBoxSelectQualityPriorToPlayback;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label labelQualityLAN;        
 
 
     }

@@ -1,5 +1,5 @@
 ﻿namespace MyPlexMedia.Plugin.Window.Playback {
-    public enum PlexQualities {
+     public enum PlexQualities {
         _1_320kbps_240p = 3,
         _2_720kbps_320p,
         _3_1500kbps_480p,

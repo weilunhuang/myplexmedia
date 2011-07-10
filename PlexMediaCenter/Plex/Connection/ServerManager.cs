@@ -99,7 +99,7 @@ namespace PlexMediaCenter.Plex.Connection {
             }
         }
 
-        internal PlexServer TryFindPlexServer(Uri plexUrl) {
+        public PlexServer TryFindPlexServer(Uri plexUrl) {
             PlexServer server = PlexInterface.ServerManager.PlexServers.Find(svr => svr.HostAdress.Equals(plexUrl.Host));
             if (server != null) {
                 return server;
