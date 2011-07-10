@@ -80,6 +80,13 @@
               <ZipFileName>Installer{GenericSkinFile}\{12264c25-1d38-4875-ab04-71a4c37598bc}-icon_online.png</ZipFileName>
               <DestinationFilename>%Skin%\[DEFAULT]\Media\MyPlexMedia\icon_online.png</DestinationFilename>
             </FileItem>
+            <FileItem InstallType="GenericSkinFile" SystemFile="false" Modified="false">
+              <Param1 />
+              <UpdateOption>AlwaysOverwrite</UpdateOption>
+              <LocalFileName>..\..\Skin\Media\MyPlexMedia\default_background.jpg</LocalFileName>
+              <ZipFileName>Installer{GenericSkinFile}\{0e5d09fd-35d9-4c29-bfd3-7ce8ee6b3024}-default_background.jpg</ZipFileName>
+              <DestinationFilename>%Skin%\[DEFAULT]\Media\MyPlexMedia\default_background.jpg</DestinationFilename>
+            </FileItem>
           </Items>
         </Files>
       </GroupItem>
@@ -200,20 +207,20 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <ForumPage>http://forum.team-mediaportal.com/mediaportal-plugins-47/preview-myplexmedia-plexmediaserver-browser-0-5-0-alpha-97743/#post758188</ForumPage>
     <UpdateUrl>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/update.xml</UpdateUrl>
     <Version>
-      <Major>0</Major>
-      <Minor>5</Minor>
+      <Major>1</Major>
+      <Minor>0</Minor>
       <Build>0</Build>
       <Revision>0</Revision>
     </Version>
     <ExtensionDescription>A MediaPortal plugin to browse your Plex Media Server(s).
 
 check out Plex: http://www.plexapp.com/</ExtensionDescription>
-    <VersionDescription>First preview release of the MyPlexMedia plugin</VersionDescription>
-    <DevelopmentStatus>Alpha</DevelopmentStatus>
-    <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_0.5.0.mpe1</OnlineLocation>
+    <VersionDescription>The first initial release of the MyPlexMedia plugin...</VersionDescription>
+    <DevelopmentStatus>Stable</DevelopmentStatus>
+    <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_1.0.0.mpe1</OnlineLocation>
     <ReleaseDate>2011-06-19T12:49:07</ReleaseDate>
     <Tags>mediaportal, plex, plex media server, pms, plex server, media, browser</Tags>
-    <Location>C:\Users\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_0.5.0.mpe1</Location>
+    <Location>C:\Users\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_1.0.0.mpe1</Location>
     <Params>
       <Items>
         <SectionParam Name="Icon">
@@ -317,6 +324,13 @@ check out Plex: http://www.plexapp.com/</ExtensionDescription>
         <LocalFileName>..\..\Skin\Media\MyPlexMedia\icon_online.png</LocalFileName>
         <ZipFileName>Installer{GenericSkinFile}\{12264c25-1d38-4875-ab04-71a4c37598bc}-icon_online.png</ZipFileName>
         <DestinationFilename>%Skin%\[DEFAULT]\Media\MyPlexMedia\icon_online.png</DestinationFilename>
+      </FileItem>
+      <FileItem InstallType="GenericSkinFile" SystemFile="false" Modified="false">
+        <Param1 />
+        <UpdateOption>AlwaysOverwrite</UpdateOption>
+        <LocalFileName>..\..\Skin\Media\MyPlexMedia\default_background.jpg</LocalFileName>
+        <ZipFileName>Installer{GenericSkinFile}\{0e5d09fd-35d9-4c29-bfd3-7ce8ee6b3024}-default_background.jpg</ZipFileName>
+        <DestinationFilename>%Skin%\[DEFAULT]\Media\MyPlexMedia\default_background.jpg</DestinationFilename>
       </FileItem>
     </Items>
   </UniqueFileList>
