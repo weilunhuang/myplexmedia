@@ -8,140 +8,106 @@ namespace PlexMediaCenter.Plex.Data.Types
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.ComponentModel.DesignerCategoryAttribute("code")]
     [System.Xml.Serialization.XmlTypeAttribute(AnonymousType=true)]
-    public partial class MediaContainerTrack
+    public partial class MediaContainerServer
     {
         
-        private System.Collections.Generic.List<Media> mediaField;
+        private string nameField;
         
-        private string ratingKeyField;
+        private string addressField;
         
-        private string keyField;
+        private string portField;
         
-        private string typeField;
+        private string hostField;
         
-        private string titleField;
+        private string machineIdentifierField;
         
-        private string summaryField;
-        
-        private string indexField;
-        
-        private string durationField;
+        private string createdAtField;
         
         private string updatedAtField;
         
-        private string guidField;
-        
-        private string addedAtField;
+        private string ownedField;
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlElementAttribute("Media")]
-        public System.Collections.Generic.List<Media> Media
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string name
         {
             get
             {
-                return this.mediaField;
+                return this.nameField;
             }
             set
             {
-                this.mediaField = value;
+                this.nameField = value;
             }
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string ratingKey
+        public string address
         {
             get
             {
-                return this.ratingKeyField;
+                return this.addressField;
             }
             set
             {
-                this.ratingKeyField = value;
+                this.addressField = value;
             }
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string key
+        public string port
         {
             get
             {
-                return this.keyField;
+                return this.portField;
             }
             set
             {
-                this.keyField = value;
+                this.portField = value;
             }
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string type
+        public string host
         {
             get
             {
-                return this.typeField;
+                return this.hostField;
             }
             set
             {
-                this.typeField = value;
+                this.hostField = value;
             }
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string title
+        public string machineIdentifier
         {
             get
             {
-                return this.titleField;
+                return this.machineIdentifierField;
             }
             set
             {
-                this.titleField = value;
+                this.machineIdentifierField = value;
             }
         }
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string summary
+        public string createdAt
         {
             get
             {
-                return this.summaryField;
+                return this.createdAtField;
             }
             set
             {
-                this.summaryField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string index
-        {
-            get
-            {
-                return this.indexField;
-            }
-            set
-            {
-                this.indexField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string duration
-        {
-            get
-            {
-                return this.durationField;
-            }
-            set
-            {
-                this.durationField = value;
+                this.createdAtField = value;
             }
         }
         
@@ -161,29 +127,15 @@ namespace PlexMediaCenter.Plex.Data.Types
         
         /// <remarks/>
         [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string guid
+        public string owned
         {
             get
             {
-                return this.guidField;
+                return this.ownedField;
             }
             set
             {
-                this.guidField = value;
-            }
-        }
-        
-        /// <remarks/>
-        [System.Xml.Serialization.XmlAttributeAttribute()]
-        public string addedAt
-        {
-            get
-            {
-                return this.addedAtField;
-            }
-            set
-            {
-                this.addedAtField = value;
+                this.ownedField = value;
             }
         }
     }

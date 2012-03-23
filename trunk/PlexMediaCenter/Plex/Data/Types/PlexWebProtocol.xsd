@@ -1,5 +1,23 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+<xs:element name="user">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="username" type="xs:string" minOccurs="0" />
+        <xs:element name="email" type="xs:string" minOccurs="0" />
+        <xs:element name="authentication-token" type="xs:string" minOccurs="0" />
+        <xs:element name="joined-at" nillable="true" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:simpleContent msdata:ColumnName="joined-at_Text" msdata:Ordinal="1">
+              <xs:extension base="xs:string">
+                <xs:attribute name="type" type="xs:string" />
+              </xs:extension>
+            </xs:simpleContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
 	<xs:element name="Genre">
 		<xs:complexType>
 			<xs:attribute name="tag" type="xs:string" />
@@ -46,6 +64,18 @@
 	<xs:element name="MediaContainer">
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="Server" minOccurs="0" maxOccurs="unbounded">
+					 <xs:complexType>
+						<xs:attribute name="name" type="xs:string" />
+						<xs:attribute name="address" type="xs:string" />
+						<xs:attribute name="port" type="xs:string" />
+						<xs:attribute name="host" type="xs:string" />
+						<xs:attribute name="machineIdentifier" type="xs:string" />
+						<xs:attribute name="createdAt" type="xs:string" />
+						<xs:attribute name="updatedAt" type="xs:string" />
+						<xs:attribute name="owned" type="xs:string" />
+					 </xs:complexType>
+				</xs:element>
 				<xs:element name="Directory" minOccurs="0" maxOccurs="unbounded">
 					<xs:complexType>
 						<xs:sequence>
@@ -175,6 +205,7 @@
 				<xs:element ref="Genre" />
 				<xs:element ref="Media" />
 				<xs:element ref="MediaContainer" />
+				<xs:element ref="user" />
 			</xs:choice>
 		</xs:complexType>
 	</xs:element>

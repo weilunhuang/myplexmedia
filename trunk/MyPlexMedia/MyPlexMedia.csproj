@@ -120,6 +120,8 @@
     <EmbeddedResource Include="Resources\img\MyPlexMedia_disabled.png" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_enabled.png" />
     <None Include="Resources\img\config_ctripes.png" />
+    <None Include="Resources\img\my-logo.png" />
+    <None Include="Resources\img\logo_myPlex.png" />
     <Content Include="Skin\Media\MyPlexMedia\default_background.jpg" />
     <Content Include="Skin\Media\MyPlexMedia\icon_back.png" />
     <Content Include="Skin\Media\MyPlexMedia\icon_bonjour.png" />
