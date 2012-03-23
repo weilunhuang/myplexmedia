@@ -46,7 +46,8 @@ namespace PlexMediaCenter.Plex.Connection {
 
             VideoDecoders = new List<string>
                                 {
-                                    "h264{profile:high&resolution:1080&level:51}"
+                                    "h264{profile:high&resolution:1080&level:51}",
+                                    "h264{profile:high&resolution:720&level:51}"
                                 };
 
             AudioDecoders = new List<string>

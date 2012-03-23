@@ -55,6 +55,7 @@ namespace PlexMediaCenter.Plex {
             get { return _webClient.IsBusy; }
         }
 
+        public static MyPlex MyPlex { get; private set; }
         public static ServerManager ServerManager { get; private set; }
         public static ArtworkRetriever ArtworkRetriever { get; private set; }
 
@@ -80,6 +81,16 @@ namespace PlexMediaCenter.Plex {
             ArtworkRetriever.OnArtworkRetrievalError += MediaRetrieval_OnArtWorkRetrievalError;
         }
 
+        public static bool MyPlexLogin(string user, string pass) {
+            MyPlex = new MyPlex(new NetworkCredential(user, pass));
+            if (MyPlex.Authenticate(ref _webClient) && ServerManager != null) {
+                ServerManager.AddMyPlexServerList(MyPlex);
+            } else {
+                return false;
+            }
+            return true;
+        }
+
         #region Plex Server Requests
 
         public static MediaContainer TryGetPlexSections(PlexServer plexServer) {
@@ -89,11 +100,11 @@ namespace PlexMediaCenter.Plex {
                     System.Threading.Thread.Sleep(500);
                     return RequestPlexItems(plexServer.UriPlexSections);
                 } catch (Exception e) {
-                    OnPlexError(new PlexException(typeof (PlexInterface), "TryGetPlexSections failed for: " + plexServer,
+                    OnPlexError(new PlexException(typeof(PlexInterface), "TryGetPlexSections failed for: " + plexServer,
                                                   e));
                 }
             } else {
-                OnPlexError(new PlexException(typeof (PlexInterface),
+                OnPlexError(new PlexException(typeof(PlexInterface),
                                               string.Format("Unable to login to: ", plexServer.ToString()), null));
             }
             return null;
@@ -105,11 +116,11 @@ namespace PlexMediaCenter.Plex {
                     ServerManager.SetCurrentPlexServer(plexServer);
                     return RequestPlexItems(plexServer.UriPlexBase);
                 } catch (Exception e) {
-                    OnPlexError(new PlexException(typeof (PlexInterface), "Unable to get root items for: " + plexServer,
+                    OnPlexError(new PlexException(typeof(PlexInterface), "Unable to get root items for: " + plexServer,
                                                   e));
                 }
             } else {
-                OnPlexError(new PlexException(typeof (PlexInterface), "Unable to login to: " + plexServer, null));
+                OnPlexError(new PlexException(typeof(PlexInterface), "Unable to login to: " + plexServer, null));
             }
             return null;
         }
@@ -121,7 +132,7 @@ namespace PlexMediaCenter.Plex {
                 requestedContainer.UriSource = selectedPath;
                 return requestedContainer;
             } catch (Exception e) {
-                OnPlexError(new PlexException(typeof (PlexInterface),
+                OnPlexError(new PlexException(typeof(PlexInterface),
                                               "Unable to get items from path: " + selectedPath.AbsoluteUri, e));
             }
             return null;
@@ -129,7 +140,7 @@ namespace PlexMediaCenter.Plex {
 
         public static void RequestPlexItemsAsync(Uri path, object userToken) {
             if (_webClient.IsBusy) {
-                OnPlexError(new PlexException(typeof (PlexInterface), "Another Request in progress!", null));
+                OnPlexError(new PlexException(typeof(PlexInterface), "Another Request in progress!", null));
                 return;
             }
             OnResponseProgress(userToken, 0);
@@ -148,7 +159,7 @@ namespace PlexMediaCenter.Plex {
 
         private static void _webClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e) {
             if (e.Error != null) {
-                OnPlexError(new PlexException(typeof (PlexInterface), e.Error.Message, null));
+                OnPlexError(new PlexException(typeof(PlexInterface), e.Error.Message, null));
             } else {
                 OnResponseReceived(e.UserState,
                                    Serialization.DeSerializeXML<MediaContainer>(

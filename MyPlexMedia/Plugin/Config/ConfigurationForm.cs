@@ -54,7 +54,8 @@ namespace MyPlexMedia.Plugin.Config {
 
         private List<PlexServer> PlexServers { get; set; }
 
-        private static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
+        private void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
+            plexServerBindingSource.ResetBindings(true);
         }
 
         private void BonjourDiscovery_OnBonjourServer(PlexServer bojourDiscoveredServer) {
@@ -135,6 +136,13 @@ namespace MyPlexMedia.Plugin.Config {
                 dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = PlexServers[e.RowIndex].IsOnline
                                                                                 ? Color.LightGreen
                                                                                 : Color.Tomato;
-        }       
+        }
+
+        private void buttonMyPlexLogin_Click(object sender, EventArgs e) {
+           buttonMyPlexLogin.BackColor = 
+               PlexInterface.MyPlexLogin(textBoxMyPlexUser.Text, textBoxMyPlexPass.Text)
+                                ? Color.LightGreen
+                                : Color.Tomato;
+        }
     }
 }

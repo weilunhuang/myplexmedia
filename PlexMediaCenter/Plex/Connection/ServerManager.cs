@@ -92,7 +92,7 @@ namespace PlexMediaCenter.Plex.Connection {
                 if (File.Exists(ServerXmlFile)) {
                     File.Delete(ServerXmlFile);
                 }
-                Serialization.Serialize(ServerXmlFile, plexServers);
+                Serialization.Serialize(ServerXmlFile, plexServers.Where(svr => !svr.IsMyPlex).ToList());
             } catch (Exception e) {
                 OnServerManangerError(new PlexException(GetType(),
                                                         String.Format("Unable to serialize '{0}'", ServerXmlFile), e));
@@ -123,6 +123,11 @@ namespace PlexMediaCenter.Plex.Connection {
                 PlexServers.Add(bonjourDiscoveredServer);
                 OnPlexServersChanged(PlexServers);
             }
+        }
+
+        public void AddMyPlexServerList(MyPlex myPlex) {
+            PlexServers = myPlex.MyPlexServerList.Union(PlexServers).ToList();
+            OnPlexServersChanged(PlexServers);
         }
 
         public void RefrehBonjourServers() {

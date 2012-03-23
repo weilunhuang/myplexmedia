@@ -30,7 +30,7 @@ using PlexMediaCenter.Util;
 namespace PlexMediaCenter.Plex.Connection {
     [Serializable]
     public class PlexServer : IEquatable<PlexServer> {
-        private const int PlexPort = 32400;
+        private const int DefaultPlexPort = 32400;
 
         public PlexServer() {
         }
@@ -39,12 +39,23 @@ namespace PlexMediaCenter.Plex.Connection {
             HostName = hostName;
             HostAdress = hostAdress;
             UserName = userName;
+            PlexPort = DefaultPlexPort;
             EncryptPassword(userName, userPass);
         }
 
         public PlexServer(string hostName, string hostAdress) {
             HostName = hostName;
             HostAdress = hostAdress;
+            PlexPort = DefaultPlexPort;
+        }
+
+        public PlexServer(string hostName, string hostAdress, int plexPort, MyPlexUser plexUser) {
+            HostName = hostName;
+            HostAdress = hostAdress;
+            PlexPort = plexPort;
+            AuthToken = plexUser.authenticationtoken;
+            UserName = plexUser.username;
+            IsMyPlex = true;
         }
 
         public String FriendlyName {
@@ -53,14 +64,20 @@ namespace PlexMediaCenter.Plex.Connection {
 
         public String HostName { get; set; }
         public String HostAdress { get; set; }
+        public int PlexPort { get; set; }
+        
         public String UserName { get; set; }
         public String UserPass { get; set; }
+        public String AuthToken { get; set; }
 
         [XmlIgnore]
         public PlexCapabilitiesServer ServerCapabilities { get; set; }
 
         [XmlIgnore]
         public bool IsBonjour { get; set; }
+
+        [XmlIgnore]
+        public bool IsMyPlex { get; set; }
 
         [XmlIgnore]
         public bool IsOnline { get; set; }
@@ -75,31 +92,26 @@ namespace PlexMediaCenter.Plex.Connection {
             get { return new UriBuilder("http", HostAdress, PlexPort, "").Uri; }
         }
 
-        #region IEquatable<PlexServer> Members
-
-        public bool Equals(PlexServer other) {
-            return HostAdress.Equals(other.HostAdress);
-        }
-
-        #endregion
-
         public void EncryptPassword(string userName, string userPass) {
             UserPass = Encryption.GetSHA1Hash(userName.ToLower() + Encryption.GetSHA1Hash(userPass));
         }
 
         public override string ToString() {
-            return String.Format("{0}@{1}", UserName, UriPlexBase.Host);
+            return String.Format("{0} @ {1} [{2}]", UserName, FriendlyName, UriPlexBase.Host);
         }
 
         public void AddAuthHeaders(ref WebClient webClient) {
-            webClient.Headers["X-Plex-User"] = UserName;
-            webClient.Headers["X-Plex-Pass"] = UserPass;
+            if (IsMyPlex) {
+                webClient.Headers["X-Plex-Token"] = AuthToken;
+            } else {
+                webClient.Headers["X-Plex-User"] = UserName;
+                webClient.Headers["X-Plex-Pass"] = UserPass;
+            }
         }
 
         internal bool Authenticate(ref WebClient webClient) {
             if (CheckSocketConnection()) {
-                webClient.Headers["X-Plex-User"] = UserName;
-                webClient.Headers["X-Plex-Pass"] = UserPass;
+                AddAuthHeaders(ref webClient);
                 try {
                     string serverXmlResponse = webClient.DownloadString(UriPlexBase);
                     ServerCapabilities =
@@ -128,5 +140,12 @@ namespace PlexMediaCenter.Plex.Connection {
         private static PlexCapabilitiesServer GetServerCapabilities(MediaContainer serverResponse) {
             return serverResponse == null ? null : new PlexCapabilitiesServer(serverResponse);
         }
+
+        #region IEquatable<PlexServer> Members
+
+        public bool Equals(PlexServer other) {
+            return HostAdress.Equals(other.HostAdress);
+        }
+        #endregion
     }
 }

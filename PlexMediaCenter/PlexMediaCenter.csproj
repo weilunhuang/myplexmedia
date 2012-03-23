@@ -48,18 +48,21 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Plex\Connection\MyPlex.cs" />
     <Compile Include="Plex\Connection\PlexCapabilitiesClient.cs" />
     <Compile Include="Plex\Data\Types\Genre.cs" />
     <Compile Include="Plex\Data\Types\Media.cs" />
     <Compile Include="Plex\Data\Types\MediaContainer.cs" />
     <Compile Include="Plex\Data\Types\MediaContainerDirectory.cs" />
     <Compile Include="Plex\Data\Types\MediaContainerDirectoryLocation.cs" />
+    <Compile Include="Plex\Data\Types\MediaContainerServer.cs" />
     <Compile Include="Plex\Data\Types\MediaContainerTrack.cs" />
     <Compile Include="Plex\Data\Types\MediaContainerVideo.cs" />
     <Compile Include="Plex\Data\Types\MediaContainerVideoDirector.cs" />
     <Compile Include="Plex\Data\Types\MediaContainerVideoField.cs" />
     <Compile Include="Plex\Data\Types\MediaPart.cs" />
     <Compile Include="Plex\Data\Types\MediaPartStream.cs" />
+    <Compile Include="Plex\Data\Types\MyPlexUser.cs" />
     <Compile Include="Plex\Data\Types\NewDataSet.cs" />
     <Compile Include="Plex\PlexException.cs" />
     <Compile Include="Plex\PlexInterface.cs" />
@@ -77,7 +80,13 @@
     <Content Include="Resources\dll\ZeroconfService.dll" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Plex\Data\Schema\PlexWebProtocol.xsd" />
+    <None Include="Plex\Data\Types\PlexWebProtocol.xsc">
+      <DependentUpon>PlexWebProtocol.xsd</DependentUpon>
+    </None>
+    <None Include="Plex\Data\Types\PlexWebProtocol.xsd" />
+    <None Include="Plex\Data\Types\PlexWebProtocol.xss">
+      <DependentUpon>PlexWebProtocol.xsd</DependentUpon>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
