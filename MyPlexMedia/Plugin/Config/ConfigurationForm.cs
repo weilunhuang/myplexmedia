@@ -46,7 +46,7 @@ namespace MyPlexMedia.Plugin.Config {
                 PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
                 PlexInterface.ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
                 BonjourDiscovery.OnBonjourServer += BonjourDiscovery_OnBonjourServer;
-                PlexServers = PlexInterface.ServerManager.PlexServers;
+                plexServerBindingSource.DataSource = PlexServers = PlexInterface.ServerManager.PlexServers;
             } catch (Exception ex) {
                 Log.Error(ex);
             }
@@ -55,12 +55,13 @@ namespace MyPlexMedia.Plugin.Config {
         private List<PlexServer> PlexServers { get; set; }
 
         private void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
+            PlexServers = updatedServerList;
             plexServerBindingSource.ResetBindings(true);
         }
 
         private void BonjourDiscovery_OnBonjourServer(PlexServer bojourDiscoveredServer) {
             if (PlexServers.Contains<PlexServer>(bojourDiscoveredServer)) {
-                PlexServers.Find(x => x.Equals(bojourDiscoveredServer)).IsBonjour = true;
+                PlexServers.First(x => x.Equals(bojourDiscoveredServer)).IsBonjour = true;
             } else {
                 PlexServers.Add(bojourDiscoveredServer);
             }
@@ -103,8 +104,16 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) {
-            if (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index && e.Value != null) {
-                e.Value = "[password set]";
+            try {
+                if (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index) {
+                    if (string.IsNullOrEmpty(PlexServers[e.RowIndex].UserPass)) {
+                        e.Value = "[password set]";
+                    }
+                    if (PlexServers[e.RowIndex].IsMyPlex) {
+                        e.Value = "[token set]";
+                    }
+                }
+            } catch {
             }
         }
 
@@ -117,7 +126,7 @@ namespace MyPlexMedia.Plugin.Config {
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e) {
             try {
                 if (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index) {
-                    PlexServers[e.RowIndex].EncryptPassword(PlexServers[e.RowIndex].UserName,
+                    PlexServers[e.RowIndex].UserPass = PlexServer.EncryptPassword(PlexServers[e.RowIndex].UserName,
                                                             dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString());
                 }
 
@@ -139,10 +148,10 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void buttonMyPlexLogin_Click(object sender, EventArgs e) {
-           buttonMyPlexLogin.BackColor = 
-               PlexInterface.MyPlexLogin(textBoxMyPlexUser.Text, textBoxMyPlexPass.Text)
-                                ? Color.LightGreen
-                                : Color.Tomato;
+            buttonMyPlexLogin.BackColor =
+                PlexInterface.MyPlexLogin(textBoxMyPlexUser.Text, textBoxMyPlexPass.Text)
+                                 ? Color.LightGreen
+                                 : Color.Tomato;
         }
     }
 }

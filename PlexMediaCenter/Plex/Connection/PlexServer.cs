@@ -40,7 +40,7 @@ namespace PlexMediaCenter.Plex.Connection {
             HostAdress = hostAdress;
             UserName = userName;
             PlexPort = DefaultPlexPort;
-            EncryptPassword(userName, userPass);
+            UserPass = EncryptPassword(userName, userPass);
         }
 
         public PlexServer(string hostName, string hostAdress) {
@@ -92,8 +92,8 @@ namespace PlexMediaCenter.Plex.Connection {
             get { return new UriBuilder("http", HostAdress, PlexPort, "").Uri; }
         }
 
-        public void EncryptPassword(string userName, string userPass) {
-            UserPass = Encryption.GetSHA1Hash(userName.ToLower() + Encryption.GetSHA1Hash(userPass));
+        public static string EncryptPassword(string userName, string userPass) {
+            return Encryption.GetSHA1Hash(userName.ToLower() + Encryption.GetSHA1Hash(userPass));
         }
 
         public override string ToString() {
