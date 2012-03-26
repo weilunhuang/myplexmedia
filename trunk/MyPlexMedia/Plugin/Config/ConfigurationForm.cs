@@ -45,7 +45,7 @@ namespace MyPlexMedia.Plugin.Config {
                                    Settings.PLEX_ICON_DEFAULT);
                 PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
                 PlexInterface.ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
-                BonjourDiscovery.OnBonjourServer += BonjourDiscovery_OnBonjourServer;
+                BonjourDiscovery.OnBonjourConnection += BonjourDiscovery_OnBonjourServer;
                 plexServerBindingSource.DataSource = PlexServers = PlexInterface.ServerManager.PlexServers;
             } catch (Exception ex) {
                 Log.Error(ex);

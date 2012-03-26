@@ -32,11 +32,13 @@ namespace PlexMediaCenter.Plex.Connection {
         public PlexCapabilitiesServer(MediaContainer serverBaseUriResponse) {
             FriendlyName = serverBaseUriResponse.friendlyName;
             PMSVersion = serverBaseUriResponse.version;
+            MachineIdentifier = serverBaseUriResponse.machineIdentifier;
             TranscoderVideoBitrates = serverBaseUriResponse.transcoderVideoBitrates.Split(',').ToList();
             TranscoderVideoQualities = serverBaseUriResponse.transcoderVideoQualities.Split(',').ToList();
             TranscoderVideoResolutions = serverBaseUriResponse.transcoderVideoResolutions.Split(',').ToList();
         }
 
+        public string MachineIdentifier { get; set; }
         public string FriendlyName { get; set; }
         public string PMSVersion { get; set; }
         public List<string> TranscoderVideoBitrates { get; set; }

@@ -44,7 +44,7 @@ namespace PlexMediaCenter.Plex.Connection {
             }
             ServerXmlFile = serverXmlFile;
             PlexServers = LoadPlexServers();
-            BonjourDiscovery.OnBonjourServer += BonjourDiscovery_OnBonjourServer;
+            BonjourDiscovery.OnBonjourConnection += BonjourDiscovery_OnBonjourConnection;
         }
 
         private string ServerXmlFile { get; set; }
@@ -116,8 +116,8 @@ namespace PlexMediaCenter.Plex.Connection {
             PlexServerCurrent = server;
         }
 
-        private void BonjourDiscovery_OnBonjourServer(PlexServer bonjourDiscoveredServer) {
-            if (PlexServers.Contains<PlexServer>(bonjourDiscoveredServer)) {
+        private void BonjourDiscovery_OnBonjourConnection(BonjourConnectionInfo bonjourDiscoveredServer) {
+            if (PlexServers.Contains<PlexServer>(bonjourDiscoveredServer.Capabilities)) {
                 PlexServers.Find(x => x.Equals(bonjourDiscoveredServer)).IsBonjour = true;
             } else {
                 PlexServers.Add(bonjourDiscoveredServer);
@@ -140,5 +140,7 @@ namespace PlexMediaCenter.Plex.Connection {
         internal bool Authenticate(ref System.Net.WebClient _webClient, PlexServer plexServer) {
             return plexServer.Authenticate(ref _webClient);
         }
+
+
     }
 }

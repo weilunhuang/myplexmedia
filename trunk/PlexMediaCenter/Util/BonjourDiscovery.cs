@@ -29,7 +29,7 @@ namespace PlexMediaCenter.Util {
     public static class BonjourDiscovery {
         #region Delegates
 
-        public delegate void OnBonjourServerEventHandler(PlexServer bojourDiscoveredServer);
+        public delegate void OnBonjourEventHandler(BonjourConnectionInfo bojourDiscoveredServer);
 
         #endregion
 
@@ -41,7 +41,7 @@ namespace PlexMediaCenter.Util {
 
         private static NetServiceBrowser BonjourBrowser { get; set; }
 
-        public static event OnBonjourServerEventHandler OnBonjourServer;
+        public static event OnBonjourEventHandler OnBonjourConnection;
 
         private static void _browser_DidFindService(NetServiceBrowser browser, NetService service, bool moreComing) {
             try {
@@ -53,11 +53,8 @@ namespace PlexMediaCenter.Util {
         }
 
         private static void service_DidResolveService(NetService service) {
-            try {
-                PlexServer bonjourServer = new PlexServer(service.HostName,
-                                                          ((IPEndPoint) service.Addresses[0]).Address.ToString())
-                                               {IsBonjour = true};
-                OnBonjourServer(bonjourServer);
+            try {                
+                OnBonjourConnection(new BonjourConnectionInfo(service.HostName, ((IPEndPoint)service.Addresses[0]).Address.ToString(), service.Port));
             } catch (Exception e) {
                 throw e;
             }

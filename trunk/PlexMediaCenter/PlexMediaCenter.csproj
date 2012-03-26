@@ -48,7 +48,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Plex\Connection\BonjourConnectionInfo.cs" />
+    <Compile Include="Plex\Connection\BaseConnectionInfo.cs" />
+    <Compile Include="Plex\Connection\ManualConnectionInfo.cs" />
     <Compile Include="Plex\Connection\MyPlex.cs" />
+    <Compile Include="Plex\Connection\MyPlexConnectionInfo.cs" />
     <Compile Include="Plex\Connection\PlexCapabilitiesClient.cs" />
     <Compile Include="Plex\Data\Types\Genre.cs" />
     <Compile Include="Plex\Data\Types\Media.cs" />
