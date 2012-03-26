@@ -25,53 +25,32 @@ using System.Net;
 using System.Net.Sockets;
 using System.Xml.Serialization;
 using PlexMediaCenter.Plex.Data.Types;
+using System.Collections.Generic;
 using PlexMediaCenter.Util;
 
 namespace PlexMediaCenter.Plex.Connection {
     [Serializable]
     public class PlexServer : IEquatable<PlexServer> {
-        private const int DefaultPlexPort = 32400;
 
         public PlexServer() {
         }
 
-        public PlexServer(string hostName, string hostAdress, string userName, string userPass) {
-            HostName = hostName;
-            HostAdress = hostAdress;
-            UserName = userName;
-            PlexPort = DefaultPlexPort;
-            UserPass = EncryptPassword(userName, userPass);
+        public String MachineIdentifier { get; private set; }
+        private List<BaseConnectionInfo> KnownConnections { get; set; }
+
+        public PlexServer(string machineIdentifier) {
+            MachineIdentifier = machineIdentifier;
+            KnownConnections = new List<BaseConnectionInfo>();
         }
 
-        public PlexServer(string hostName, string hostAdress) {
-            HostName = hostName;
-            HostAdress = hostAdress;
-            PlexPort = DefaultPlexPort;
-        }
-
-        public PlexServer(string hostName, string hostAdress, int plexPort, MyPlexUser plexUser) {
-            HostName = hostName;
-            HostAdress = hostAdress;
-            PlexPort = plexPort;
-            AuthToken = plexUser.authenticationtoken;
-            UserName = plexUser.username;
-            IsMyPlex = true;
+        public void AddConnectionInfo(BaseConnectionInfo connectionInfo) {
+            KnownConnections.Add(connectionInfo);
         }
 
         public String FriendlyName {
             get { return ServerCapabilities != null ? ServerCapabilities.FriendlyName : String.Empty; }
         }
 
-        public String HostName { get; set; }
-        public String HostAdress { get; set; }
-        public int PlexPort { get; set; }
-        
-        public String UserName { get; set; }
-        public String UserPass { get; set; }
-        public String AuthToken { get; set; }
-
-        [XmlIgnore]
-        public PlexCapabilitiesServer ServerCapabilities { get; set; }
 
         [XmlIgnore]
         public bool IsBonjour { get; set; }
@@ -82,16 +61,7 @@ namespace PlexMediaCenter.Plex.Connection {
         [XmlIgnore]
         public bool IsOnline { get; set; }
 
-        [XmlIgnore]
-        public Uri UriPlexSections {
-            get { return new Uri(UriPlexBase, "/library/sections/"); }
-        }
-
-        [XmlIgnore]
-        public Uri UriPlexBase {
-            get { return new UriBuilder("http", HostAdress, PlexPort, "").Uri; }
-        }
-
+        
         public static string EncryptPassword(string userName, string userPass) {
             return Encryption.GetSHA1Hash(userName.ToLower() + Encryption.GetSHA1Hash(userPass));
         }
@@ -100,51 +70,13 @@ namespace PlexMediaCenter.Plex.Connection {
             return String.Format("{0} @ {1} [{2}]", UserName, FriendlyName, UriPlexBase.Host);
         }
 
-        public void AddAuthHeaders(ref WebClient webClient) {
-            if (IsMyPlex) {
-                webClient.Headers["X-Plex-Token"] = AuthToken;
-            } else {
-                webClient.Headers["X-Plex-User"] = UserName;
-                webClient.Headers["X-Plex-Pass"] = UserPass;
-            }
-        }
-
         internal bool Authenticate(ref WebClient webClient) {
-            if (CheckSocketConnection()) {
-                AddAuthHeaders(ref webClient);
-                try {
-                    string serverXmlResponse = webClient.DownloadString(UriPlexBase);
-                    ServerCapabilities =
-                        GetServerCapabilities(Serialization.DeSerializeXML<MediaContainer>(serverXmlResponse));
-                    IsOnline = true;
-                    return ServerCapabilities != null;
-                } catch (Exception e) {
-                }
-            }
-            IsOnline = false;
-            return false;
+            return true;
         }
-
-        private bool CheckSocketConnection() {
-            using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
-                try {
-                    IAsyncResult result = socket.BeginConnect(HostAdress, PlexPort, null, null);
-                    return result.AsyncWaitHandle.WaitOne(2000, true);
-                } catch {
-                    socket.Close();
-                    return false;
-                }
-            }
-        }
-
-        private static PlexCapabilitiesServer GetServerCapabilities(MediaContainer serverResponse) {
-            return serverResponse == null ? null : new PlexCapabilitiesServer(serverResponse);
-        }
-
         #region IEquatable<PlexServer> Members
 
         public bool Equals(PlexServer other) {
-            return HostAdress.Equals(other.HostAdress);
+            return MachineIdentifier.Equals(other.MachineIdentifier);
         }
         #endregion
     }

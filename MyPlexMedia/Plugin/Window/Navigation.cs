@@ -48,10 +48,10 @@ namespace MyPlexMedia.Plugin.Window {
             PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
             PlexInterface.OnResponseReceived += PlexInterface_OnResponseReceived;
             CommonDialogs.OnProgressCancelled += CommonDialogs_OnProgressCancelled;
-            History = new List<string> {Settings.PLUGIN_NAME};
+            History = new List<string> { Settings.PLUGIN_NAME };
             RootItem = new PlexItemBase(null, "Root Item", null);
             ServerItem = new MenuItem(RootItem, "Plex Servers");
-            RootMenu = new List<IMenuItem> {ServerItem};
+            RootMenu = new List<IMenuItem> { ServerItem };
             RootItem.SetChildItems(RootMenu);
         }
 
@@ -93,7 +93,7 @@ namespace MyPlexMedia.Plugin.Window {
                     ShowRootMenu(lastSelectedOrDefaultServer);
                     return;
                 } catch (Exception e) {
-                    OnErrorOccured(new PlexException(typeof (Navigation), "Creating startmenu failed!", e));
+                    OnErrorOccured(new PlexException(typeof(Navigation), "Creating startmenu failed!", e));
                 }
             }
             ShowCurrentMenu(ServerItem, 0);
@@ -154,9 +154,9 @@ namespace MyPlexMedia.Plugin.Window {
                 tmpList.AddRange(
                     plexResponseConatiner.Track.ConvertAll<IMenuItem>(
                         track =>
-                        new PlexItemTrack(parentItem, track.title, new Uri(parentItem.UriPath, track.key), plexResponseConatiner.title1 , plexResponseConatiner.title2, track)));
+                        new PlexItemTrack(parentItem, track.title, new Uri(parentItem.UriPath, track.key), plexResponseConatiner.title1, plexResponseConatiner.title2, track)));
             } catch (Exception e) {
-                OnErrorOccured(new PlexException(typeof (Navigation), "Creating submenu failed!", e));
+                OnErrorOccured(new PlexException(typeof(Navigation), "Creating submenu failed!", e));
             }
             return tmpList;
         }
@@ -164,7 +164,7 @@ namespace MyPlexMedia.Plugin.Window {
         private static void PlexInterface_OnResponseReceived(object userToken, MediaContainer response) {
             if (userToken is PlexItemSearch && response.Directory.Count < 1 && response.Video.Count < 1 &&
                 response.Track.Count < 1) {
-                CommonDialogs.ShowNotifyDialog(10, "Plex Search", "Nothing found...", Settings.PLEX_ICON_DEFAULT_SEARCH,  CommonDialogs.PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_OK);
+                CommonDialogs.ShowNotifyDialog(10, "Plex Search", "Nothing found...", Settings.PLEX_ICON_DEFAULT_SEARCH, CommonDialogs.PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_OK);
             }
             if (userToken is PlexItemBase) {
                 PlexItemBase item = userToken as PlexItemBase;
@@ -178,7 +178,7 @@ namespace MyPlexMedia.Plugin.Window {
                 History.Add(item.Name);
                 ShowCurrentMenu(item, item.LastSelectedChildIndex);
             } else {
-                OnErrorOccured(new PlexException(typeof (Navigation), "Unexpected item type in received response!",
+                OnErrorOccured(new PlexException(typeof(Navigation), "Unexpected item type in received response!",
                                                  new InvalidCastException()));
             }
         }
@@ -201,13 +201,10 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         internal static void AddNewPlexServer() {
-            PlexServer newServer = new PlexServer
-                                       {
-                                           HostName = CommonDialogs.GetKeyBoardInput("Friendly name", "HostName"),
-                                           HostAdress = CommonDialogs.GetKeyBoardInput("Host Adress", "HostAdress"),
-                                           UserName = CommonDialogs.GetKeyBoardInput("Login", "UserName"),
-                                           UserPass = CommonDialogs.GetKeyBoardInput("Password", "UserPasse")
-                                       };
+            PlexServer newServer = new PlexServer(CommonDialogs.GetKeyBoardInput("Friendly name", "HostName"),
+                CommonDialogs.GetKeyBoardInput("Host Adress", "HostAdress"),
+                CommonDialogs.GetKeyBoardInput("Login", "UserName"),
+                CommonDialogs.GetKeyBoardInput("Password", "UserPasse"));
             if (PlexInterface.Login(newServer)) {
                 PlexInterface.ServerManager.SetCurrentPlexServer(newServer);
             } else {
