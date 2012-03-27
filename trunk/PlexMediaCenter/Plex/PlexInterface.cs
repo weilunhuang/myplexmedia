@@ -69,13 +69,12 @@ namespace PlexMediaCenter.Plex {
             get { return PlexServerCurrent.IsBonjour; }
         }
 
-        public static bool ShouldTranscode { get; set; }
         public static event OnResponseProgressEventHandler OnResponseProgress;
         public static event OnResponseReceivedEventHandler OnResponseReceived;
         public static event OnPlexErrorEventHandler OnPlexError;
 
         public static void Init(string serverListXmlPath, string defaultBasePath, string defaultImage) {
-            ServerManager = new ServerManager(serverListXmlPath);
+            ServerManager = new ServerManager(ref _webClient,serverListXmlPath);
             ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
             ArtworkRetriever = new ArtworkRetriever(defaultBasePath, defaultImage);
             ArtworkRetriever.OnArtworkRetrievalError += MediaRetrieval_OnArtWorkRetrievalError;
@@ -84,7 +83,7 @@ namespace PlexMediaCenter.Plex {
         public static bool MyPlexLogin(string user, string pass) {
             MyPlex = new MyPlex(new NetworkCredential(user, pass));
             if (MyPlex.Authenticate(ref _webClient) && ServerManager != null) {
-                ServerManager.AddMyPlexServerList(MyPlex);
+                ServerManager.AddMyPlexServers(MyPlex.MyPlexServerList);
             } else {
                 return false;
             }
@@ -106,21 +105,6 @@ namespace PlexMediaCenter.Plex {
             } else {
                 OnPlexError(new PlexException(typeof(PlexInterface),
                                               string.Format("Unable to login to: ", plexServer.ToString()), null));
-            }
-            return null;
-        }
-
-        public static MediaContainer TryGetPlexServerRoot(PlexServer plexServer) {
-            if (Login(plexServer)) {
-                try {
-                    ServerManager.SetCurrentPlexServer(plexServer);
-                    return RequestPlexItems(plexServer.UriPlexBase);
-                } catch (Exception e) {
-                    OnPlexError(new PlexException(typeof(PlexInterface), "Unable to get root items for: " + plexServer,
-                                                  e));
-                }
-            } else {
-                OnPlexError(new PlexException(typeof(PlexInterface), "Unable to login to: " + plexServer, null));
             }
             return null;
         }
@@ -200,14 +184,12 @@ namespace PlexMediaCenter.Plex {
         }
 
         public static bool Login(PlexServer plexServer) {
-            return !String.IsNullOrEmpty(plexServer.HostAdress) &&
-                   ServerManager.Authenticate(ref _webClient, plexServer);
+            return ServerManager.Authenticate(plexServer);
         }
 
         public static void RefreshBonjourServers() {
             ServerManager.RefrehBonjourServers();
         }
-
         #endregion
     }
 }

@@ -2,7 +2,6 @@ using System;
 using System.Net;
 
 namespace PlexMediaCenter.Plex.Connection {
-    [Serializable]
     public class BonjourConnectionInfo : BaseConnectionInfo {
 
         public BonjourConnectionInfo() {
@@ -12,8 +11,12 @@ namespace PlexMediaCenter.Plex.Connection {
         :base(hostName,hostAdress, plexBonjourPort){
         }
 
-        public override void AddAuthHeaders(ref WebClient webClient) {
+        internal override void AddAuthHeaders(ref WebClient webClient) {
 
+        }
+
+        internal override string GetAuthUrlParameters() {
+            return string.Empty;
         }
     }
 }

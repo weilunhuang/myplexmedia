@@ -37,7 +37,7 @@ namespace PlexMediaCenter.Util {
 
         public static Uri GetTrackPlaybackUrl(Uri plexUriPath, MediaContainerTrack track) {
             PlexServer server = PlexInterface.ServerManager.TryFindPlexServer(plexUriPath);
-            return new Uri(server.UriPlexBase, track.Media[0].Part[0].key + GetPlexUserPass(server));
+            return new Uri(server.UriPlexBase, track.Media[0].Part[0].key  +"?"+ server.CurrentConnection.GetAuthUrlParameters());
         }
 
         public static List<string> GetVideoSegmentedPlayList(Uri plexUriPath, MediaContainerVideo video, long offset,
@@ -123,16 +123,11 @@ namespace PlexMediaCenter.Util {
         private static string GetPlexAuthParameters(PlexServer plexServer, string url) {
             string time = GetUnixTime();
             string authParameters = string.Empty;
-            authParameters += "&X-Plex-User=" + plexServer.UserName;
-            authParameters += "&X-Plex-Pass=" + plexServer.UserPass;
+            authParameters += "&" + plexServer.CurrentConnection.GetAuthUrlParameters();
             authParameters += "&X-Plex-Access-Key=" + PlexApiPublicKey;
             authParameters += "&X-Plex-Access-Time=" + time;
             authParameters += "&X-Plex-Access-Code=" + Uri.EscapeDataString(GetPlexApiToken(url, time));
             return authParameters;
-        }
-
-        private static string GetPlexUserPass(PlexServer plexServer) {
-            return String.Format("?X-Plex-User={0}&X-Plex-Pass={1}", plexServer.UserName, plexServer.UserPass);
         }
 
         //public static Uri GetFlvStreamUrl(PlexServer plexServer, string partKey, long offset = 0, int quality = _defaultQuality, bool is3G = false) {
