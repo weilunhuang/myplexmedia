@@ -31,18 +31,17 @@ namespace PlexMediaCenter.Plex.Connection {
     [Serializable]
     public abstract class BaseConnectionInfo {
 
+        public String MachineIdentifier { get; set; }
         public String HostName { get; set; }
         public String HostAdress { get; set; }
         public int PlexPort { get; set; }
 
         [XmlIgnore]
-        public Uri UriPlexBase {
-            get { return new UriBuilder("http", HostAdress, PlexPort, "").Uri; }
-        }
+        public bool IsOnline { get; set; }
 
         [XmlIgnore]
-        public Uri UriPlexSections {
-            get { return new Uri(UriPlexBase, "/library/sections/"); }
+        public Uri UriPlexBase {
+            get { return new UriBuilder("http", HostAdress, PlexPort, "").Uri; }
         }
 
         public PlexCapabilitiesServer Capabilities { get; set; }
@@ -56,20 +55,24 @@ namespace PlexMediaCenter.Plex.Connection {
             PlexPort = plexPort;
         }
 
-        public abstract void AddAuthHeaders(ref WebClient webClient);
+        internal abstract void AddAuthHeaders(ref WebClient webClient);
 
-        public bool TryConnect(ref WebClient webClient, out string MachineIdentifier) {
-            MachineIdentifier = string.Empty;
+        internal abstract string GetAuthUrlParameters();
+
+        public bool TryConnect(ref WebClient webClient, ref string machineIdentifier) {
             if (CheckSocketConnection()) {
                 AddAuthHeaders(ref webClient);
                 try {
                     string serverXmlResponse = webClient.DownloadString(UriPlexBase);
                     Capabilities = GetServerCapabilities(Serialization.DeSerializeXML<MediaContainer>(serverXmlResponse));
-                    MachineIdentifier = Capabilities.MachineIdentifier;
+                    MachineIdentifier = machineIdentifier = Capabilities.MachineIdentifier;
+                    IsOnline = true;
+                    return true;
                 } catch (Exception e) {
+                    IsOnline = false;
                 }
             }
-            return Capabilities != null;
+            return false;
         }
 
         private PlexCapabilitiesServer GetServerCapabilities(MediaContainer serverResponse) {
@@ -87,5 +90,7 @@ namespace PlexMediaCenter.Plex.Connection {
                 }
             }
         }
+
+       
     }
 }

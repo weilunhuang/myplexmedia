@@ -26,53 +26,112 @@ using System.Net.Sockets;
 using System.Xml.Serialization;
 using PlexMediaCenter.Plex.Data.Types;
 using System.Collections.Generic;
+using System.Linq;
 using PlexMediaCenter.Util;
+using System.Runtime.InteropServices;
 
 namespace PlexMediaCenter.Plex.Connection {
     [Serializable]
     public class PlexServer : IEquatable<PlexServer> {
 
+        public string MachineIdentifier { get; set; }
+
         public PlexServer() {
         }
 
-        public String MachineIdentifier { get; private set; }
-        private List<BaseConnectionInfo> KnownConnections { get; set; }
-
-        public PlexServer(string machineIdentifier) {
+        internal PlexServer(string machineIdentifier, BaseConnectionInfo connectionInfo) {
             MachineIdentifier = machineIdentifier;
-            KnownConnections = new List<BaseConnectionInfo>();
+            AddConnectionInfo(connectionInfo);
+        }
+
+        [XmlIgnore]
+        public string FriendlyName { get { return CurrentConnection.Capabilities.FriendlyName; } }
+        [XmlIgnore]
+        public string PlexVersion { get { return CurrentConnection.Capabilities.PMSVersion; } }
+
+        public IDictionary<Type, BaseConnectionInfo> KnownConnections { get; set; }
+
+        [XmlIgnore]
+        public Uri UriPlexBase { get { return CurrentConnection.UriPlexBase; } }
+
+        public Uri UriPlexSections {
+            get { return new Uri(CurrentConnection.UriPlexBase, "/library/sections/"); }
+        }
+
+        [XmlIgnore]
+        public BaseConnectionInfo CurrentConnection {
+            get {
+                if (IsBonjour) {
+                    return KnownConnections[typeof(BonjourConnectionInfo)];
+                }
+                if (IsMyPlex) {
+                    return KnownConnections[typeof(MyPlexConnectionInfo)];
+                }
+                if (IsManual) {
+                    return KnownConnections[typeof(ManualConnectionInfo)];
+                } else {
+                   return KnownConnections.First().Value;
+                }
+            }
+        }
+
+        [XmlIgnore]
+        public bool IsOnline {
+            get {
+                return CurrentConnection.IsOnline;
+            }
+        }
+
+        [XmlIgnore]
+        public bool IsBonjour {
+            get {
+                return KnownConnections.ContainsKey(typeof(BonjourConnectionInfo))
+                    && KnownConnections[typeof(BonjourConnectionInfo)].IsOnline;
+            }
+        }
+
+        [XmlIgnore]
+        public bool IsMyPlex {
+            get {
+                return KnownConnections.ContainsKey(typeof(MyPlexConnectionInfo))
+                    && KnownConnections[typeof(MyPlexConnectionInfo)].IsOnline;
+            }
+        }
+
+        [XmlIgnore]
+        public bool IsManual {
+            get {
+                return KnownConnections.ContainsKey(typeof(ManualConnectionInfo))
+                  && KnownConnections[typeof(ManualConnectionInfo)].IsOnline;
+            }
         }
 
         public void AddConnectionInfo(BaseConnectionInfo connectionInfo) {
-            KnownConnections.Add(connectionInfo);
+            if (KnownConnections == null) {
+                KnownConnections = new Dictionary<Type, BaseConnectionInfo>();
+            }
+            if (KnownConnections.ContainsKey(connectionInfo.GetType())) {
+                //Update connection info
+                KnownConnections[connectionInfo.GetType()] = connectionInfo;
+            } else {
+                //Add new Connection info
+                KnownConnections.Add(connectionInfo.GetType(), connectionInfo);
+            }
         }
 
-        public String FriendlyName {
-            get { return ServerCapabilities != null ? ServerCapabilities.FriendlyName : String.Empty; }
-        }
-
-
-        [XmlIgnore]
-        public bool IsBonjour { get; set; }
-
-        [XmlIgnore]
-        public bool IsMyPlex { get; set; }
-
-        [XmlIgnore]
-        public bool IsOnline { get; set; }
-
-        
         public static string EncryptPassword(string userName, string userPass) {
             return Encryption.GetSHA1Hash(userName.ToLower() + Encryption.GetSHA1Hash(userPass));
         }
 
         public override string ToString() {
-            return String.Format("{0} @ {1} [{2}]", UserName, FriendlyName, UriPlexBase.Host);
+            return String.Format("{0} @ {1} [{2}]", FriendlyName, CurrentConnection.UriPlexBase, PlexVersion);
         }
 
         internal bool Authenticate(ref WebClient webClient) {
-            return true;
+            string machine = String.Empty;
+            return CurrentConnection.TryConnect(ref webClient, ref machine);
         }
+
         #region IEquatable<PlexServer> Members
 
         public bool Equals(PlexServer other) {

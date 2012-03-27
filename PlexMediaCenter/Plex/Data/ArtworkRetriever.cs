@@ -68,7 +68,7 @@ namespace PlexMediaCenter.Plex.Data {
             ArtworkQueueItem currentItem = queueItem as ArtworkQueueItem;
             WebClient downloader = new WebClient();
             try {
-                currentItem.PlexServer.AddAuthHeaders(ref downloader);
+                currentItem.PlexServer.CurrentConnection.AddAuthHeaders(ref downloader);
                 downloader.DownloadFile(currentItem.ImageUrl, currentItem.ImageLocalPath);
                 currentItem.FinishedCallback.Invoke(currentItem.ImageLocalPath);
             } catch (Exception e) {

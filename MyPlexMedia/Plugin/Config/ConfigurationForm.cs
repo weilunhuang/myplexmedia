@@ -40,34 +40,23 @@ namespace MyPlexMedia.Plugin.Config {
                 InitializeComponent();
                 Load += ConfigurationForm_Load;
                 FormClosing += ConfigurationForm_FormClosing;
+                
                 Settings.Load();
                 PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH,
                                    Settings.PLEX_ICON_DEFAULT);
                 PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
                 PlexInterface.ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
-                BonjourDiscovery.OnBonjourConnection += BonjourDiscovery_OnBonjourServer;
-                plexServerBindingSource.DataSource = PlexServers = PlexInterface.ServerManager.PlexServers;
+                PlexInterface.ServerManager.RefrehBonjourServers();
             } catch (Exception ex) {
                 Log.Error(ex);
             }
         }
 
-        private List<PlexServer> PlexServers { get; set; }
-
         private void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
-            PlexServers = updatedServerList;
+            plexServerBindingSource.DataSource = updatedServerList;
             plexServerBindingSource.ResetBindings(true);
         }
-
-        private void BonjourDiscovery_OnBonjourServer(PlexServer bojourDiscoveredServer) {
-            if (PlexServers.Contains<PlexServer>(bojourDiscoveredServer)) {
-                PlexServers.First(x => x.Equals(bojourDiscoveredServer)).IsBonjour = true;
-            } else {
-                PlexServers.Add(bojourDiscoveredServer);
-            }
-            plexServerBindingSource.ResetBindings(true);
-        }
-
+        
         private static void ServerManager_OnServerManangerError(PlexException e) {
             MessageBox.Show(e.ToString());
         }
@@ -84,7 +73,6 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void ConfigurationForm_FormClosing(object sender, FormClosingEventArgs e) {
-            PlexInterface.ServerManager.SavePlexServers(PlexServers);
             Settings.CacheFolder = textBoxCheezRootFolder.Text;
             Settings.DeleteCacheOnExit = checkBoxDeleteOnExit.Checked;
             Settings.DefaultQualityLAN = (PlexQualities)comboBoxQualityLAN.SelectedValue;
@@ -120,7 +108,6 @@ namespace MyPlexMedia.Plugin.Config {
         private void tabPage2_Enter(object sender, EventArgs e) {
             plexServerBindingSource.DataSource = PlexServers;
             RefreshOnlineStatus();
-            BonjourDiscovery.StartBonjourDiscovery();
         }
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e) {

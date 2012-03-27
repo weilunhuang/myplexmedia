@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using PlexMediaCenter.Util;
+using System.Net;
 
 namespace PlexMediaCenter.Plex.Connection {
     public class ServerManager {
@@ -35,16 +36,18 @@ namespace PlexMediaCenter.Plex.Connection {
         public delegate void OnServerManangerErrorEventHandler(PlexException e);
 
         #endregion
+        private WebClient WebClient;
+        private PlexServer CurrentPlexServer{get; set;}
 
-        private PlexServer _plexServerCurrent;
-
-        public ServerManager(string serverXmlFile) {
+        public ServerManager(ref WebClient webClient, string serverXmlFile) {
             if (string.IsNullOrEmpty(serverXmlFile)) {
                 throw new Exception();
             }
+            WebClient = webClient;
             ServerXmlFile = serverXmlFile;
             PlexServers = LoadPlexServers();
             BonjourDiscovery.OnBonjourConnection += BonjourDiscovery_OnBonjourConnection;
+            BonjourDiscovery.StartBonjourDiscovery();
         }
 
         private string ServerXmlFile { get; set; }
@@ -52,13 +55,13 @@ namespace PlexMediaCenter.Plex.Connection {
         public List<PlexServer> PlexServers { get; private set; }
 
         public PlexServer PlexServerCurrent {
-            get { return _plexServerCurrent; }
+            get { return PlexServerCurrent; }
             private set {
-                _plexServerCurrent = value;
+                PlexServerCurrent = value;
                 if (!PlexServers.Contains(value)) {
                     PlexServers.Insert(0, value);
+                    SavePlexServers(PlexServers);
                 }
-                SavePlexServers(PlexServers);
             }
         }
 
@@ -82,7 +85,7 @@ namespace PlexMediaCenter.Plex.Connection {
             return new List<PlexServer>();
         }
 
-        public void SavePlexServers(List<PlexServer> plexServers) {
+        private void SavePlexServers(List<PlexServer> plexServers) {
             if (plexServers == null) {
                 OnServerManangerError(new PlexException(GetType(), "Unable to save server list",
                                                         new ArgumentNullException("plexServers")));
@@ -100,7 +103,7 @@ namespace PlexMediaCenter.Plex.Connection {
         }
 
         public PlexServer TryFindPlexServer(Uri plexUrl) {
-            PlexServer server = PlexInterface.ServerManager.PlexServers.Find(svr => svr.HostAdress.Equals(plexUrl.Host));
+            PlexServer server = PlexInterface.ServerManager.PlexServers.Find(svr => svr.UriPlexBase.Host.Equals(plexUrl.Host));
             if (server != null) {
                 return server;
             } else {
@@ -117,17 +120,31 @@ namespace PlexMediaCenter.Plex.Connection {
         }
 
         private void BonjourDiscovery_OnBonjourConnection(BonjourConnectionInfo bonjourDiscoveredServer) {
-            if (PlexServers.Contains<PlexServer>(bonjourDiscoveredServer.Capabilities)) {
-                PlexServers.Find(x => x.Equals(bonjourDiscoveredServer)).IsBonjour = true;
-            } else {
-                PlexServers.Add(bonjourDiscoveredServer);
-                OnPlexServersChanged(PlexServers);
+            try {
+                string machineIdentifier = string.Empty;
+                if (bonjourDiscoveredServer.TryConnect(ref WebClient, ref machineIdentifier)) {
+                    if (PlexServers.Exists(svr => svr.MachineIdentifier.Equals(machineIdentifier))) {
+                        PlexServers.Single(svr => svr.MachineIdentifier.Equals(machineIdentifier)).AddConnectionInfo(bonjourDiscoveredServer);
+                    } else {
+                        PlexServers.Add(new PlexServer(machineIdentifier, bonjourDiscoveredServer));
+                    }
+                    OnPlexServersChanged(PlexServers);
+                }
+            } catch { 
+                
             }
         }
 
-        public void AddMyPlexServerList(MyPlex myPlex) {
-            PlexServers = myPlex.MyPlexServerList.Union(PlexServers).ToList();
-            OnPlexServersChanged(PlexServers);
+
+
+        internal void AddMyPlexServers(List<MyPlexConnectionInfo> myPlexServerConnections) {
+            foreach (MyPlexConnectionInfo conn in myPlexServerConnections) {
+                if (PlexServers.Exists(svr => svr.MachineIdentifier.Equals(conn.MachineIdentifier))) {
+                    PlexServers.Single(svr => svr.MachineIdentifier.Equals(conn.MachineIdentifier)).AddConnectionInfo(conn);
+                } else {
+                    PlexServers.Add(new PlexServer(conn.MachineIdentifier, conn));
+                }
+            }
         }
 
         public void RefrehBonjourServers() {
@@ -137,10 +154,8 @@ namespace PlexMediaCenter.Plex.Connection {
             BonjourDiscovery.RefreshBonjourDiscovery();
         }
 
-        internal bool Authenticate(ref System.Net.WebClient _webClient, PlexServer plexServer) {
-            return plexServer.Authenticate(ref _webClient);
+        internal bool Authenticate(PlexServer plexServer) {
+            return plexServer.Authenticate(ref WebClient);
         }
-
-
     }
 }

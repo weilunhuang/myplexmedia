@@ -15,7 +15,7 @@ namespace PlexMediaCenter.Plex.Connection {
         private NetworkCredential MyPlexCredentials { get; set; }
 
         public MyPlexUser MyPlexAccount { get; private set; }
-        public List<PlexServer> MyPlexServerList { get; private set; }
+        public List<MyPlexConnectionInfo> MyPlexServerList { get; private set; }
 
         public MyPlex(NetworkCredential myPlexCredentials) {
             MyPlexCredentials = myPlexCredentials;
@@ -34,11 +34,11 @@ namespace PlexMediaCenter.Plex.Connection {
                 MyPlexAccount = Serialization.DeSerializeXML<MyPlexUser>(Encoding.ASCII.GetString(byteResult));
                 webClient.Headers["X-Plex-Token"] = MyPlexAccount.authenticationtoken;
                 string serversRes = webClient.DownloadString(ServersUrl);
-                List<MediaContainerServer> servers= Serialization.DeSerializeXML<MediaContainer>(serversRes).Server;
-                MyPlexServerList = servers.ConvertAll<PlexServer>(mcs => new PlexServer(mcs.name , mcs.host, int.Parse(mcs.port), MyPlexAccount));
+                List<MediaContainerServer> servers = Serialization.DeSerializeXML<MediaContainer>(serversRes).Server;
+                MyPlexServerList = servers.ConvertAll<MyPlexConnectionInfo>(mcs => new MyPlexConnectionInfo(mcs.machineIdentifier, mcs.name, mcs.host, int.Parse(mcs.port), MyPlexAccount.authenticationtoken));
                 return
-                    MyPlexAccount != null 
-                    && !String.IsNullOrEmpty(MyPlexAccount.authenticationtoken) 
+                    MyPlexAccount != null
+                    && !String.IsNullOrEmpty(MyPlexAccount.authenticationtoken)
                     && !String.IsNullOrEmpty(serversRes);
             } catch {
                 return false;
