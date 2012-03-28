@@ -86,52 +86,52 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void RefreshOnlineStatus() {
-            Invoke(new MethodInvoker(() => { UseWaitCursor = true; }));
-            PlexServers.ForEach(svr => PlexInterface.Login(svr));
-            Invoke(new MethodInvoker(() => { UseWaitCursor = false; }));
+            //Invoke(new MethodInvoker(() => { UseWaitCursor = true; }));
+            //PlexServers.ForEach(svr => PlexInterface.Login(svr));
+            //Invoke(new MethodInvoker(() => { UseWaitCursor = false; }));
         }
 
         private void dataGridView1_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e) {
-            try {
-                if (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index) {
-                    if (string.IsNullOrEmpty(PlexServers[e.RowIndex].UserPass)) {
-                        e.Value = "[password set]";
-                    }
-                    if (PlexServers[e.RowIndex].IsMyPlex) {
-                        e.Value = "[token set]";
-                    }
-                }
-            } catch {
-            }
+            //try {
+            //    if (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index) {
+            //        if (string.IsNullOrEmpty(PlexServers[e.RowIndex].UserPass)) {
+            //            e.Value = "[password set]";
+            //        }
+            //        if (PlexServers[e.RowIndex].IsMyPlex) {
+            //            e.Value = "[token set]";
+            //        }
+            //    }
+            //} catch {
+            //}
         }
 
         private void tabPage2_Enter(object sender, EventArgs e) {
-            plexServerBindingSource.DataSource = PlexServers;
-            RefreshOnlineStatus();
+            //plexServerBindingSource.DataSource = PlexServers;
+            //RefreshOnlineStatus();
         }
 
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e) {
-            try {
-                if (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index) {
-                    PlexServers[e.RowIndex].UserPass = PlexServer.EncryptPassword(PlexServers[e.RowIndex].UserName,
-                                                            dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString());
-                }
+            //try {
+            //    if (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index) {
+            //        PlexServers[e.RowIndex].UserPass = PlexServer.EncryptPassword(PlexServers[e.RowIndex].UserName,
+            //                                                dataGridView1[e.ColumnIndex, e.RowIndex].Value.ToString());
+            //    }
 
-                if (e.ColumnIndex == hostAdressDataGridViewTextBoxColumn.Index ||
-                    !PlexServers[e.RowIndex].IsBonjour &&
-                    (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index ||
-                     e.ColumnIndex == userNameDataGridViewTextBoxColumn.Index)) {
-                    PlexInterface.Login(PlexServers[e.RowIndex]);
-                }
-            } catch (Exception) {
-            }
+            //    if (e.ColumnIndex == hostAdressDataGridViewTextBoxColumn.Index ||
+            //        !PlexServers[e.RowIndex].IsBonjour &&
+            //        (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index ||
+            //         e.ColumnIndex == userNameDataGridViewTextBoxColumn.Index)) {
+            //        PlexInterface.Login(PlexServers[e.RowIndex]);
+            //    }
+            //} catch (Exception) {
+            //}
         }
 
         private void dataGridView1_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e) {
-            if (e.RowIndex < PlexServers.Count)
-                dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = PlexServers[e.RowIndex].IsOnline
-                                                                                ? Color.LightGreen
-                                                                                : Color.Tomato;
+            //if (e.RowIndex < PlexServers.Count)
+            //    dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = PlexServers[e.RowIndex].IsOnline
+            //                                                                    ? Color.LightGreen
+            //                                                                    : Color.Tomato;
         }
 
         private void buttonMyPlexLogin_Click(object sender, EventArgs e) {
@@ -139,6 +139,10 @@ namespace MyPlexMedia.Plugin.Config {
                 PlexInterface.MyPlexLogin(textBoxMyPlexUser.Text, textBoxMyPlexPass.Text)
                                  ? Color.LightGreen
                                  : Color.Tomato;
+        }
+
+        private void listBoxPlexServers_SelectedValueChanged(object sender, EventArgs e) {
+            baseConnectionInfoBindingSource.DataSource = ((PlexServer)listBoxPlexServers.SelectedValue).KnownConnections;
         }
     }
 }

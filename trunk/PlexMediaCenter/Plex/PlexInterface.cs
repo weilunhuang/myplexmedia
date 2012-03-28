@@ -28,6 +28,7 @@ using PlexMediaCenter.Plex.Connection;
 using PlexMediaCenter.Plex.Data;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
+using System.Runtime.InteropServices;
 
 namespace PlexMediaCenter.Plex {
     public static class PlexInterface {
@@ -185,6 +186,10 @@ namespace PlexMediaCenter.Plex {
 
         public static bool Login(PlexServer plexServer) {
             return ServerManager.Authenticate(plexServer);
+        }
+
+        public static bool Connect(ManualConnectionInfo connInfo) {
+            return(Login(ServerManager.AddManualServerConnection(connInfo)));
         }
 
         public static void RefreshBonjourServers() {

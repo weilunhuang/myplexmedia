@@ -36,9 +36,26 @@ namespace MyPlexMedia.Plugin.Config {
             this.textBoxMyPlexUser = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.buttonRefreshBonjourServers = new System.Windows.Forms.Button();
+            this.button2 = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.HostName = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.HostAdress = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.PlexPort = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Capabilities = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.MachineIdentifier = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.machineIdentifierDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hostNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.hostAdressDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.plexPortDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.isOnlineDataGridViewCheckBoxColumn1 = new System.Windows.Forms.DataGridViewCheckBoxColumn();
+            this.uriPlexBaseDataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.capabilitiesDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.baseConnectionInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.listBoxPlexServers = new System.Windows.Forms.ListBox();
             this.plexServerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.buttonRefreshBonjourServers = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.checkBoxSelectQualityPriorToPlayback = new System.Windows.Forms.CheckBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -55,19 +72,14 @@ namespace MyPlexMedia.Plugin.Config {
             this.uriPlexSectionsDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.uriPlexBaseDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.serverCapabilitiesDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hostNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.hostAdressDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.PlexPort = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.userNameDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.userPassDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.FriendlyName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.isBonjourDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
-            this.IsMyPlex = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.tabControl1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.tabPage2.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.baseConnectionInfoBindingSource)).BeginInit();
+            this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -185,8 +197,10 @@ namespace MyPlexMedia.Plugin.Config {
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.button2);
+            this.tabPage2.Controls.Add(this.groupBox2);
+            this.tabPage2.Controls.Add(this.groupBox1);
             this.tabPage2.Controls.Add(this.buttonRefreshBonjourServers);
-            this.tabPage2.Controls.Add(this.dataGridView1);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -196,16 +210,29 @@ namespace MyPlexMedia.Plugin.Config {
             this.tabPage2.UseVisualStyleBackColor = true;
             this.tabPage2.Enter += new System.EventHandler(this.tabPage2_Enter);
             // 
-            // buttonRefreshBonjourServers
+            // button2
             // 
-            this.buttonRefreshBonjourServers.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.buttonRefreshBonjourServers.Location = new System.Drawing.Point(3, 162);
-            this.buttonRefreshBonjourServers.Name = "buttonRefreshBonjourServers";
-            this.buttonRefreshBonjourServers.Size = new System.Drawing.Size(674, 23);
-            this.buttonRefreshBonjourServers.TabIndex = 1;
-            this.buttonRefreshBonjourServers.Text = "Update Online Status && Discover Plex Servers (Bonjour Discovery)";
-            this.buttonRefreshBonjourServers.UseVisualStyleBackColor = true;
-            this.buttonRefreshBonjourServers.Click += new System.EventHandler(this.buttonRefreshBonjourServers_Click);
+            this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.button2.Location = new System.Drawing.Point(6, 159);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(128, 23);
+            this.button2.TabIndex = 3;
+            this.button2.Text = "Add Server";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.groupBox2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox2.Controls.Add(this.dataGridView1);
+            this.groupBox2.Location = new System.Drawing.Point(140, 6);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(534, 147);
+            this.groupBox2.TabIndex = 4;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Known Connections";
             // 
             // dataGridView1
             // 
@@ -215,29 +242,155 @@ namespace MyPlexMedia.Plugin.Config {
             this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.DisplayedCells;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.HostName,
+            this.HostAdress,
+            this.PlexPort,
+            this.Capabilities,
+            this.MachineIdentifier,
+            this.machineIdentifierDataGridViewTextBoxColumn,
             this.hostNameDataGridViewTextBoxColumn,
             this.hostAdressDataGridViewTextBoxColumn,
-            this.PlexPort,
-            this.userNameDataGridViewTextBoxColumn,
-            this.userPassDataGridViewTextBoxColumn,
-            this.FriendlyName,
-            this.isBonjourDataGridViewCheckBoxColumn,
-            this.IsMyPlex});
-            this.dataGridView1.DataSource = this.plexServerBindingSource;
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.dataGridView1.Location = new System.Drawing.Point(3, 3);
+            this.plexPortDataGridViewTextBoxColumn,
+            this.isOnlineDataGridViewCheckBoxColumn1,
+            this.uriPlexBaseDataGridViewTextBoxColumn1,
+            this.capabilitiesDataGridViewTextBoxColumn});
+            this.dataGridView1.DataSource = this.baseConnectionInfoBindingSource;
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView1.Location = new System.Drawing.Point(3, 16);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersWidth = 25;
             this.dataGridView1.RowHeadersWidthSizeMode = System.Windows.Forms.DataGridViewRowHeadersWidthSizeMode.DisableResizing;
-            this.dataGridView1.Size = new System.Drawing.Size(674, 153);
+            this.dataGridView1.Size = new System.Drawing.Size(528, 128);
             this.dataGridView1.TabIndex = 0;
             this.dataGridView1.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellEndEdit);
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             this.dataGridView1.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGridView1_RowPrePaint);
             // 
+            // HostName
+            // 
+            this.HostName.DataPropertyName = "HostName";
+            this.HostName.HeaderText = "HostName";
+            this.HostName.Name = "HostName";
+            this.HostName.Width = 82;
+            // 
+            // HostAdress
+            // 
+            this.HostAdress.DataPropertyName = "HostAdress";
+            this.HostAdress.HeaderText = "HostAdress";
+            this.HostAdress.Name = "HostAdress";
+            this.HostAdress.Width = 86;
+            // 
+            // PlexPort
+            // 
+            this.PlexPort.DataPropertyName = "PlexPort";
+            this.PlexPort.HeaderText = "PlexPort";
+            this.PlexPort.Name = "PlexPort";
+            this.PlexPort.Width = 71;
+            // 
+            // Capabilities
+            // 
+            this.Capabilities.DataPropertyName = "Capabilities";
+            this.Capabilities.HeaderText = "Capabilities";
+            this.Capabilities.Name = "Capabilities";
+            this.Capabilities.Width = 85;
+            // 
+            // MachineIdentifier
+            // 
+            this.MachineIdentifier.DataPropertyName = "MachineIdentifier";
+            this.MachineIdentifier.HeaderText = "MachineIdentifier";
+            this.MachineIdentifier.Name = "MachineIdentifier";
+            this.MachineIdentifier.Width = 113;
+            // 
+            // machineIdentifierDataGridViewTextBoxColumn
+            // 
+            this.machineIdentifierDataGridViewTextBoxColumn.DataPropertyName = "MachineIdentifier";
+            this.machineIdentifierDataGridViewTextBoxColumn.HeaderText = "MachineIdentifier";
+            this.machineIdentifierDataGridViewTextBoxColumn.Name = "machineIdentifierDataGridViewTextBoxColumn";
+            this.machineIdentifierDataGridViewTextBoxColumn.Width = 113;
+            // 
+            // hostNameDataGridViewTextBoxColumn
+            // 
+            this.hostNameDataGridViewTextBoxColumn.DataPropertyName = "HostName";
+            this.hostNameDataGridViewTextBoxColumn.HeaderText = "HostName";
+            this.hostNameDataGridViewTextBoxColumn.Name = "hostNameDataGridViewTextBoxColumn";
+            this.hostNameDataGridViewTextBoxColumn.Width = 82;
+            // 
+            // hostAdressDataGridViewTextBoxColumn
+            // 
+            this.hostAdressDataGridViewTextBoxColumn.DataPropertyName = "HostAdress";
+            this.hostAdressDataGridViewTextBoxColumn.HeaderText = "HostAdress";
+            this.hostAdressDataGridViewTextBoxColumn.Name = "hostAdressDataGridViewTextBoxColumn";
+            this.hostAdressDataGridViewTextBoxColumn.Width = 86;
+            // 
+            // plexPortDataGridViewTextBoxColumn
+            // 
+            this.plexPortDataGridViewTextBoxColumn.DataPropertyName = "PlexPort";
+            this.plexPortDataGridViewTextBoxColumn.HeaderText = "PlexPort";
+            this.plexPortDataGridViewTextBoxColumn.Name = "plexPortDataGridViewTextBoxColumn";
+            this.plexPortDataGridViewTextBoxColumn.Width = 71;
+            // 
+            // isOnlineDataGridViewCheckBoxColumn1
+            // 
+            this.isOnlineDataGridViewCheckBoxColumn1.DataPropertyName = "IsOnline";
+            this.isOnlineDataGridViewCheckBoxColumn1.HeaderText = "IsOnline";
+            this.isOnlineDataGridViewCheckBoxColumn1.Name = "isOnlineDataGridViewCheckBoxColumn1";
+            this.isOnlineDataGridViewCheckBoxColumn1.Width = 51;
+            // 
+            // uriPlexBaseDataGridViewTextBoxColumn1
+            // 
+            this.uriPlexBaseDataGridViewTextBoxColumn1.DataPropertyName = "UriPlexBase";
+            this.uriPlexBaseDataGridViewTextBoxColumn1.HeaderText = "UriPlexBase";
+            this.uriPlexBaseDataGridViewTextBoxColumn1.Name = "uriPlexBaseDataGridViewTextBoxColumn1";
+            this.uriPlexBaseDataGridViewTextBoxColumn1.ReadOnly = true;
+            this.uriPlexBaseDataGridViewTextBoxColumn1.Width = 89;
+            // 
+            // capabilitiesDataGridViewTextBoxColumn
+            // 
+            this.capabilitiesDataGridViewTextBoxColumn.DataPropertyName = "Capabilities";
+            this.capabilitiesDataGridViewTextBoxColumn.HeaderText = "Capabilities";
+            this.capabilitiesDataGridViewTextBoxColumn.Name = "capabilitiesDataGridViewTextBoxColumn";
+            this.capabilitiesDataGridViewTextBoxColumn.Width = 85;
+            // 
+            // baseConnectionInfoBindingSource
+            // 
+            this.baseConnectionInfoBindingSource.DataSource = typeof(PlexMediaCenter.Plex.Connection.BaseConnectionInfo);
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.listBoxPlexServers);
+            this.groupBox1.Location = new System.Drawing.Point(6, 6);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(128, 147);
+            this.groupBox1.TabIndex = 3;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Plex Servers";
+            // 
+            // listBoxPlexServers
+            // 
+            this.listBoxPlexServers.DataSource = this.plexServerBindingSource;
+            this.listBoxPlexServers.DisplayMember = "FriendlyName";
+            this.listBoxPlexServers.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBoxPlexServers.FormattingEnabled = true;
+            this.listBoxPlexServers.Location = new System.Drawing.Point(3, 16);
+            this.listBoxPlexServers.Name = "listBoxPlexServers";
+            this.listBoxPlexServers.Size = new System.Drawing.Size(122, 128);
+            this.listBoxPlexServers.TabIndex = 2;
+            this.listBoxPlexServers.ValueMember = "MachineIdentifier";
+            this.listBoxPlexServers.SelectedValueChanged += new System.EventHandler(this.listBoxPlexServers_SelectedValueChanged);
+            // 
             // plexServerBindingSource
             // 
             this.plexServerBindingSource.DataSource = typeof(PlexMediaCenter.Plex.Connection.PlexServer);
+            // 
+            // buttonRefreshBonjourServers
+            // 
+            this.buttonRefreshBonjourServers.Location = new System.Drawing.Point(140, 159);
+            this.buttonRefreshBonjourServers.Name = "buttonRefreshBonjourServers";
+            this.buttonRefreshBonjourServers.Size = new System.Drawing.Size(534, 23);
+            this.buttonRefreshBonjourServers.TabIndex = 1;
+            this.buttonRefreshBonjourServers.Text = "Update Online Status && Discover Plex Servers (Bonjour Discovery)";
+            this.buttonRefreshBonjourServers.UseVisualStyleBackColor = true;
+            this.buttonRefreshBonjourServers.Click += new System.EventHandler(this.buttonRefreshBonjourServers_Click);
             // 
             // tabPage3
             // 
@@ -392,81 +545,6 @@ namespace MyPlexMedia.Plugin.Config {
             this.serverCapabilitiesDataGridViewTextBoxColumn.Name = "serverCapabilitiesDataGridViewTextBoxColumn";
             this.serverCapabilitiesDataGridViewTextBoxColumn.Width = 58;
             // 
-            // hostNameDataGridViewTextBoxColumn
-            // 
-            this.hostNameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.hostNameDataGridViewTextBoxColumn.DataPropertyName = "HostName";
-            this.hostNameDataGridViewTextBoxColumn.FillWeight = 64.23822F;
-            this.hostNameDataGridViewTextBoxColumn.HeaderText = "Host Name";
-            this.hostNameDataGridViewTextBoxColumn.Name = "hostNameDataGridViewTextBoxColumn";
-            // 
-            // hostAdressDataGridViewTextBoxColumn
-            // 
-            this.hostAdressDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
-            this.hostAdressDataGridViewTextBoxColumn.DataPropertyName = "HostAdress";
-            this.hostAdressDataGridViewTextBoxColumn.FillWeight = 64.23822F;
-            this.hostAdressDataGridViewTextBoxColumn.HeaderText = "Host Adress";
-            this.hostAdressDataGridViewTextBoxColumn.Name = "hostAdressDataGridViewTextBoxColumn";
-            this.hostAdressDataGridViewTextBoxColumn.Width = 21;
-            // 
-            // PlexPort
-            // 
-            this.PlexPort.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
-            this.PlexPort.DataPropertyName = "PlexPort";
-            this.PlexPort.FillWeight = 84.68307F;
-            this.PlexPort.HeaderText = "PlexPort";
-            this.PlexPort.Name = "PlexPort";
-            this.PlexPort.Width = 21;
-            // 
-            // userNameDataGridViewTextBoxColumn
-            // 
-            this.userNameDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
-            this.userNameDataGridViewTextBoxColumn.DataPropertyName = "UserName";
-            this.userNameDataGridViewTextBoxColumn.FillWeight = 64.23822F;
-            this.userNameDataGridViewTextBoxColumn.HeaderText = "User Name";
-            this.userNameDataGridViewTextBoxColumn.Name = "userNameDataGridViewTextBoxColumn";
-            this.userNameDataGridViewTextBoxColumn.Width = 21;
-            // 
-            // userPassDataGridViewTextBoxColumn
-            // 
-            this.userPassDataGridViewTextBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
-            this.userPassDataGridViewTextBoxColumn.DataPropertyName = "UserPass";
-            this.userPassDataGridViewTextBoxColumn.FillWeight = 64.23822F;
-            this.userPassDataGridViewTextBoxColumn.HeaderText = "User Pass";
-            this.userPassDataGridViewTextBoxColumn.Name = "userPassDataGridViewTextBoxColumn";
-            this.userPassDataGridViewTextBoxColumn.Width = 21;
-            // 
-            // FriendlyName
-            // 
-            this.FriendlyName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCellsExceptHeader;
-            this.FriendlyName.DataPropertyName = "FriendlyName";
-            this.FriendlyName.FillWeight = 64.23822F;
-            this.FriendlyName.HeaderText = "Friendly Name";
-            this.FriendlyName.Name = "FriendlyName";
-            this.FriendlyName.ReadOnly = true;
-            this.FriendlyName.Width = 21;
-            // 
-            // isBonjourDataGridViewCheckBoxColumn
-            // 
-            this.isBonjourDataGridViewCheckBoxColumn.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.isBonjourDataGridViewCheckBoxColumn.DataPropertyName = "IsBonjour";
-            this.isBonjourDataGridViewCheckBoxColumn.FillWeight = 131.4561F;
-            this.isBonjourDataGridViewCheckBoxColumn.HeaderText = "Bonjour";
-            this.isBonjourDataGridViewCheckBoxColumn.MinimumWidth = 10;
-            this.isBonjourDataGridViewCheckBoxColumn.Name = "isBonjourDataGridViewCheckBoxColumn";
-            this.isBonjourDataGridViewCheckBoxColumn.ReadOnly = true;
-            this.isBonjourDataGridViewCheckBoxColumn.Width = 49;
-            // 
-            // IsMyPlex
-            // 
-            this.IsMyPlex.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
-            this.IsMyPlex.DataPropertyName = "IsMyPlex";
-            this.IsMyPlex.FillWeight = 110.091F;
-            this.IsMyPlex.HeaderText = "MyPlex";
-            this.IsMyPlex.MinimumWidth = 10;
-            this.IsMyPlex.Name = "IsMyPlex";
-            this.IsMyPlex.Width = 47;
-            // 
             // ConfigurationForm
             // 
             this.AcceptButton = this.buttonMyPlexLogin;
@@ -485,7 +563,10 @@ namespace MyPlexMedia.Plugin.Config {
             this.tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).EndInit();
             this.tabPage2.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.baseConnectionInfoBindingSource)).EndInit();
+            this.groupBox1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
@@ -508,7 +589,6 @@ namespace MyPlexMedia.Plugin.Config {
         private System.Windows.Forms.Label labelCheezRootFolder;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.Button buttonRefreshBonjourServers;
-        private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.BindingSource plexServerBindingSource;
         private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.DataGridViewTextBoxColumn serverCapabilitiesDataGridViewTextBoxColumn;
@@ -531,12 +611,24 @@ namespace MyPlexMedia.Plugin.Config {
         private System.Windows.Forms.LinkLabel linkLabel1;
         private System.Windows.Forms.DataGridViewTextBoxColumn hostNameDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn hostAdressDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn PlexPort;
         private System.Windows.Forms.DataGridViewTextBoxColumn userNameDataGridViewTextBoxColumn;
         private System.Windows.Forms.DataGridViewTextBoxColumn userPassDataGridViewTextBoxColumn;
-        private System.Windows.Forms.DataGridViewTextBoxColumn FriendlyName;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn isBonjourDataGridViewCheckBoxColumn;
-        private System.Windows.Forms.DataGridViewCheckBoxColumn IsMyPlex;        
+        private System.Windows.Forms.DataGridView dataGridView1;
+        private System.Windows.Forms.GroupBox groupBox2;
+        private System.Windows.Forms.BindingSource baseConnectionInfoBindingSource;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.ListBox listBoxPlexServers;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HostName;
+        private System.Windows.Forms.DataGridViewTextBoxColumn HostAdress;
+        private System.Windows.Forms.DataGridViewTextBoxColumn PlexPort;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Capabilities;
+        private System.Windows.Forms.DataGridViewTextBoxColumn MachineIdentifier;
+        private System.Windows.Forms.DataGridViewTextBoxColumn machineIdentifierDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewTextBoxColumn plexPortDataGridViewTextBoxColumn;
+        private System.Windows.Forms.DataGridViewCheckBoxColumn isOnlineDataGridViewCheckBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn uriPlexBaseDataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn capabilitiesDataGridViewTextBoxColumn;        
 
 
     }

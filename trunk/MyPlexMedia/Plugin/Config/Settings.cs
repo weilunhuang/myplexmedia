@@ -76,6 +76,8 @@ namespace MyPlexMedia.Plugin.Config {
         static Settings() {
             DefaultLayout = CreatePreferredLayouts();
             //Set defaults           
+            MyPlexUser = String.Empty;
+            MyPlexPass = String.Empty;
             CacheFolder = PLEX_ARTWORK_CACHE_ROOT_PATH;
             DefaultQualityLAN = Window.Playback.PlexQualities._3_1500kbps_480p;
             DefaultQualityWAN = Window.Playback.PlexQualities._3_1500kbps_480p;
@@ -94,6 +96,8 @@ namespace MyPlexMedia.Plugin.Config {
 
         public static int FetchCount { get; set; }
         public static string CacheFolder { get; set; }
+        public static string MyPlexUser { get; set; }
+        public static string MyPlexPass { get; set; }
         public static bool DeleteCacheOnExit { get; set; }
         public static bool SelectQualityPriorToPlayback { get; set; }
 
@@ -173,6 +177,8 @@ namespace MyPlexMedia.Plugin.Config {
                     if (!String.IsNullOrEmpty(reader.GetValue(PLUGIN_NAME, "CacheFolder"))) {
                         CacheFolder = reader.GetValue(PLUGIN_NAME, "CacheFolder");
                     }
+                    MyPlexUser = reader.GetValue(PLUGIN_NAME, "MyPlexUser");
+                    MyPlexPass = decryptString(reader.GetValue(PLUGIN_NAME, "MyPlexPass"));
                     DefaultQualityLAN = Enum<PlexQualities>.Parse(reader.GetValueAsString(PLUGIN_NAME, "DefaultQualityLAN", DefaultQualityLAN.ToString()));
                     DefaultQualityWAN = Enum<PlexQualities>.Parse(reader.GetValueAsString(PLUGIN_NAME, "DefaultQualityWAN", DefaultQualityWAN.ToString()));
                     SelectQualityPriorToPlayback = reader.GetValueAsBool(PLUGIN_NAME, "SelectQualityPriorToPlayback", true);
@@ -194,6 +200,8 @@ namespace MyPlexMedia.Plugin.Config {
                     xmlwriter.SetValue(PLUGIN_NAME, "CacheFolder", CacheFolder);
                     xmlwriter.SetValue(PLUGIN_NAME, "DefaultQualityLAN", DefaultQualityLAN);
                     xmlwriter.SetValue(PLUGIN_NAME, "DefaultQualityWAN", DefaultQualityWAN);
+                    xmlwriter.SetValue(PLUGIN_NAME, "MyPlexUser", MyPlexUser);
+                    xmlwriter.SetValue(PLUGIN_NAME, "MyPlexPass", encryptString(MyPlexPass));
                     xmlwriter.SetValueAsBool(PLUGIN_NAME, "SelectQualityPriorToPlayback", SelectQualityPriorToPlayback);
 
                 }

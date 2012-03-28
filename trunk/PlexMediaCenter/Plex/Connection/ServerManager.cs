@@ -26,6 +26,7 @@ using System.IO;
 using System.Linq;
 using PlexMediaCenter.Util;
 using System.Net;
+using System.Text.RegularExpressions;
 
 namespace PlexMediaCenter.Plex.Connection {
     public class ServerManager {
@@ -37,7 +38,7 @@ namespace PlexMediaCenter.Plex.Connection {
 
         #endregion
         private WebClient WebClient;
-        private PlexServer CurrentPlexServer{get; set;}
+        private PlexServer CurrentPlexServer { get; set; }
 
         public ServerManager(ref WebClient webClient, string serverXmlFile) {
             if (string.IsNullOrEmpty(serverXmlFile)) {
@@ -107,7 +108,7 @@ namespace PlexMediaCenter.Plex.Connection {
             if (server != null) {
                 return server;
             } else {
-                PlexException pe = new PlexException(typeof (ServerManager),
+                PlexException pe = new PlexException(typeof(ServerManager),
                                                      "Couldn't find PlexServer in List: " + plexUrl.Host,
                                                      new KeyNotFoundException());
                 OnServerManangerError(pe);
@@ -130,8 +131,8 @@ namespace PlexMediaCenter.Plex.Connection {
                     }
                     OnPlexServersChanged(PlexServers);
                 }
-            } catch { 
-                
+            } catch {
+
             }
         }
 
@@ -145,6 +146,19 @@ namespace PlexMediaCenter.Plex.Connection {
                     PlexServers.Add(new PlexServer(conn.MachineIdentifier, conn));
                 }
             }
+        }
+
+        public PlexServer AddManualServerConnection(ManualConnectionInfo manualServerConnection) {
+            PlexServer tmpServer = null;
+            string machine = string.Empty;
+            if(manualServerConnection.TryConnect(ref WebClient, ref machine) && PlexServers.Exists(svr => svr.MachineIdentifier.Equals(manualServerConnection.MachineIdentifier))) {
+                tmpServer = PlexServers.Single(svr => svr.MachineIdentifier.Equals(manualServerConnection.MachineIdentifier));
+                tmpServer.AddConnectionInfo(manualServerConnection);
+            } else {
+                tmpServer = new PlexServer(manualServerConnection.MachineIdentifier, manualServerConnection);
+                PlexServers.Add(tmpServer);
+            }
+            return tmpServer;
         }
 
         public void RefrehBonjourServers() {
