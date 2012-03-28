@@ -34,7 +34,7 @@ namespace PlexMediaCenter.Plex.Connection {
 
         public delegate void OnPlexServersChangedEventHandler(List<PlexServer> updatedServerList);
 
-        public delegate void OnServerManangerErrorEventHandler(PlexException e);
+        internal delegate void OnServerManangerErrorEventHandler(PlexException e);
 
         #endregion
         private WebClient WebClient;
@@ -66,7 +66,7 @@ namespace PlexMediaCenter.Plex.Connection {
             }
         }
 
-        public event OnServerManangerErrorEventHandler OnServerManangerError;
+        internal static event OnServerManangerErrorEventHandler OnServerManangerError;
         public event OnPlexServersChangedEventHandler OnPlexServersChanged;
 
         ~ServerManager() {
@@ -78,9 +78,11 @@ namespace PlexMediaCenter.Plex.Connection {
                 try {
                     return Serialization.DeSerialize<List<PlexServer>>(ServerXmlFile);
                 } catch (Exception e) {
-                    OnServerManangerError(new PlexException(GetType(),
-                                                            String.Format("Unable to deserialize '{0}'", ServerXmlFile),
-                                                            e));
+                    if (OnServerManangerError != null) {
+                        OnServerManangerError(new PlexException(GetType(),
+                                                                String.Format("Unable to deserialize '{0}'", ServerXmlFile),
+                                                                e));
+                    }
                 }
             }
             return new List<PlexServer>();
@@ -140,12 +142,15 @@ namespace PlexMediaCenter.Plex.Connection {
 
         internal void AddMyPlexServers(List<MyPlexConnectionInfo> myPlexServerConnections) {
             foreach (MyPlexConnectionInfo conn in myPlexServerConnections) {
+                string machine = string.Empty;
+                conn.TryConnect(ref WebClient, ref machine); 
                 if (PlexServers.Exists(svr => svr.MachineIdentifier.Equals(conn.MachineIdentifier))) {
                     PlexServers.Single(svr => svr.MachineIdentifier.Equals(conn.MachineIdentifier)).AddConnectionInfo(conn);
                 } else {
                     PlexServers.Add(new PlexServer(conn.MachineIdentifier, conn));
                 }
             }
+            OnPlexServersChanged(PlexServers);
         }
 
         public PlexServer AddManualServerConnection(ManualConnectionInfo manualServerConnection) {

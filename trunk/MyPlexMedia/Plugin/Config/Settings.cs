@@ -184,7 +184,8 @@ namespace MyPlexMedia.Plugin.Config {
                     SelectQualityPriorToPlayback = reader.GetValueAsBool(PLUGIN_NAME, "SelectQualityPriorToPlayback", true);
                     DeleteCacheOnExit = reader.GetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
                 }
-            } catch { }
+            } catch { 
+            }
         }
 
         /// <summary>

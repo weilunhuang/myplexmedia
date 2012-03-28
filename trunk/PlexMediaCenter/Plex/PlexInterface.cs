@@ -75,8 +75,9 @@ namespace PlexMediaCenter.Plex {
         public static event OnPlexErrorEventHandler OnPlexError;
 
         public static void Init(string serverListXmlPath, string defaultBasePath, string defaultImage) {
-            ServerManager = new ServerManager(ref _webClient,serverListXmlPath);
             ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
+            ServerManager = new ServerManager(ref _webClient,serverListXmlPath);
+
             ArtworkRetriever = new ArtworkRetriever(defaultBasePath, defaultImage);
             ArtworkRetriever.OnArtworkRetrievalError += MediaRetrieval_OnArtWorkRetrievalError;
         }
