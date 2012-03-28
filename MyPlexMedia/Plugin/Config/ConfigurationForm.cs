@@ -40,25 +40,25 @@ namespace MyPlexMedia.Plugin.Config {
                 InitializeComponent();
                 Load += ConfigurationForm_Load;
                 FormClosing += ConfigurationForm_FormClosing;
-                
+
                 Settings.Load();
+                PlexInterface.OnPlexError += PlexInterface_OnPlexError;
                 PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH,
                                    Settings.PLEX_ICON_DEFAULT);
                 PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
-                PlexInterface.ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
                 PlexInterface.ServerManager.RefrehBonjourServers();
             } catch (Exception ex) {
                 Log.Error(ex);
             }
         }
 
+        void PlexInterface_OnPlexError(PlexException e) {
+            MessageBox.Show(e.Message);
+        }
+
         private void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
             plexServerBindingSource.DataSource = updatedServerList;
             plexServerBindingSource.ResetBindings(true);
-        }
-        
-        private static void ServerManager_OnServerManangerError(PlexException e) {
-            MessageBox.Show(e.ToString());
         }
 
         private void ConfigurationForm_Load(object sender, EventArgs e) {
@@ -69,6 +69,8 @@ namespace MyPlexMedia.Plugin.Config {
             comboBoxQualityLAN.SelectedItem = Settings.DefaultQualityLAN;
             comboBoxQualityWAN.DataSource = Enum.GetValues(typeof(PlexQualities));
             comboBoxQualityWAN.SelectedItem = Settings.DefaultQualityWAN;
+            textBoxMyPlexPass.Text = Settings.MyPlexPass;
+            textBoxMyPlexUser.Text = Settings.MyPlexUser;
             checkBoxSelectQualityPriorToPlayback.Checked = Settings.SelectQualityPriorToPlayback;
         }
 
@@ -77,11 +79,13 @@ namespace MyPlexMedia.Plugin.Config {
             Settings.DeleteCacheOnExit = checkBoxDeleteOnExit.Checked;
             Settings.DefaultQualityLAN = (PlexQualities)comboBoxQualityLAN.SelectedValue;
             Settings.DefaultQualityWAN = (PlexQualities)comboBoxQualityWAN.SelectedValue;
+            Settings.MyPlexPass = textBoxMyPlexPass.Text;
+            Settings.MyPlexUser = textBoxMyPlexUser.Text;
             Settings.Save();
         }
 
         private void buttonRefreshBonjourServers_Click(object sender, EventArgs e) {
-            BonjourDiscovery.RefreshBonjourDiscovery();
+            PlexInterface.ServerManager.RefrehBonjourServers();
             RefreshOnlineStatus();
         }
 
@@ -128,10 +132,9 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void dataGridView1_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e) {
-            //if (e.RowIndex < PlexServers.Count)
-            //    dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = PlexServers[e.RowIndex].IsOnline
-            //                                                                    ? Color.LightGreen
-            //                                                                    : Color.Tomato;
+            dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = ((BaseConnectionInfo)baseConnectionInfoBindingSource[e.RowIndex]).IsOnline
+                                                                                ? Color.LightGreen
+                                                                                : Color.Tomato;
         }
 
         private void buttonMyPlexLogin_Click(object sender, EventArgs e) {
@@ -142,7 +145,20 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void listBoxPlexServers_SelectedValueChanged(object sender, EventArgs e) {
-            baseConnectionInfoBindingSource.DataSource = ((PlexServer)listBoxPlexServers.SelectedValue).KnownConnections;
+            try {
+                if (listBoxPlexServers.SelectedValue != null) {
+                    baseConnectionInfoBindingSource.DataSource = ((PlexServer)plexServerBindingSource[listBoxPlexServers.SelectedIndex]).KnownConnections.Values.ToList();
+                    baseConnectionInfoBindingSource.ResetBindings(true);
+                }
+            } catch {
+
+            }
+        }
+
+        private void textBoxMyPlexPass_KeyPress(object sender, KeyPressEventArgs e) {
+            if (e.KeyChar == (char)13) {
+                buttonMyPlexLogin_Click(sender, e);
+            }
         }
     }
 }

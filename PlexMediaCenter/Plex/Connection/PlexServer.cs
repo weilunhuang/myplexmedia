@@ -29,9 +29,10 @@ using System.Collections.Generic;
 using System.Linq;
 using PlexMediaCenter.Util;
 using System.Runtime.InteropServices;
+using System.Runtime.Serialization;
 
 namespace PlexMediaCenter.Plex.Connection {
-    [Serializable]
+   [DataContract]
     public class PlexServer : IEquatable<PlexServer> {
 
         public string MachineIdentifier { get; set; }
@@ -45,11 +46,11 @@ namespace PlexMediaCenter.Plex.Connection {
         }
 
         [XmlIgnore]
-        public string FriendlyName { get { return CurrentConnection.Capabilities.FriendlyName; } }
+        public string FriendlyName { get { return CurrentConnection.Capabilities != null ? CurrentConnection.Capabilities.FriendlyName : CurrentConnection.HostName; } }
         [XmlIgnore]
-        public string PlexVersion { get { return CurrentConnection.Capabilities.PMSVersion; } }
+        public string PlexVersion { get { return CurrentConnection.Capabilities != null ? CurrentConnection.Capabilities.PMSVersion : String.Empty; } }
 
-        public IDictionary<Type, BaseConnectionInfo> KnownConnections { get; set; }
+        public Dictionary<Type, BaseConnectionInfo> KnownConnections { get; set; }
 
         [XmlIgnore]
         public Uri UriPlexBase { get { return CurrentConnection.UriPlexBase; } }
