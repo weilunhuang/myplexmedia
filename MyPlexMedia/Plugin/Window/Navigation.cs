@@ -201,13 +201,14 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         internal static void AddNewPlexServer() {
-            PlexServer newServer = new PlexServer(CommonDialogs.GetKeyBoardInput("Friendly name", "HostName"),
+            ManualConnectionInfo newServer = new ManualConnectionInfo(
+                CommonDialogs.GetKeyBoardInput("Friendly name", "HostName"),
                 CommonDialogs.GetKeyBoardInput("Host Adress", "HostAdress"),
+                int.Parse(CommonDialogs.GetKeyBoardInput("Plex Port", "PlexPort")),
                 CommonDialogs.GetKeyBoardInput("Login", "UserName"),
-                CommonDialogs.GetKeyBoardInput("Password", "UserPasse"));
-            if (PlexInterface.Login(newServer)) {
-                PlexInterface.ServerManager.SetCurrentPlexServer(newServer);
-            } else {
+                CommonDialogs.GetKeyBoardInput("Password", "UserPass"));
+            
+            if (!PlexInterface.Connect(newServer)) {
                 if (CommonDialogs.ShowCustomYesNo("PlexServer not found!",
                                                   "The new PlexServer appears to be offline \nor was misconfigured...",
                                                   "Try Again!", "Cancel", false)) {
