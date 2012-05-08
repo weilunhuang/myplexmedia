@@ -90,8 +90,7 @@ namespace PlexMediaCenter.Util {
             List<string> playListItems;
             string playListRequest = plexServer.UriPlexBase.AbsoluteUri + "video/:/transcode/segmented/";
             using (WebClient plexClient = new WebClient()) {
-                string response = plexClient.DownloadString(GetM3U8PlaylistUrl(plexServer, partKey, offset,
-                                                                               quality, is3G));
+                string response = plexClient.DownloadString(GetM3U8PlaylistUrl(plexServer, partKey, offset, quality, is3G));
                 string session = response.Substring(response.IndexOf("session")).Replace("\n", "");                
                 playListRequest += session;
 
@@ -123,7 +122,7 @@ namespace PlexMediaCenter.Util {
         private static string GetPlexAuthParameters(PlexServer plexServer, string url) {
             string time = GetUnixTime();
             string authParameters = string.Empty;
-            authParameters += "&" + plexServer.CurrentConnection.GetAuthUrlParameters();
+            authParameters += plexServer.CurrentConnection.GetAuthUrlParameters();
             authParameters += "&X-Plex-Access-Key=" + PlexApiPublicKey;
             authParameters += "&X-Plex-Access-Time=" + time;
             authParameters += "&X-Plex-Access-Code=" + Uri.EscapeDataString(GetPlexApiToken(url, time));

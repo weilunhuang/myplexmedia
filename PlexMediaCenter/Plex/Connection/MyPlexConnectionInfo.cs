@@ -20,7 +20,7 @@ namespace PlexMediaCenter.Plex.Connection {
         }
 
         internal override string GetAuthUrlParameters() {
-            return String.Format("X-Plex-Token={0}", AuthToken);
+            return String.Format("&X-Plex-Token={0}", AuthToken);
         }
     }
 }

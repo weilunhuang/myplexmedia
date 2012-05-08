@@ -73,7 +73,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         #endregion
 
-        public static event OnMenuItemSelectedEventHandler OnMenuItemSelected;
+        public static event OnMenuItemSelectedEventHandler OnMenuItemSelected = delegate { };
 
         private void MenuItem_OnItemSelected(GUIListItem item, GUIControl parent) {
             OnSelected();

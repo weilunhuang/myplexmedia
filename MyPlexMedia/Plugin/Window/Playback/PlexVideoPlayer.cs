@@ -65,6 +65,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         public static void PlayBackMedia(Uri itemPath, MediaContainerVideo video) {
             if (Buffering.IsBuffering) {
                 if (CommonDialogs.ShowCustomYesNo("Buffering in progress...", "Cancel previous buffering process and start a new one?", "Yes", "No", true)) {
+                    StopPlayerMainThread();
                     Buffering.StopBuffering();
                 } else { return; }
             }
@@ -206,6 +207,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             if (!g_Player.PlayVideoStream(file, title)) {
                 Buffering.StopBuffering();
             }
+            g_Player.ShowFullScreenWindow();
         }
 
     }

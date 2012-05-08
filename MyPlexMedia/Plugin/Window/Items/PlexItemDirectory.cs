@@ -32,8 +32,8 @@ namespace MyPlexMedia.Plugin.Window.Items {
             Directory = directory;
             IsFolder = true;
 
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, new Uri(UriPath.Authority + Directory.thumb));
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, new Uri(UriPath.Authority + Directory.art));
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, UriPath, Directory.thumb);
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, UriPath, Directory.art);
 
             int duration;
             if (int.TryParse(Directory.duration, out duration)) {

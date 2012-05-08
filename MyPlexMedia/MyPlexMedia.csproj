@@ -38,10 +38,19 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Common.Utils, Version=1.1.7.0, Culture=neutral, processorArchitecture=x86" />
-    <Reference Include="core, Version=1.1.7.0, Culture=neutral, processorArchitecture=x86" />
+    <Reference Include="Common.Utils, Version=1.2.2.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Resources\dll\Common.Utils.dll</HintPath>
+    </Reference>
+    <Reference Include="core, Version=1.2.2.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Resources\dll\core.dll</HintPath>
+    </Reference>
     <Reference Include="Databases, Version=1.1.7.0, Culture=neutral, processorArchitecture=x86" />
-    <Reference Include="dialogs, Version=1.1.7.0, Culture=neutral, processorArchitecture=x86" />
+    <Reference Include="dialogs, Version=1.2.2.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Resources\dll\dialogs.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -51,8 +60,14 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="utils, Version=1.1.7.0, Culture=neutral, processorArchitecture=x86" />
-    <Reference Include="WindowPlugins, Version=1.1.7.0, Culture=neutral, processorArchitecture=x86" />
+    <Reference Include="utils, Version=1.2.2.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Resources\dll\utils.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowPlugins, Version=1.2.2.0, Culture=neutral, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Resources\dll\WindowPlugins.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Plugin\Config\Configuration.cs" />
