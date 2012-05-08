@@ -38,9 +38,9 @@ namespace PlexMediaCenter.Plex {
         public delegate void OnResponseProgressEventHandler(object userToken, int progress);
         public delegate void OnResponseReceivedEventHandler(object userToken, MediaContainer response);
 
-        public static event OnResponseProgressEventHandler OnResponseProgress;
-        public static event OnResponseReceivedEventHandler OnResponseReceived;
-        public static event OnPlexErrorEventHandler OnPlexError;
+        public static event OnResponseProgressEventHandler OnResponseProgress = delegate { };
+        public static event OnResponseReceivedEventHandler OnResponseReceived = delegate { };
+        public static event OnPlexErrorEventHandler OnPlexError = delegate { };
 
         #endregion
 
@@ -56,6 +56,9 @@ namespace PlexMediaCenter.Plex {
         #region Initialization
 
         public static void Init(string serverListXmlPath, string defaultBasePath, string defaultImage, WebClient webClient = default(WebClient)) {
+            if (webClient == null) {
+                webClient = new WebClient();
+            }
             PlexWebClient = webClient;
             PlexWebClient.DownloadDataCompleted += _webClient_DownloadDataCompleted;
             PlexWebClient.DownloadProgressChanged += _webClient_DownloadProgressChanged;

@@ -73,7 +73,7 @@ namespace MyPlexMedia.Plugin.Config {
             textBoxMyPlexUser.Text = Settings.MyPlexUser;
             checkBoxSelectQualityPriorToPlayback.Checked = Settings.SelectQualityPriorToPlayback;
             PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
-            PlexInterface.ServerManager.RefreshBonjourServers();
+
         }
 
         private void ConfigurationForm_FormClosing(object sender, FormClosingEventArgs e) {
@@ -150,5 +150,10 @@ namespace MyPlexMedia.Plugin.Config {
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) {
 
         }
+
+        private void tabPage2_Enter(object sender, EventArgs e) {
+            PlexInterface.ServerManager.RefreshBonjourServers();
+        }
+
     }
 }

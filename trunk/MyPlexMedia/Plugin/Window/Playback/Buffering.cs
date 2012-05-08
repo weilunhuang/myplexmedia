@@ -30,6 +30,7 @@ using MediaPortal.GUI.Library;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Util;
 using System.Threading;
+using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Playback {
 
@@ -43,7 +44,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         #endregion
 
-        private const string BufferFile = @"D:\MyPlexMediaBuffer.ts";
+        private const string BufferFile = Settings.PLEX_BUFFERING_TEMPFILE;;
         private const PlexQualities DefaultQuality = PlexQualities._1_320kbps_240p;
         private static readonly BackgroundWorker MediaBufferer;
 

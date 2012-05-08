@@ -200,6 +200,7 @@ namespace MyPlexMedia.Plugin.Config {
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Plex Servers";
             this.tabPage2.UseVisualStyleBackColor = true;
+            this.tabPage2.Enter += new System.EventHandler(this.tabPage2_Enter);
             // 
             // button2
             // 

@@ -55,6 +55,7 @@ namespace MyPlexMedia.Plugin.Config {
         public static string PLEX_ICON_DEFAULT_BACK = Path.Combine(SKIN_FOLDER_MEDIA, "icon_back.png");
         public static string PLEX_ICON_DEFAULT_ONLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.png");
         public static string PLEX_ICON_DEFAULT_OFFLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_offline.png");
+        public static string PLEX_BUFFERING_TEMPFILE { get; set; }
 
         public static string PLEX_SERVER_LIST_XML =
             Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Config),
@@ -254,7 +255,6 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         #endregion
-
 
     }
 }

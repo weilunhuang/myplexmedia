@@ -27,12 +27,12 @@ using PlexMediaCenter.Plex.Connection;
 namespace MyPlexMedia.Plugin.Window.Items {
     internal class PlexItemServer : PlexItemBase {
         public PlexItemServer(IMenuItem parentItem, PlexServer plexServer)
-            : base(parentItem, plexServer.CurrentConnection.HostAdress, plexServer.UriPlexSections) {
+            : base(parentItem,  (String.IsNullOrEmpty(plexServer.FriendlyName) ? plexServer.CurrentConnection.HostName : plexServer.FriendlyName), plexServer.UriPlexSections) {
             IsFolder = true;
 
             PlexServer = plexServer;
             SetIcon(PlexServer.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE);
-            Label2 = (String.IsNullOrEmpty(plexServer.FriendlyName) ? plexServer.CurrentConnection.HostName : plexServer.FriendlyName);
+            Label2 = plexServer.CurrentConnection.HostAdress;
         }
 
         private PlexServer PlexServer { get; set; }

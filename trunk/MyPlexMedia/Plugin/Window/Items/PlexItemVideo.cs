@@ -33,13 +33,13 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public PlexItemVideo(IMenuItem parentItem, string title, Uri path, MediaContainerVideo video)
             : base(parentItem, title, path) {
             Video = video;
+           
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, UriPath, Video.thumb);
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, UriPath, Video.art);
 
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon,  new Uri(path.Authority + Video.thumb));
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage,  new Uri(path.Authority + Video.art));
+            if (video.type.Equals("episode")) {
 
-            if(video.type.Equals("episode")){
-              
-                Label = String.Format("{0}.S{1:00}E{2:00}.{3}", new object[]{video.grandparentTitle, int.Parse(video.parentIndex), int.Parse(video.index), video.title});
+                Label = String.Format("{0}.S{1:00}E{2:00}.{3}", new object[] { video.grandparentTitle, int.Parse(video.parentIndex), int.Parse(video.index), video.title });
                 video.title = Label;
             }
 
@@ -80,12 +80,12 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public override void OnClicked(object sender, EventArgs e) {
             PlexVideoPlayer.PlayBackMedia(UriPath, Video);
         }
-        
+
         public override void OnInfo() {
-            
-            GUIVideoInfo videoInfo = (GUIVideoInfo) GUIWindowManager.GetWindow((int) GUIWindow.Window.WINDOW_VIDEO_INFO);
+
+            GUIVideoInfo videoInfo = (GUIVideoInfo)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIDEO_INFO);
             videoInfo.Movie = (IMDBMovie)TVTag;
-            GUIWindowManager.ActivateWindow((int) GUIWindow.Window.WINDOW_VIDEO_INFO);
+            GUIWindowManager.ActivateWindow((int)GUIWindow.Window.WINDOW_VIDEO_INFO);
         }
     }
 }

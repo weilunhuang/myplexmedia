@@ -32,7 +32,7 @@ namespace PlexMediaCenter.Plex.Data {
         #region Delegates
 
         public delegate void OnArtworkRetrievalErrorEventHandler(PlexException e);
-
+        public event OnArtworkRetrievalErrorEventHandler OnArtworkRetrievalError = delegate { };
         #endregion
 
         public ArtworkRetriever(string basePath, string defaultImagePath) {
@@ -42,24 +42,24 @@ namespace PlexMediaCenter.Plex.Data {
 
         public string ImageBasePath { get; private set; }
         public string DefaultImagePath { get; private set; }
-        public event OnArtworkRetrievalErrorEventHandler OnArtworkRetrievalError;
+       
 
-        public void QueueArtwork(Action<string> downloadFinishedCallback, Uri imageUrl) {
-            if (imageUrl == null || string.IsNullOrEmpty(imageUrl.AbsoluteUri)) {
+        public void QueueArtwork(Action<string> downloadFinishedCallback, Uri sourcePath, string imageRelativePath) {
+            if (imageRelativePath == null || string.IsNullOrEmpty(imageRelativePath)) {
                 return;
             }
             string localImagePath = ImageBasePath;
             if (!Directory.Exists(localImagePath)) {
                 Directory.CreateDirectory(localImagePath);
             }
-            localImagePath = Path.Combine(localImagePath, GetSafeFilenameFromUrl(imageUrl.AbsoluteUri, '_'));
+            localImagePath = Path.Combine(localImagePath, GetSafeFilenameFromUrl(imageRelativePath, '_'));
             if (File.Exists(localImagePath)) {
                 //Image locally available so nothing to do...
                 downloadFinishedCallback.Invoke(localImagePath);
             } else {
                 //we need to put this in the Threadpool                 
                 ThreadPool.QueueUserWorkItem(DownloadEnqueuedArtwork,
-                                             new ArtworkQueueItem(imageUrl, localImagePath,
+                                             new ArtworkQueueItem(new Uri(new UriBuilder(sourcePath.Scheme, sourcePath.Host, sourcePath.Port).Uri, imageRelativePath), localImagePath,
                                                                   downloadFinishedCallback));
             }
         }
@@ -70,7 +70,9 @@ namespace PlexMediaCenter.Plex.Data {
             try {
                 PlexInterface.GetPlexServerFromUri(currentItem.ImageUrl).CurrentConnection.AddAuthHeaders(ref downloader);
                 //currentItem.PlexConnection.AddAuthHeaders(ref downloader);
-                downloader.DownloadFile(currentItem.ImageUrl, currentItem.ImageLocalPath);
+                if (!File.Exists(currentItem.ImageLocalPath)) {
+                    downloader.DownloadFile(currentItem.ImageUrl, currentItem.ImageLocalPath);
+                }
                 currentItem.FinishedCallback.Invoke(currentItem.ImageLocalPath);
             } catch (Exception e) {
                 OnArtworkRetrievalError(new PlexException(GetType(), "Download failed: " + currentItem.ImageUrl, e));

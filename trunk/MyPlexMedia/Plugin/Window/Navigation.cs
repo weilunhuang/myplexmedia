@@ -148,6 +148,7 @@ namespace MyPlexMedia.Plugin.Window {
                     plexResponseConatiner.viewGroup.Equals("secondary")) {
                     parentItem.ViewItems = tmpList;
                 }
+                plexResponseConatiner.Video.ForEach(vid => vid.parentIndex = plexResponseConatiner.parentIndex);
                 tmpList.AddRange(
                     plexResponseConatiner.Video.ConvertAll<IMenuItem>(
                         vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));
@@ -200,19 +201,23 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         internal static void AddNewPlexServer() {
-            ManualConnectionInfo newServer = new ManualConnectionInfo(
-                CommonDialogs.GetKeyBoardInput("Friendly name", "HostName"),
-                CommonDialogs.GetKeyBoardInput("Host Adress", "HostAdress"),
-                int.Parse(CommonDialogs.GetKeyBoardInput("Plex Port", "PlexPort")),
-                CommonDialogs.GetKeyBoardInput("Login", "UserName"),
-                CommonDialogs.GetKeyBoardInput("Password", "UserPass"));
-            
-            if (!PlexInterface.ServerManager.TryAddManualServerConnection(newServer)) {
-                if (CommonDialogs.ShowCustomYesNo("PlexServer not found!",
-                                                  "The new PlexServer appears to be offline \nor was misconfigured...",
-                                                  "Try Again!", "Cancel", false)) {
-                    AddNewPlexServer();
+            try {
+                ManualConnectionInfo newServer = new ManualConnectionInfo(
+                    CommonDialogs.GetKeyBoardInput("Friendly name", "HostName"),
+                    CommonDialogs.GetKeyBoardInput("Host Adress", "HostAdress"),
+                    int.Parse(CommonDialogs.GetKeyBoardInput("Plex Port", "PlexPort")),
+                    CommonDialogs.GetKeyBoardInput("Login", "UserName"),
+                    CommonDialogs.GetKeyBoardInput("Password", "UserPass"));
+
+                if (!PlexInterface.ServerManager.TryAddManualServerConnection(newServer)) {
+                    if (CommonDialogs.ShowCustomYesNo("PlexServer not found!",
+                                                      "The new PlexServer appears to be offline \nor was misconfigured...",
+                                                      "Try Again!", "Cancel", false)) {
+                        AddNewPlexServer();
+                    }
                 }
+            } catch {
+                ShowCurrentMenu(RootItem, 0);
             }
         }
 

@@ -55,8 +55,8 @@ namespace PlexMediaCenter.Plex.Connection {
 
         public List<PlexServer> PlexServers { get; private set; }
 
-        internal event OnServerManangerErrorEventHandler OnServerManangerError;
-        public event OnPlexServersChangedEventHandler OnPlexServersChanged;
+        internal event OnServerManangerErrorEventHandler OnServerManangerError = delegate { };
+        public event OnPlexServersChangedEventHandler OnPlexServersChanged = delegate { };
 
         ~ServerManager() {
             SavePlexServers(PlexServers);
