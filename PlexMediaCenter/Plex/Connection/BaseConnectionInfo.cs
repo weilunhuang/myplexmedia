@@ -59,13 +59,13 @@ namespace PlexMediaCenter.Plex.Connection {
 
         internal abstract string GetAuthUrlParameters();
 
-        public bool TryConnect(ref WebClient webClient, ref string machineIdentifier) {
+        public bool TryConnect(ref WebClient webClient) {
             if (CheckSocketConnection()) {
                 AddAuthHeaders(ref webClient);
                 try {
                     string serverXmlResponse = webClient.DownloadString(UriPlexBase);
                     Capabilities = GetServerCapabilities(Serialization.DeSerializeXML<MediaContainer>(serverXmlResponse));
-                    MachineIdentifier = machineIdentifier = Capabilities.MachineIdentifier;
+                    MachineIdentifier = Capabilities.MachineIdentifier;
                     IsOnline = true;
                     return true;
                 } catch (Exception e) {

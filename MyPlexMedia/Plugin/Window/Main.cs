@@ -60,6 +60,7 @@ namespace MyPlexMedia.Plugin.Window {
             GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", string.Empty);
             PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH,
                                Settings.PLEX_ICON_DEFAULT);
+            PlexInterface.MyPlexLogin(Settings.MyPlexUser, Settings.MyPlexPass);
             return Load(Settings.SKINFILE_MAIN_WINDOW);
         }
 
@@ -133,12 +134,12 @@ namespace MyPlexMedia.Plugin.Window {
             }
         }
 
-        protected override void OnInfo(int iItem) {
-            if (facadeLayout[iItem] is IMenuItem) {
-                ((IMenuItem) facadeLayout[iItem]).Parent.LastSelectedChildIndex = iItem;
-                ((IMenuItem) facadeLayout[iItem]).OnInfo();
+        protected override void OnInfo(int item) {
+            if (facadeLayout[item] is IMenuItem) {
+                ((IMenuItem) facadeLayout[item]).Parent.LastSelectedChildIndex = item;
+                ((IMenuItem) facadeLayout[item]).OnInfo();
             } else {
-                base.OnInfo(iItem);
+                base.OnInfo(item);
             }
         }
 

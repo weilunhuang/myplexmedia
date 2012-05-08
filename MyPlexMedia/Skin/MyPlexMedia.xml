@@ -114,7 +114,7 @@
           <height>121</height>
           <texture>#Play.Current.Thumb</texture>
           <overlay>yes</overlay>
-          <keepaspectratio>no</keepaspectratio>
+          <keepaspectratio>yes</keepaspectratio>
           <centered>yes</centered>
         </control>
         <control>

@@ -79,7 +79,7 @@ namespace MyPlexMedia.Plugin.Window {
             RootItem.UriPath = plexSections.UriSource;
             RootMenu = GetCreateSubMenuItems(RootItem, PlexInterface.RequestPlexItems(RootItem.UriPath));
             RootMenu.Add(new PlexItemSearch(RootItem, "Search...",
-                                            new Uri(PlexInterface.PlexServerCurrent.UriPlexBase, "search?type=0"),
+                                            new Uri(selectedServer.UriPlexBase, "search?type=0"),
                                             "Search Plex Server"));
             RootMenu.Add(ServerItem);
             RootItem.SetChildItems(RootMenu);
@@ -184,7 +184,6 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
-            updatedServerList.ForEach(svr => PlexInterface.Login(svr));
             ServerMenu = updatedServerList.ConvertAll<IMenuItem>(svr => new PlexItemServer(ServerItem, svr));
             ServerMenu.Add(new ActionItem(null, "Refresh Bonjouor...", Settings.PLEX_ICON_DEFAULT_BONJOUR,
                                           RefreshServerMenu));
@@ -197,7 +196,7 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         internal static void RefreshServerMenu() {
-            PlexInterface.RefreshBonjourServers();
+            PlexInterface.ServerManager.RefreshBonjourServers();
         }
 
         internal static void AddNewPlexServer() {
@@ -208,7 +207,7 @@ namespace MyPlexMedia.Plugin.Window {
                 CommonDialogs.GetKeyBoardInput("Login", "UserName"),
                 CommonDialogs.GetKeyBoardInput("Password", "UserPass"));
             
-            if (!PlexInterface.Connect(newServer)) {
+            if (!PlexInterface.ServerManager.TryAddManualServerConnection(newServer)) {
                 if (CommonDialogs.ShowCustomYesNo("PlexServer not found!",
                                                   "The new PlexServer appears to be offline \nor was misconfigured...",
                                                   "Try Again!", "Cancel", false)) {

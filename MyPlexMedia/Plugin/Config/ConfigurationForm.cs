@@ -45,8 +45,6 @@ namespace MyPlexMedia.Plugin.Config {
                 PlexInterface.OnPlexError += PlexInterface_OnPlexError;
                 PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH,
                                    Settings.PLEX_ICON_DEFAULT);
-                PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
-                PlexInterface.ServerManager.RefrehBonjourServers();
             } catch (Exception ex) {
                 Log.Error(ex);
             }
@@ -57,8 +55,10 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
-            plexServerBindingSource.DataSource = updatedServerList;
-            plexServerBindingSource.ResetBindings(true);
+            Invoke(new MethodInvoker(() => {
+                plexServerBindingSource.DataSource = updatedServerList;
+                plexServerBindingSource.ResetBindings(true);
+            }));
         }
 
         private void ConfigurationForm_Load(object sender, EventArgs e) {
@@ -72,6 +72,8 @@ namespace MyPlexMedia.Plugin.Config {
             textBoxMyPlexPass.Text = Settings.MyPlexPass;
             textBoxMyPlexUser.Text = Settings.MyPlexUser;
             checkBoxSelectQualityPriorToPlayback.Checked = Settings.SelectQualityPriorToPlayback;
+            PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
+            PlexInterface.ServerManager.RefreshBonjourServers();
         }
 
         private void ConfigurationForm_FormClosing(object sender, FormClosingEventArgs e) {
@@ -85,7 +87,7 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void buttonRefreshBonjourServers_Click(object sender, EventArgs e) {
-            PlexInterface.ServerManager.RefrehBonjourServers();
+            PlexInterface.ServerManager.RefreshBonjourServers();
             RefreshOnlineStatus();
         }
 
@@ -109,11 +111,6 @@ namespace MyPlexMedia.Plugin.Config {
             //}
         }
 
-        private void tabPage2_Enter(object sender, EventArgs e) {
-            //plexServerBindingSource.DataSource = PlexServers;
-            //RefreshOnlineStatus();
-        }
-
         private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e) {
             //try {
             //    if (e.ColumnIndex == userPassDataGridViewTextBoxColumn.Index) {
@@ -132,9 +129,9 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void dataGridView1_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e) {
-            dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = ((BaseConnectionInfo)baseConnectionInfoBindingSource[e.RowIndex]).IsOnline
-                                                                                ? Color.LightGreen
-                                                                                : Color.Tomato;
+            //dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = ((bool)dataGridView1[isOnlineDataGridViewCheckBoxColumn.Name, e.RowIndex].Value)
+            //                                                                    ? Color.LightGreen
+            //                                                                    : Color.Tomato;
         }
 
         private void buttonMyPlexLogin_Click(object sender, EventArgs e) {
@@ -144,21 +141,14 @@ namespace MyPlexMedia.Plugin.Config {
                                  : Color.Tomato;
         }
 
-        private void listBoxPlexServers_SelectedValueChanged(object sender, EventArgs e) {
-            try {
-                if (listBoxPlexServers.SelectedValue != null) {
-                    baseConnectionInfoBindingSource.DataSource = ((PlexServer)plexServerBindingSource[listBoxPlexServers.SelectedIndex]).KnownConnections.Values.ToList();
-                    baseConnectionInfoBindingSource.ResetBindings(true);
-                }
-            } catch {
-
-            }
-        }
-
         private void textBoxMyPlexPass_KeyPress(object sender, KeyPressEventArgs e) {
             if (e.KeyChar == (char)13) {
                 buttonMyPlexLogin_Click(sender, e);
             }
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e) {
+
         }
     }
 }

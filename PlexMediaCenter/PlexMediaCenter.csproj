@@ -77,6 +77,7 @@
     <Compile Include="Util\BonjourDiscovery.cs" />
     <Compile Include="Util\Encryption.cs" />
     <Compile Include="Plex\Data\ArtworkRetriever.cs" />
+    <Compile Include="Util\SerializableDictionary.cs" />
     <Compile Include="Util\Serialization.cs" />
     <Compile Include="Util\Transcoding.cs" />
   </ItemGroup>
