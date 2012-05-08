@@ -50,7 +50,7 @@ namespace PlexMediaCenter.Plex.Connection {
         [XmlIgnore]
         public string PlexVersion { get { return CurrentConnection.Capabilities != null ? CurrentConnection.Capabilities.PMSVersion : String.Empty; } }
 
-        public Dictionary<Type, BaseConnectionInfo> KnownConnections { get; set; }
+        public SerializableDictionary<Type, BaseConnectionInfo> KnownConnections { get; set; }
 
         [XmlIgnore]
         public Uri UriPlexBase { get { return CurrentConnection.UriPlexBase; } }
@@ -109,7 +109,7 @@ namespace PlexMediaCenter.Plex.Connection {
 
         public void AddConnectionInfo(BaseConnectionInfo connectionInfo) {
             if (KnownConnections == null) {
-                KnownConnections = new Dictionary<Type, BaseConnectionInfo>();
+                KnownConnections = new SerializableDictionary<Type, BaseConnectionInfo>();
             }
             if (KnownConnections.ContainsKey(connectionInfo.GetType())) {
                 //Update connection info
@@ -129,8 +129,7 @@ namespace PlexMediaCenter.Plex.Connection {
         }
 
         internal bool Authenticate(ref WebClient webClient) {
-            string machine = String.Empty;
-            return CurrentConnection.TryConnect(ref webClient, ref machine);
+            return CurrentConnection.TryConnect(ref webClient);
         }
 
         #region IEquatable<PlexServer> Members

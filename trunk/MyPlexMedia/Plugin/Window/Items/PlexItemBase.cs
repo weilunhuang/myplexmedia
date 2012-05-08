@@ -33,7 +33,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public delegate void OnHasBackgroundEventHandler(string imagePath);
 
         #endregion
-
+        
         public PlexItemBase(IMenuItem parentItem, string title, Uri path)
             : base(parentItem, title) {
             if (path != null) {

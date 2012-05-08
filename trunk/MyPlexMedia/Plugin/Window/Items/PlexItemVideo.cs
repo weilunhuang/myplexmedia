@@ -34,8 +34,8 @@ namespace MyPlexMedia.Plugin.Window.Items {
             : base(parentItem, title, path) {
             Video = video;
 
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, PlexInterface.PlexServerCurrent, Video.thumb);
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, PlexInterface.PlexServerCurrent, Video.art);
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon,  new Uri(path.Authority + Video.thumb));
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage,  new Uri(path.Authority + Video.art));
 
             if(video.type.Equals("episode")){
               

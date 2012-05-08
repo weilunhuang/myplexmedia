@@ -23,6 +23,7 @@
 using System;
 using PlexMediaCenter.Plex;
 using PlexMediaCenter.Plex.Data.Types;
+using PlexMediaCenter.Plex.Connection;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     internal class PlexItemDirectory : PlexItemBase {
@@ -31,8 +32,8 @@ namespace MyPlexMedia.Plugin.Window.Items {
             Directory = directory;
             IsFolder = true;
 
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, PlexInterface.PlexServerCurrent, Directory.thumb);
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, PlexInterface.PlexServerCurrent, Directory.art);
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, new Uri(UriPath.Authority + Directory.thumb));
+            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, new Uri(UriPath.Authority + Directory.art));
 
             int duration;
             if (int.TryParse(Directory.duration, out duration)) {

@@ -44,22 +44,22 @@ namespace PlexMediaCenter.Plex.Data {
         public string DefaultImagePath { get; private set; }
         public event OnArtworkRetrievalErrorEventHandler OnArtworkRetrievalError;
 
-        public void QueueArtwork(Action<string> downloadFinishedCallback, PlexServer plexServer, string imageFileName) {
-            if (String.IsNullOrEmpty(imageFileName)) {
+        public void QueueArtwork(Action<string> downloadFinishedCallback, Uri imageUrl) {
+            if (imageUrl == null || string.IsNullOrEmpty(imageUrl.AbsoluteUri)) {
                 return;
             }
             string localImagePath = ImageBasePath;
             if (!Directory.Exists(localImagePath)) {
                 Directory.CreateDirectory(localImagePath);
             }
-            localImagePath = Path.Combine(localImagePath, GetSafeFilenameFromUrl(imageFileName, '_'));
+            localImagePath = Path.Combine(localImagePath, GetSafeFilenameFromUrl(imageUrl.AbsoluteUri, '_'));
             if (File.Exists(localImagePath)) {
                 //Image locally available so nothing to do...
                 downloadFinishedCallback.Invoke(localImagePath);
             } else {
                 //we need to put this in the Threadpool                 
                 ThreadPool.QueueUserWorkItem(DownloadEnqueuedArtwork,
-                                             new ArtworkQueueItem(plexServer, imageFileName, localImagePath,
+                                             new ArtworkQueueItem(imageUrl, localImagePath,
                                                                   downloadFinishedCallback));
             }
         }
@@ -68,7 +68,8 @@ namespace PlexMediaCenter.Plex.Data {
             ArtworkQueueItem currentItem = queueItem as ArtworkQueueItem;
             WebClient downloader = new WebClient();
             try {
-                currentItem.PlexServer.CurrentConnection.AddAuthHeaders(ref downloader);
+                PlexInterface.GetPlexServerFromUri(currentItem.ImageUrl).CurrentConnection.AddAuthHeaders(ref downloader);
+                //currentItem.PlexConnection.AddAuthHeaders(ref downloader);
                 downloader.DownloadFile(currentItem.ImageUrl, currentItem.ImageLocalPath);
                 currentItem.FinishedCallback.Invoke(currentItem.ImageLocalPath);
             } catch (Exception e) {
@@ -85,15 +86,13 @@ namespace PlexMediaCenter.Plex.Data {
         #region Nested type: ArtworkQueueItem
 
         private class ArtworkQueueItem {
-            public ArtworkQueueItem(PlexServer plexServer, string imageServerPath, string imageLocalPath,
+            public ArtworkQueueItem(Uri imageServerPath, string imageLocalPath,
                                     Action<string> downloadFinishedCallback) {
-                PlexServer = plexServer;
-                ImageUrl = new Uri(plexServer.UriPlexBase, imageServerPath);
+                ImageUrl = imageServerPath;
                 ImageLocalPath = imageLocalPath;
                 FinishedCallback = downloadFinishedCallback;
             }
 
-            public PlexServer PlexServer { get; private set; }
             public Uri ImageUrl { get; private set; }
             public string ImageLocalPath { get; private set; }
             public Action<string> FinishedCallback { get; private set; }

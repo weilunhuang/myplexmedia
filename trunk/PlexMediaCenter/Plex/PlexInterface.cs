@@ -32,51 +32,36 @@ using System.Runtime.InteropServices;
 
 namespace PlexMediaCenter.Plex {
     public static class PlexInterface {
-        #region Delegates
+        #region Events & Delegates
 
         public delegate void OnPlexErrorEventHandler(PlexException e);
-
         public delegate void OnResponseProgressEventHandler(object userToken, int progress);
-
         public delegate void OnResponseReceivedEventHandler(object userToken, MediaContainer response);
-
-        #endregion
-
-        private static WebClient _webClient;
-
-        static PlexInterface() {
-            _webClient = new WebClient();
-            _webClient.DownloadDataCompleted += _webClient_DownloadDataCompleted;
-            _webClient.DownloadProgressChanged += _webClient_DownloadProgressChanged;
-        }
-
-        public static bool IsConnected { get; private set; }
-
-        public static bool IsBusy {
-            get { return _webClient.IsBusy; }
-        }
-
-        public static MyPlex MyPlex { get; private set; }
-        public static ServerManager ServerManager { get; private set; }
-        public static ArtworkRetriever ArtworkRetriever { get; private set; }
-
-        public static PlexServer PlexServerCurrent {
-            get { return ServerManager.PlexServerCurrent; }
-        }
-
-        public static bool Is3GConnected { get; set; }
-
-        public static bool IsLANConnected {
-            get { return PlexServerCurrent.IsBonjour; }
-        }
 
         public static event OnResponseProgressEventHandler OnResponseProgress;
         public static event OnResponseReceivedEventHandler OnResponseReceived;
         public static event OnPlexErrorEventHandler OnPlexError;
 
-        public static void Init(string serverListXmlPath, string defaultBasePath, string defaultImage) {
+        #endregion
+
+        #region Properties
+
+        private static WebClient PlexWebClient;
+        public static MyPlex MyPlex { get; private set; }
+        public static ServerManager ServerManager { get; private set; }
+        public static ArtworkRetriever ArtworkRetriever { get; private set; }
+
+        #endregion
+
+        #region Initialization
+
+        public static void Init(string serverListXmlPath, string defaultBasePath, string defaultImage, WebClient webClient = default(WebClient)) {
+            PlexWebClient = webClient;
+            PlexWebClient.DownloadDataCompleted += _webClient_DownloadDataCompleted;
+            PlexWebClient.DownloadProgressChanged += _webClient_DownloadProgressChanged;
+
+            ServerManager = new ServerManager(ref PlexWebClient,serverListXmlPath);
             ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
-            ServerManager = new ServerManager(ref _webClient,serverListXmlPath);
 
             ArtworkRetriever = new ArtworkRetriever(defaultBasePath, defaultImage);
             ArtworkRetriever.OnArtworkRetrievalError += MediaRetrieval_OnArtWorkRetrievalError;
@@ -84,20 +69,27 @@ namespace PlexMediaCenter.Plex {
 
         public static bool MyPlexLogin(string user, string pass) {
             MyPlex = new MyPlex(new NetworkCredential(user, pass));
-            if (MyPlex.Authenticate(ref _webClient) && ServerManager != null) {
-                ServerManager.AddMyPlexServers(MyPlex.MyPlexServerList);
+            if (MyPlex.Authenticate(ref PlexWebClient) && ServerManager != null) {
+                ServerManager.AddMyPlexServers(MyPlex.MyPlexServers);
             } else {
                 return false;
             }
             return true;
         }
 
+        #endregion
+
         #region Plex Server Requests
 
+        public static PlexServer GetPlexServerFromUri(Uri sourcePath) {
+            return ServerManager.PlexServers.Single(svr => 
+                svr.KnownConnections.Any(con => 
+                    con.Value.UriPlexBase.IsBaseOf(sourcePath)));
+        }
+
         public static MediaContainer TryGetPlexSections(PlexServer plexServer) {
-            if (plexServer != null && Login(plexServer)) {
+            if (plexServer != null && plexServer.Authenticate(ref PlexWebClient)) {
                 try {
-                    ServerManager.SetCurrentPlexServer(plexServer);
                     System.Threading.Thread.Sleep(500);
                     return RequestPlexItems(plexServer.UriPlexSections);
                 } catch (Exception e) {
@@ -114,7 +106,7 @@ namespace PlexMediaCenter.Plex {
         public static MediaContainer RequestPlexItems(Uri selectedPath) {
             try {
                 MediaContainer requestedContainer =
-                    Serialization.DeSerializeXML<MediaContainer>(_webClient.DownloadString(selectedPath));
+                    Serialization.DeSerializeXML<MediaContainer>(PlexWebClient.DownloadString(selectedPath));
                 requestedContainer.UriSource = selectedPath;
                 return requestedContainer;
             } catch (Exception e) {
@@ -125,17 +117,17 @@ namespace PlexMediaCenter.Plex {
         }
 
         public static void RequestPlexItemsAsync(Uri path, object userToken) {
-            if (_webClient.IsBusy) {
+            if (PlexWebClient.IsBusy) {
                 OnPlexError(new PlexException(typeof(PlexInterface), "Another Request in progress!", null));
                 return;
             }
             OnResponseProgress(userToken, 0);
-            _webClient.DownloadDataAsync(path, userToken);
+            PlexWebClient.DownloadDataAsync(path, userToken);
         }
 
         public static void RequestPlexItemsCancel() {
-            if (_webClient.IsBusy) {
-                _webClient.CancelAsync();
+            if (PlexWebClient.IsBusy) {
+                PlexWebClient.CancelAsync();
             }
         }
 
@@ -173,29 +165,10 @@ namespace PlexMediaCenter.Plex {
 
         #region ServerManager
 
-        public static bool PlexServersAvailable {
-            get {
-                return ServerManager.PlexServers != null
-                       && ServerManager.PlexServers.Count > 0
-                       && ServerManager.PlexServerCurrent != null;
-            }
-        }
-
         private static void ServerManager_OnServerManangerError(PlexException e) {
             OnPlexError(e);
         }
 
-        public static bool Login(PlexServer plexServer) {
-            return ServerManager.Authenticate(plexServer);
-        }
-
-        public static bool Connect(ManualConnectionInfo connInfo) {
-            return(Login(ServerManager.AddManualServerConnection(connInfo)));
-        }
-
-        public static void RefreshBonjourServers() {
-            ServerManager.RefrehBonjourServers();
-        }
         #endregion
     }
 }

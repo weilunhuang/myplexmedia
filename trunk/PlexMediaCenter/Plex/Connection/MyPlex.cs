@@ -15,18 +15,18 @@ namespace PlexMediaCenter.Plex.Connection {
         private NetworkCredential MyPlexCredentials { get; set; }
 
         public MyPlexUser MyPlexAccount { get; private set; }
-        public List<MyPlexConnectionInfo> MyPlexServerList { get; private set; }
+        public List<MyPlexConnectionInfo> MyPlexServers { get; private set; }
 
         public MyPlex(NetworkCredential myPlexCredentials) {
             MyPlexCredentials = myPlexCredentials;
         }
 
         public bool Authenticate(ref WebClient webClient) {
-            webClient.Headers["X-Plex-Platform"] = string.Empty;
-            webClient.Headers["X-Plex-Platform-Version"] = string.Empty;
-            webClient.Headers["X-Plex-Provides"] = string.Empty;
-            webClient.Headers["X-Plex-Product"] = string.Empty;
-            webClient.Headers["X-Plex-Device"] = string.Empty;
+            webClient.Headers["X-Plex-Platform"] = "Microsoft Windows";
+            webClient.Headers["X-Plex-Platform-Version"] = System.Environment.OSVersion.VersionString;
+            webClient.Headers["X-Plex-Provides"] = "player";
+            webClient.Headers["X-Plex-Product"] = "MyPlexMedia (MediaPortal Plugin)";
+            webClient.Headers["X-Plex-Device"] = "HTPC (MediaPortal)";
             webClient.Headers["X-Plex-Client-Identifier"] = new Guid().ToString();
             try {
                 webClient.Credentials = MyPlexCredentials;
@@ -35,7 +35,7 @@ namespace PlexMediaCenter.Plex.Connection {
                 webClient.Headers["X-Plex-Token"] = MyPlexAccount.authenticationtoken;
                 string serversRes = webClient.DownloadString(ServersUrl);
                 List<MediaContainerServer> servers = Serialization.DeSerializeXML<MediaContainer>(serversRes).Server;
-                MyPlexServerList = servers.ConvertAll<MyPlexConnectionInfo>(mcs => new MyPlexConnectionInfo(mcs.machineIdentifier, mcs.name, mcs.host, int.Parse(mcs.port), MyPlexAccount.authenticationtoken));
+                MyPlexServers = servers.ConvertAll<MyPlexConnectionInfo>(mcs => new MyPlexConnectionInfo(mcs.machineIdentifier, mcs.name, mcs.host, int.Parse(mcs.port), MyPlexAccount.authenticationtoken));
                 return
                     MyPlexAccount != null
                     && !String.IsNullOrEmpty(MyPlexAccount.authenticationtoken)

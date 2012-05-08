@@ -55,18 +55,7 @@ namespace PlexMediaCenter.Plex.Connection {
 
         public List<PlexServer> PlexServers { get; private set; }
 
-        public PlexServer PlexServerCurrent {
-            get { return PlexServerCurrent; }
-            private set {
-                PlexServerCurrent = value;
-                if (!PlexServers.Contains(value)) {
-                    PlexServers.Insert(0, value);
-                    SavePlexServers(PlexServers);
-                }
-            }
-        }
-
-        internal static event OnServerManangerErrorEventHandler OnServerManangerError;
+        internal event OnServerManangerErrorEventHandler OnServerManangerError;
         public event OnPlexServersChangedEventHandler OnPlexServersChanged;
 
         ~ServerManager() {
@@ -118,18 +107,13 @@ namespace PlexMediaCenter.Plex.Connection {
             }
         }
 
-        public void SetCurrentPlexServer(PlexServer server) {
-            PlexServerCurrent = server;
-        }
-
         private void BonjourDiscovery_OnBonjourConnection(BonjourConnectionInfo bonjourDiscoveredServer) {
             try {
-                string machineIdentifier = string.Empty;
-                if (bonjourDiscoveredServer.TryConnect(ref WebClient, ref machineIdentifier)) {
-                    if (PlexServers.Exists(svr => svr.MachineIdentifier.Equals(machineIdentifier))) {
-                        PlexServers.Single(svr => svr.MachineIdentifier.Equals(machineIdentifier)).AddConnectionInfo(bonjourDiscoveredServer);
+                if (bonjourDiscoveredServer.TryConnect(ref WebClient)) {
+                    if (PlexServers.Exists(svr => svr.MachineIdentifier.Equals(bonjourDiscoveredServer.MachineIdentifier))) {
+                        PlexServers.Single(svr => svr.MachineIdentifier.Equals(bonjourDiscoveredServer.MachineIdentifier)).AddConnectionInfo(bonjourDiscoveredServer);
                     } else {
-                        PlexServers.Add(new PlexServer(machineIdentifier, bonjourDiscoveredServer));
+                        PlexServers.Add(new PlexServer(bonjourDiscoveredServer.MachineIdentifier, bonjourDiscoveredServer));
                     }
                     OnPlexServersChanged(PlexServers);
                 }
@@ -138,12 +122,9 @@ namespace PlexMediaCenter.Plex.Connection {
             }
         }
 
-
-
         internal void AddMyPlexServers(List<MyPlexConnectionInfo> myPlexServerConnections) {
             foreach (MyPlexConnectionInfo conn in myPlexServerConnections) {
-                string machine = string.Empty;
-                conn.TryConnect(ref WebClient, ref machine); 
+                conn.TryConnect(ref WebClient); 
                 if (PlexServers.Exists(svr => svr.MachineIdentifier.Equals(conn.MachineIdentifier))) {
                     PlexServers.Single(svr => svr.MachineIdentifier.Equals(conn.MachineIdentifier)).AddConnectionInfo(conn);
                 } else {
@@ -153,28 +134,26 @@ namespace PlexMediaCenter.Plex.Connection {
             OnPlexServersChanged(PlexServers);
         }
 
-        public PlexServer AddManualServerConnection(ManualConnectionInfo manualServerConnection) {
-            PlexServer tmpServer = null;
-            string machine = string.Empty;
-            if(manualServerConnection.TryConnect(ref WebClient, ref machine) && PlexServers.Exists(svr => svr.MachineIdentifier.Equals(manualServerConnection.MachineIdentifier))) {
-                tmpServer = PlexServers.Single(svr => svr.MachineIdentifier.Equals(manualServerConnection.MachineIdentifier));
-                tmpServer.AddConnectionInfo(manualServerConnection);
-            } else {
-                tmpServer = new PlexServer(manualServerConnection.MachineIdentifier, manualServerConnection);
-                PlexServers.Add(tmpServer);
+        public bool TryAddManualServerConnection(ManualConnectionInfo manualServerConnection) {
+            if (!manualServerConnection.TryConnect(ref WebClient)) {
+                return false;
             }
-            return tmpServer;
+            PlexServer plexServer = null;
+             if(PlexServers.Exists(svr => svr.MachineIdentifier.Equals(manualServerConnection.MachineIdentifier))) {
+                plexServer = PlexServers.Single(svr => svr.MachineIdentifier.Equals(manualServerConnection.MachineIdentifier));
+                plexServer.AddConnectionInfo(manualServerConnection);
+            } else {
+                plexServer = new PlexServer(manualServerConnection.MachineIdentifier, manualServerConnection);
+                PlexServers.Add(plexServer);
+            }
+            return true;
         }
 
-        public void RefrehBonjourServers() {
+        public void RefreshBonjourServers() {
             if (PlexServers.Count > 0) {
                 OnPlexServersChanged(PlexServers);
             }
             BonjourDiscovery.RefreshBonjourDiscovery();
-        }
-
-        internal bool Authenticate(PlexServer plexServer) {
-            return plexServer.Authenticate(ref WebClient);
         }
     }
 }
