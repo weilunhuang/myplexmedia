@@ -44,7 +44,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         #endregion
 
-        private const string BufferFile = Settings.PLEX_BUFFERING_TEMPFILE;;
+        private const string BufferFile = Settings.PLEX_BUFFER_FILE;
         private const PlexQualities DefaultQuality = PlexQualities._1_320kbps_240p;
         private static readonly BackgroundWorker MediaBufferer;
 
