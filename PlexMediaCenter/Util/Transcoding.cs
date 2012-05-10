@@ -37,7 +37,11 @@ namespace PlexMediaCenter.Util {
 
         public static Uri GetTrackPlaybackUrl(Uri plexUriPath, MediaContainerTrack track) {
             PlexServer server = PlexInterface.ServerManager.TryFindPlexServer(plexUriPath);
-            return new Uri(server.UriPlexBase, track.Media[0].Part[0].key  +"?"+ server.CurrentConnection.GetAuthUrlParameters());
+            string authPars = server.CurrentConnection.GetAuthUrlParameters();
+            if (!string.IsNullOrEmpty(authPars)) {
+                authPars = "?" + authPars;
+            }
+            return new Uri(server.UriPlexBase, track.Media[0].Part[0].key + authPars);
         }
 
         public static List<string> GetVideoSegmentedPlayList(Uri plexUriPath, MediaContainerVideo video, long offset,
@@ -55,7 +59,7 @@ namespace PlexMediaCenter.Util {
         public static void StopTranscoding(Uri plexUriPath) {
             PlexServer server = PlexInterface.ServerManager.TryFindPlexServer(plexUriPath);
             using (WebClient plexClient = new WebClient()) {
-               string result = plexClient.DownloadString(new Uri(server.UriPlexBase, "/video/:/transcode/segmented/stop"));
+                string result = plexClient.DownloadString(new Uri(server.UriPlexBase, "/video/:/transcode/segmented/stop"));
             }
         }
 
@@ -80,7 +84,7 @@ namespace PlexMediaCenter.Util {
             DateTime jan1 = new DateTime(1970, 1, 1, 0, 0, 0);
             double dTime = (DateTime.Now - jan1).TotalMilliseconds;
             // as per the Javascript example, round up the Unix time
-            string time = Math.Round(dTime/1000).ToString();
+            string time = Math.Round(dTime / 1000).ToString();
             // the basic url WITH the part key is:
             return time;
         }
@@ -91,12 +95,12 @@ namespace PlexMediaCenter.Util {
             string playListRequest = plexServer.UriPlexBase.AbsoluteUri + "video/:/transcode/segmented/";
             using (WebClient plexClient = new WebClient()) {
                 string response = plexClient.DownloadString(GetM3U8PlaylistUrl(plexServer, partKey, offset, quality, is3G));
-                string session = response.Substring(response.IndexOf("session")).Replace("\n", "");                
+                string session = response.Substring(response.IndexOf("session")).Replace("\n", "");
                 playListRequest += session;
 
                 plexClient.Headers[HttpRequestHeader.Cookie] = plexClient.ResponseHeaders[HttpResponseHeader.SetCookie];
                 string playList = plexClient.DownloadString(playListRequest);
-                playListItems = playList.Split(new[] {'\n'}).Where(item => item.EndsWith(".ts")).ToList();
+                playListItems = playList.Split(new[] { '\n' }).Where(item => item.EndsWith(".ts")).ToList();
             }
             return playListItems.Select(currentItem => playListRequest.Replace("index.m3u8", currentItem));
         }
@@ -115,14 +119,16 @@ namespace PlexMediaCenter.Util {
             transcodePath += PlexCapabilitiesClient.GetClientCapabilities();
             //transcodePath += "&httpCookies=";
             //transcodePath += "&userAgent=";
-            transcodePath += "&session="+Guid.NewGuid();
+            transcodePath += "&session=" + Guid.NewGuid();
             return new Uri(plexServer.UriPlexBase + transcodePath.Remove(0, 1));
         }
 
         private static string GetPlexAuthParameters(PlexServer plexServer, string url) {
             string time = GetUnixTime();
             string authParameters = string.Empty;
-            authParameters += plexServer.CurrentConnection.GetAuthUrlParameters();
+            if (!String.IsNullOrEmpty(plexServer.CurrentConnection.GetAuthUrlParameters())) {
+                authParameters += "&" + plexServer.CurrentConnection.GetAuthUrlParameters();
+            }
             authParameters += "&X-Plex-Access-Key=" + PlexApiPublicKey;
             authParameters += "&X-Plex-Access-Time=" + time;
             authParameters += "&X-Plex-Access-Code=" + Uri.EscapeDataString(GetPlexApiToken(url, time));

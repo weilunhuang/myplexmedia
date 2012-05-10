@@ -66,7 +66,7 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
         public static T ShowSelectionDialog<T>() {
             GUIDialogSelect2 dlgSelect = (GUIDialogSelect2)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_SELECT2);
             dlgSelect.Reset();
-            dlgSelect.SetHeading("Selection: " + typeof(T).ToString());
+            dlgSelect.SetHeading("Selection: " + typeof(T).Name);
             Enum.GetNames(typeof(T)).ToList().ForEach(dlgSelect.Add);
             dlgSelect.DoModal(GUIWindowManager.ActiveWindow);
             try {

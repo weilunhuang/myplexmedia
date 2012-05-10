@@ -63,9 +63,7 @@ namespace MyPlexMedia.Plugin.Config {
 
         public static string PLEX_ARTWORK_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "default_fanart.png");
 
-        public static string PLEX_ARTWORK_CACHE_ROOT_PATH =
-            Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs),
-                         PLUGIN_NAME);
+        public static string PLEX_ARTWORK_CACHE_ROOT_PATH = @"D:\MyPlexMedia\";
 
         public static string SKINFILE_MAIN_WINDOW = GUIGraphicsContext.Skin + @"\MyPlexMedia.xml";
 

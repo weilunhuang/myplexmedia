@@ -24,7 +24,7 @@ namespace PlexMediaCenter.Plex.Connection {
         }
 
         internal override string GetAuthUrlParameters() {
-            return String.Format("&X-Plex-User={0}&X-Plex-Pass={1}", UserName, UserPass);
+            return String.Format("X-Plex-User={0}&X-Plex-Pass={1}", UserName, UserPass);
         }
 
         public static string EncryptPassword(string userName, string userPass) {
