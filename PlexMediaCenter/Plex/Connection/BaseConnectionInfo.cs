@@ -72,7 +72,7 @@ namespace PlexMediaCenter.Plex.Connection {
                     IsOnline = false;
                 }
             }
-            return false;
+            return IsOnline;
         }
 
         private PlexCapabilitiesServer GetServerCapabilities(MediaContainer serverResponse) {
@@ -91,6 +91,6 @@ namespace PlexMediaCenter.Plex.Connection {
             }
         }
 
-       
+
     }
 }
