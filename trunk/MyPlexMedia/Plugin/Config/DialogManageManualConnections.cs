@@ -20,11 +20,7 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void toolStripButtonCheck_Click(object sender, EventArgs e) {
-            WebProxy myProxy = new WebProxy();
-            myProxy.Address = new Uri("http://194.114.63.23:8080");
-            myProxy.Credentials = new NetworkCredential("v7708m3", "mandela");
             WebClient wc = new WebClient();
-            wc.Proxy = myProxy;
             ManualConnections.ForEach(mc => mc.TryConnect(ref wc));
             wc.Dispose();
         }

@@ -66,7 +66,7 @@ namespace PlexMediaCenter.Plex {
             ServerManager = new ServerManager(ref PlexWebClient,serverListXmlPath);
             ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
 
-            ArtworkRetriever = new ArtworkRetriever(defaultBasePath, defaultImage);
+            ArtworkRetriever = new ArtworkRetriever(defaultBasePath, defaultBasePath);
             ArtworkRetriever.OnArtworkRetrievalError += MediaRetrieval_OnArtWorkRetrievalError;
         }
 

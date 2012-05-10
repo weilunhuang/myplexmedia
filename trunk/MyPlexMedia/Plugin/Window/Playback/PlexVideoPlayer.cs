@@ -78,16 +78,19 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
 
             if (PlexInterface.ServerManager.TryFindPlexServer(itemPath).IsBonjour) {
-                switch (CommonDialogs.ShowSelectionDialog<PlayType>()) {
-                    case PlayType.DirectPlay:
-                        PlayPlayerMainThread(itemPath.AbsoluteUri, video.title);
-                        break;
-                    default:
-                    case PlayType.Transcode:
-                        //We're on the local network, therefore we use the LAN quality
-                        Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityLAN);
-                        break;
-                }
+                //switch (CommonDialogs.ShowSelectionDialog<PlayType>()) {
+                //    case PlayType.DirectPlay:
+                //        PlayPlayerMainThread(itemPath.AbsoluteUri, video.title);
+                //        return;
+                //        break;
+                //    default:
+                //    case PlayType.Transcode:
+                //        //We're on the local network, therefore we use the LAN quality
+                //        Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityLAN);
+                //        break;
+                //}
+                //We're on the local network, therefore we use the LAN quality
+                Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityLAN);
             } else if (Settings.SelectQualityPriorToPlayback) {
                 Buffering.BufferMedia(itemPath, video, CommonDialogs.ShowSelectionDialog<PlexQualities>());
             } else {
