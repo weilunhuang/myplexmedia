@@ -38,8 +38,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, UriPath, Video.art);
 
             if (video.type.Equals("episode")) {
-
-                Label = String.Format("{0}.S{1:00}E{2:00}.{3}", new object[] { video.grandparentTitle, int.Parse(video.parentIndex), int.Parse(video.index), video.title });
+                Label = String.Format("S{0:00}E{1:00}.{2}", new object[] { int.Parse(video.parentIndex), int.Parse(video.index), video.title });
                 video.title = Label;
             }
 

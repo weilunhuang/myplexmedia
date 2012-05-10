@@ -44,7 +44,6 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         #endregion
 
-        private const string BufferFile = Settings.PLEX_BUFFER_FILE;
         private const PlexQualities DefaultQuality = PlexQualities._1_320kbps_240p;
         private static readonly BackgroundWorker MediaBufferer;
 
@@ -89,8 +88,8 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         }
 
         private static void DeleteBufferFile() {
-            if (File.Exists(BufferFile)) {
-                File.Delete(BufferFile);
+            if (File.Exists(Settings.PLEX_BUFFER_FILE)) {
+                File.Delete(Settings.PLEX_BUFFER_FILE);
             }
         }
 
@@ -110,7 +109,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
             DeleteBufferFile();
             using (
-                FileStream bufferedMedia = new FileStream(BufferFile, FileMode.Create, FileAccess.Write,
+                FileStream bufferedMedia = new FileStream(Settings.PLEX_BUFFER_FILE, FileMode.Create, FileAccess.Write,
                                                           FileShare.Read)
                 ) {
                 foreach (string segment in segments) {
@@ -136,7 +135,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                                                  currentJob);
                     if (++currentJob.SegmentsBuffered == currentJob.PreBufferSize) {
                         IsPreBuffering = false;
-                        OnPlayPreBufferedMedia(BufferFile, currentJob);
+                        OnPlayPreBufferedMedia(Settings.PLEX_BUFFER_FILE, currentJob);
                     }
                 }
             }

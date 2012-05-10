@@ -120,10 +120,6 @@ namespace PlexMediaCenter.Plex.Connection {
             }
         }
 
-        public static string EncryptPassword(string userName, string userPass) {
-            return Encryption.GetSHA1Hash(userName.ToLower() + Encryption.GetSHA1Hash(userPass));
-        }
-
         public override string ToString() {
             return String.Format("{0} @ {1} [{2}]", FriendlyName, CurrentConnection.UriPlexBase, PlexVersion);
         }

@@ -27,7 +27,7 @@ namespace PlexMediaCenter.Plex.Connection {
             return String.Format("&X-Plex-User={0}&X-Plex-Pass={1}", UserName, UserPass);
         }
 
-        private static string EncryptPassword(string userName, string userPass) {
+        public static string EncryptPassword(string userName, string userPass) {
             return Encryption.GetSHA1Hash(userName.ToLower() + Encryption.GetSHA1Hash(userPass));
         }
     }

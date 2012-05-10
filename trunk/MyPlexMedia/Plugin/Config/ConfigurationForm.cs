@@ -34,7 +34,7 @@ using MyPlexMedia.Plugin.Window.Playback;
 using MyPlexMedia.Plugin.Window.Dialogs;
 
 namespace MyPlexMedia.Plugin.Config {
-    public partial class ConfigurationForm : MPConfigForm {
+    public partial class ConfigurationForm : Form {
         public ConfigurationForm() {
             try {
                 InitializeComponent();
@@ -129,9 +129,11 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         private void dataGridView1_RowPrePaint(object sender, DataGridViewRowPrePaintEventArgs e) {
-            //dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = ((bool)dataGridView1[isOnlineDataGridViewCheckBoxColumn.Name, e.RowIndex].Value)
-            //                                                                    ? Color.LightGreen
-            //                                                                    : Color.Tomato;
+            try {
+                dataGridView1.Rows[e.RowIndex].DefaultCellStyle.BackColor = ((List<PlexServer>)plexServerBindingSource.DataSource)[e.RowIndex].IsOnline
+                                                                                    ? Color.LightGreen
+                                                                                    : Color.Tomato;
+            } catch { }
         }
 
         private void buttonMyPlexLogin_Click(object sender, EventArgs e) {
@@ -155,5 +157,16 @@ namespace MyPlexMedia.Plugin.Config {
             PlexInterface.ServerManager.RefreshBonjourServers();
         }
 
+        private void buttonManageManualConnections_Click(object sender, EventArgs e) {
+            List<ManualConnectionInfo> currentManualConnections;
+            try {
+                currentManualConnections = PlexInterface.ServerManager.PlexServers.Select(svr => svr.KnownConnections[typeof(ManualConnectionInfo)] as ManualConnectionInfo).ToList();
+            } catch {
+                currentManualConnections = new List<ManualConnectionInfo>();
+            }
+            if (DialogResult.OK == new DialogManageManualConnections(ref currentManualConnections).ShowDialog()) {
+                currentManualConnections.ForEach(mc => PlexInterface.ServerManager.TryAddManualServerConnection(mc));
+            }
+        }
     }
 }

@@ -31,11 +31,11 @@ using PlexMediaCenter.Plex;
 
 namespace MyPlexMedia.Plugin.Window.Playback {
     internal static class PlexVideoPlayer {
-       
+
         private static readonly Timer BufferCheckTimer;
 
         static PlexVideoPlayer() {
-            BufferCheckTimer = new Timer {Interval = 1000};
+            BufferCheckTimer = new Timer { Interval = 1000 };
             BufferCheckTimer.Tick += _bufferCheckTimer_Tick;
 
             g_Player.PlayBackStarted += new g_Player.StartedHandler(g_Player_PlayBackStarted);
@@ -49,11 +49,13 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         static void g_Player_PlayBackEnded(g_Player.MediaType type, string filename) {
             Buffering.StopBuffering();
             GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", String.Empty);
+            GUIPropertyManager.SetProperty("#TV.View.Percentage", String.Empty);
+            GUIPropertyManager.SetProperty("#TV.Record.percent2", String.Empty);
+            GUIPropertyManager.SetProperty("#TV.Record.percent3", String.Empty);
         }
 
         static void g_Player_PlayBackStopped(g_Player.MediaType type, int stoptime, string filename) {
-            Buffering.StopBuffering();
-            GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", String.Empty);
+            g_Player_PlayBackEnded(type, filename);
         }
 
         static void g_Player_PlayBackStarted(g_Player.MediaType type, string filename) {
@@ -62,6 +64,11 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         private static bool BufferingPause { get; set; }
 
+        enum PlayType {
+            DirectPlay,
+            Transcode
+        }
+
         public static void PlayBackMedia(Uri itemPath, MediaContainerVideo video) {
             if (Buffering.IsBuffering) {
                 if (CommonDialogs.ShowCustomYesNo("Buffering in progress...", "Cancel previous buffering process and start a new one?", "Yes", "No", true)) {
@@ -69,9 +76,18 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                     Buffering.StopBuffering();
                 } else { return; }
             }
+
             if (PlexInterface.ServerManager.TryFindPlexServer(itemPath).IsBonjour) {
-                //We're on the local network, therefore we use the LAN quality
-                Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityLAN);
+                switch (CommonDialogs.ShowSelectionDialog<PlayType>()) {
+                    case PlayType.DirectPlay:
+                        PlayPlayerMainThread(itemPath.AbsoluteUri, video.title);
+                        break;
+                    default:
+                    case PlayType.Transcode:
+                        //We're on the local network, therefore we use the LAN quality
+                        Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityLAN);
+                        break;
+                }
             } else if (Settings.SelectQualityPriorToPlayback) {
                 Buffering.BufferMedia(itemPath, video, CommonDialogs.ShowSelectionDialog<PlexQualities>());
             } else {
@@ -79,13 +95,13 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             }
             CommonDialogs.ShowWaitCursor();
             BufferCheckTimer.Start();
-            while(Buffering.IsBuffering && Buffering.IsPreBuffering) {                
+            while (Buffering.IsBuffering && Buffering.IsPreBuffering) {
                 GUIWindowManager.Process();
             }
             CommonDialogs.HideWaitCursor();
         }
 
-        private static void Buffering_OnPlayBufferedMedia(string localBufferPath, BufferJob bufferJob) {           
+        private static void Buffering_OnPlayBufferedMedia(string localBufferPath, BufferJob bufferJob) {
             BufferingPause = false;
             PlayPlayerMainThread(localBufferPath, bufferJob.Video.title);
             new System.Threading.Thread(delegate(object o) {
@@ -98,7 +114,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             GUIPropertyManager.SetProperty("#TV.Record.percent2", bufferJob.BufferingProgress.ToString());
             GUIPropertyManager.SetProperty("#TV.Record.percent3", "100");
             if (bufferJob.SegmentsBuffered <= bufferJob.PreBufferSize) {
-                CommonDialogs.ShowProgressDialog((int)bufferJob.PreBufferingProgress, "Pre-Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1}",bufferJob.SegmentsBuffered, bufferJob.PreBufferSize), String.Format("Completed: {0}%", bufferJob.PreBufferingProgress.ToString()),true);
+                CommonDialogs.ShowProgressDialog((int)bufferJob.PreBufferingProgress, "Pre-Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1}", bufferJob.SegmentsBuffered, bufferJob.PreBufferSize), String.Format("Completed: {0}%", bufferJob.PreBufferingProgress.ToString()), true);
                 GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Pre-Buffering...");
             } else {
                 if (g_Player.Paused) {
@@ -111,7 +127,6 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         }
 
         private static void CommonDialogs_OnProgressCancelled() {
-            GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", String.Empty);
             Buffering.StopBuffering();
             StopPlayerMainThread();
         }
@@ -123,7 +138,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 return 0;
             }
         }
-        
+
         private static void _bufferCheckTimer_Tick(object sender, EventArgs e) {
             GUIPropertyManager.SetProperty("#duration", Buffering.CurrentJob.VideoDuration.ToString());
             GUIPropertyManager.SetProperty("#TV.View.Percentage",
@@ -142,14 +157,13 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                     if (g_Player.Paused && BufferingPause) {
                         BufferingPause = false;
                         PausePlayerMainThread();
-
                     }
                 }
             }
 
-        
+
         }
-        
+
         private static void SetGuiProperties(object video) {
             MediaContainerVideo nowPlaying = video as MediaContainerVideo;
             GUIPropertyManager.SetProperty("#Play.Current.Title", nowPlaying.title);
@@ -173,13 +187,13 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         private delegate void StopPlayerMainThreadDelegate();
 
         private static void StopPlayerMainThread() {
-            
+
             //call g_player.stop only on main thread.
             if (GUIGraphicsContext.form.InvokeRequired) {
                 StopPlayerMainThreadDelegate d = new StopPlayerMainThreadDelegate(StopPlayerMainThread);
                 GUIGraphicsContext.form.Invoke(d);
                 return;
-            }            
+            }
             g_Player.Stop();
         }
 
@@ -201,7 +215,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             //call g_player.stop only on main thread.
             if (GUIGraphicsContext.form.InvokeRequired) {
                 PlayPlayerMainThreadDelegate d = new PlayPlayerMainThreadDelegate(PlayPlayerMainThread);
-                GUIGraphicsContext.form.Invoke(d,new object[]{file,title});
+                GUIGraphicsContext.form.Invoke(d, new object[] { file, title });
                 return;
             }
             if (!g_Player.PlayVideoStream(file, title)) {
