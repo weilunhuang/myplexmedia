@@ -40,7 +40,12 @@ namespace MyPlexMedia.Plugin.Window {
 
         #region Skin Controls
 
-        [SkinControlAttribute(2011)] protected GUIImage ctrlBackgroundImage;
+        [SkinControlAttribute(2011)]
+        protected GUIImage ctrlBackgroundImage;
+
+        private GUIFacadeControl FacadeVideo;
+        private GUIFacadeControl FacadeAudio;
+        private GUIFacadeControl FacadePictures;
 
         #endregion
 
@@ -58,9 +63,14 @@ namespace MyPlexMedia.Plugin.Window {
             LoadSettings();
             GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME);
             GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", string.Empty);
-            PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH,
+            PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.CacheFolder,
                                Settings.PLEX_ICON_DEFAULT);
             PlexInterface.MyPlexLogin(Settings.MyPlexUser, Settings.MyPlexPass);
+            //FacadeVideo = facadeLayout;
+            //facadeLayout.LoadControl(GUIGraphicsContext.Skin + @"\common.facade.video.Title.xml");
+            FacadeVideo = (GUIFacadeControl)facadeLayout.LoadControl(GUIGraphicsContext.Skin + @"\common.facade.video.Title.xml").Find(x => x.GetID == 50);
+            FacadeAudio = (GUIFacadeControl)facadeLayout.LoadControl(GUIGraphicsContext.Skin + @"\common.facade.music.xml").Find(x => x.GetID == 50);
+            FacadePictures = (GUIFacadeControl)facadeLayout.LoadControl(GUIGraphicsContext.Skin + @"\common.facade.pictures.xml").Find(x => x.GetID == 50);
             return Load(Settings.SKINFILE_MAIN_WINDOW);
         }
 
@@ -98,25 +108,22 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         protected override void SwitchLayout() {
-            Navigation.CurrentItem.PreferredLayout = new Settings.PlexSectionLayout
-                                                         {
-                                                             Layout = CurrentLayout,
-                                                             Section = Navigation.CurrentItem.PreferredLayout.Section
-                                                         };
-            //switch (Navigation.CurrentItem.PreferredLayout.Section) {
-            //    case Settings.SectionType.Music:
-            //        Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Music.xml");
-            //        break;
-            //    case Settings.SectionType.Video:
-            //        Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Videos.xml");
-            //        break;
-            //    case Settings.SectionType.Photo:
-            //        Load(GUIGraphicsContext.Skin + @"\MyPlexMedia.Photos.xml");
-            //        break;
-            //    default:
-            //        Load(Settings.SKINFILE_MAIN_WINDOW);
-            //        break;
-            //}
+            Navigation.CurrentItem.PreferredLayout = new Settings.PlexSectionLayout {
+                Layout = CurrentLayout,
+                Section = Navigation.CurrentItem.PreferredLayout.Section
+            };
+            switch (Navigation.CurrentItem.PreferredLayout.Section) {
+                case Settings.SectionType.Music:
+                    facadeLayout = FacadeAudio;
+                    break;
+                case Settings.SectionType.Photo:
+                    facadeLayout = FacadePictures;
+                    break;
+                default:
+                case Settings.SectionType.Video:
+                    facadeLayout = FacadeVideo;
+                    break;
+            }
             base.SwitchLayout();
         }
 
@@ -128,7 +135,6 @@ namespace MyPlexMedia.Plugin.Window {
                 case GUIFacadeControl.Layout.List:
                 case GUIFacadeControl.Layout.SmallIcons:
                     return true;
-
                 default:
                     return false;
             }
@@ -136,8 +142,8 @@ namespace MyPlexMedia.Plugin.Window {
 
         protected override void OnInfo(int item) {
             if (facadeLayout[item] is IMenuItem) {
-                ((IMenuItem) facadeLayout[item]).Parent.LastSelectedChildIndex = item;
-                ((IMenuItem) facadeLayout[item]).OnInfo();
+                ((IMenuItem)facadeLayout[item]).Parent.LastSelectedChildIndex = item;
+                ((IMenuItem)facadeLayout[item]).OnInfo();
             } else {
                 base.OnInfo(item);
             }
@@ -161,8 +167,8 @@ namespace MyPlexMedia.Plugin.Window {
         protected override void OnClick(int iItem) {
             GUIListItem item = facadeLayout[iItem];
             if (facadeLayout[iItem] is IMenuItem) {
-                ((IMenuItem) facadeLayout[iItem]).Parent.LastSelectedChildIndex = iItem;
-                ((IMenuItem) facadeLayout[iItem]).OnClicked(this, null);
+                ((IMenuItem)facadeLayout[iItem]).Parent.LastSelectedChildIndex = iItem;
+                ((IMenuItem)facadeLayout[iItem]).OnClicked(this, null);
             } else {
                 base.OnClick(iItem);
             }

@@ -34,7 +34,7 @@ using MyPlexMedia.Plugin.Window.Playback;
 using MyPlexMedia.Plugin.Window.Dialogs;
 
 namespace MyPlexMedia.Plugin.Config {
-    public partial class ConfigurationForm : Form {
+    public partial class ConfigurationForm : MPConfigForm {
         public ConfigurationForm() {
             try {
                 InitializeComponent();
@@ -69,11 +69,13 @@ namespace MyPlexMedia.Plugin.Config {
             comboBoxQualityLAN.SelectedItem = Settings.DefaultQualityLAN;
             comboBoxQualityWAN.DataSource = Enum.GetValues(typeof(PlexQualities));
             comboBoxQualityWAN.SelectedItem = Settings.DefaultQualityWAN;
-            textBoxMyPlexPass.Text = Settings.MyPlexPass;
-            textBoxMyPlexUser.Text = Settings.MyPlexUser;
             checkBoxSelectQualityPriorToPlayback.Checked = Settings.SelectQualityPriorToPlayback;
             PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
-
+            textBoxMyPlexPass.Text = Settings.MyPlexPass;
+            textBoxMyPlexUser.Text = Settings.MyPlexUser;
+            if (!String.IsNullOrEmpty(Settings.MyPlexUser) && !String.IsNullOrEmpty(Settings.MyPlexPass)) {
+                buttonMyPlexLogin_Click(null, null);
+            }
         }
 
         private void ConfigurationForm_FormClosing(object sender, FormClosingEventArgs e) {
