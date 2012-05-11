@@ -47,10 +47,8 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         private const PlexQualities DefaultQuality = PlexQualities._1_320kbps_240p;
         private static readonly BackgroundWorker MediaBufferer;
 
-
         static Buffering() {
-            //logger.Info(" started...");       
-            DeleteBufferFile();
+            //logger.Info(" started...");
             MediaBufferer = new BackgroundWorker { WorkerSupportsCancellation = true, WorkerReportsProgress = true };
             MediaBufferer.RunWorkerCompleted += _mediaBufferer_RunWorkerCompleted;
             MediaBufferer.DoWork += MediaBufferer_DoWork;
@@ -70,6 +68,10 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 //logger.Info("Request Buffering Cancellation");
                 MediaBufferer.CancelAsync();
                 Transcoding.StopTranscoding(CurrentJob.ServerPath);
+                while (MediaBufferer.IsBusy) {
+                    Thread.Sleep(5000);
+                }
+                DeleteBufferFile();
             }
         }
 

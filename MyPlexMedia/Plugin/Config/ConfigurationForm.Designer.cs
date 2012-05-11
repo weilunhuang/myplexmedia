@@ -39,7 +39,6 @@ namespace MyPlexMedia.Plugin.Config {
             this.buttonManageManualConnections = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.plexServerBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.buttonRefreshBonjourServers = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.checkBoxSelectQualityPriorToPlayback = new System.Windows.Forms.CheckBox();
@@ -52,7 +51,6 @@ namespace MyPlexMedia.Plugin.Config {
             this.button1 = new System.Windows.Forms.Button();
             this.textBoxCheezRootFolder = new System.Windows.Forms.TextBox();
             this.labelCheezRootFolder = new System.Windows.Forms.Label();
-            this.baseConnectionInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.isOnlineDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.uriPlexSectionsDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -65,17 +63,19 @@ namespace MyPlexMedia.Plugin.Config {
             this.isBonjourDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.isManualDataGridViewCheckBoxColumn = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.machineIdentifierDataGridViewTextBoxColumn = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.plexServerBindingSource = new System.Windows.Forms.BindingSource(this.components);
+            this.baseConnectionInfoBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.tabControl1.SuspendLayout();
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             this.tabPage2.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).BeginInit();
             this.tabPage3.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.baseConnectionInfoBindingSource)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.baseConnectionInfoBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // label16
@@ -257,10 +257,6 @@ namespace MyPlexMedia.Plugin.Config {
             this.dataGridView1.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dataGridView1_CellFormatting);
             this.dataGridView1.RowPrePaint += new System.Windows.Forms.DataGridViewRowPrePaintEventHandler(this.dataGridView1_RowPrePaint);
             // 
-            // plexServerBindingSource
-            // 
-            this.plexServerBindingSource.DataSource = typeof(PlexMediaCenter.Plex.Connection.PlexServer);
-            // 
             // buttonRefreshBonjourServers
             // 
             this.buttonRefreshBonjourServers.Location = new System.Drawing.Point(193, 159);
@@ -380,10 +376,6 @@ namespace MyPlexMedia.Plugin.Config {
             this.labelCheezRootFolder.TabIndex = 6;
             this.labelCheezRootFolder.Text = "Thumb && Artwork Cache:";
             // 
-            // baseConnectionInfoBindingSource
-            // 
-            this.baseConnectionInfoBindingSource.DataSource = typeof(PlexMediaCenter.Plex.Connection.BaseConnectionInfo);
-            // 
             // pictureBox1
             // 
             this.pictureBox1.Anchor = System.Windows.Forms.AnchorStyles.Right;
@@ -494,6 +486,14 @@ namespace MyPlexMedia.Plugin.Config {
             this.machineIdentifierDataGridViewTextBoxColumn.HeaderText = "MachineIdentifier";
             this.machineIdentifierDataGridViewTextBoxColumn.Name = "machineIdentifierDataGridViewTextBoxColumn";
             // 
+            // plexServerBindingSource
+            // 
+            this.plexServerBindingSource.DataSource = typeof(PlexMediaCenter.Plex.Connection.PlexServer);
+            // 
+            // baseConnectionInfoBindingSource
+            // 
+            this.baseConnectionInfoBindingSource.DataSource = typeof(PlexMediaCenter.Plex.Connection.BaseConnectionInfo);
+            // 
             // ConfigurationForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -513,13 +513,13 @@ namespace MyPlexMedia.Plugin.Config {
             this.tabPage2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).EndInit();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.baseConnectionInfoBindingSource)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.plexServerBindingSource)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.baseConnectionInfoBindingSource)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 

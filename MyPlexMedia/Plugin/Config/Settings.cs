@@ -55,7 +55,10 @@ namespace MyPlexMedia.Plugin.Config {
         public static string PLEX_ICON_DEFAULT_BACK = Path.Combine(SKIN_FOLDER_MEDIA, "icon_back.png");
         public static string PLEX_ICON_DEFAULT_ONLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.png");
         public static string PLEX_ICON_DEFAULT_OFFLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_offline.png");
-        public static string PLEX_BUFFER_FILE = Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Config), "MyPlexBuffer.ts");
+        public static string PLEX_ARTWORK_CACHE_ROOT_PATH =
+          Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs),
+                       PLUGIN_NAME);
+        public static string PLEX_BUFFER_FILE = Path.Combine(CacheFolder, "MyPlexBuffer.ts");
 
         public static string PLEX_SERVER_LIST_XML =
             Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Config),
@@ -63,8 +66,7 @@ namespace MyPlexMedia.Plugin.Config {
 
         public static string PLEX_ARTWORK_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "default_fanart.png");
 
-        public static string PLEX_ARTWORK_CACHE_ROOT_PATH = @"D:\MyPlexMedia\";
-
+      
         public static string SKINFILE_MAIN_WINDOW = GUIGraphicsContext.Skin + @"\MyPlexMedia.xml";
 
         public static string SKINFILE_DIALOG_BUFFERING = GUIGraphicsContext.Skin +
@@ -78,7 +80,7 @@ namespace MyPlexMedia.Plugin.Config {
             MyPlexUser = String.Empty;
             MyPlexPass = String.Empty;
             CacheFolder = PLEX_ARTWORK_CACHE_ROOT_PATH;
-            DefaultQualityLAN = Window.Playback.PlexQualities._3_1500kbps_480p;
+            DefaultQualityLAN = Window.Playback.PlexQualities._7_8000kbps_1080p;
             DefaultQualityWAN = Window.Playback.PlexQualities._3_1500kbps_480p;
             SelectQualityPriorToPlayback = true;
             DeleteCacheOnExit = false;

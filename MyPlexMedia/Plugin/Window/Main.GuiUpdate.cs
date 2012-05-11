@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using MediaPortal.GUI.Library;
 using MediaPortal.Util;
@@ -40,6 +41,9 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private static void PlexInterface_OnResponseProgress(object userToken, int progress) {
+            if (progress < 5 || progress > 95) {
+                return;
+            }
             CommonDialogs.ShowProgressDialog(progress, Settings.PLUGIN_NAME, "Fetching Plex Items...",
                                              ((IMenuItem)userToken).Parent.Name + " > " + ((IMenuItem)userToken).Name,
                                              String.Format("Current Progress: {0,3}%", progress.ToString()));
@@ -47,8 +51,9 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private void MenuItem_OnHasBackground(string imagePath) {
-            if (ctrlBackgroundImage == null || String.IsNullOrEmpty(imagePath) || !File.Exists(imagePath) ||
-                ctrlBackgroundImage.ImagePath.Equals(imagePath)) return;
+            if (ctrlBackgroundImage == null || String.IsNullOrEmpty(imagePath) || !File.Exists(imagePath) || ctrlBackgroundImage.ImagePath.Equals(imagePath)) {
+                return;
+            }
             //ctrlBackgroundImage.RemoveMemoryImageTexture();
             ctrlBackgroundImage.SetFileName(imagePath);
             //ctrlBackgroundImage.DoUpdate();
@@ -58,12 +63,13 @@ namespace MyPlexMedia.Plugin.Window {
 
         private static void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
             CommonDialogs.ShowWaitCursor();
-
         }
 
         private void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex,
                                                           Settings.PlexSectionLayout preferredLayout) {
-            GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", Navigation.History.ToArray()));
+            GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", ((IEnumerable<string>)Navigation.History).Reverse().Take(3).Reverse().ToArray()));
+            CurrentLayout = preferredLayout.Layout;
+            SwitchLayout();
             facadeLayout.Clear();
             facadeLayout.ListLayout.Clear();
             facadeLayout.CoverFlowLayout.Clear();
@@ -71,11 +77,7 @@ namespace MyPlexMedia.Plugin.Window {
             facadeLayout.FilmstripLayout.Clear();
             facadeLayout.ListLayout.Clear();
             facadeLayout.PlayListLayout.Clear();
-            CurrentLayout = preferredLayout.Layout;
-            SwitchLayout();
-            foreach (var item in fetchedMenuItems) {
-                facadeLayout.Add(item as MenuItem);
-            }
+            fetchedMenuItems.ForEach(item => facadeLayout.Add(item as MenuItem));
             facadeLayout.RefreshCoverArt();
             facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
             facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);

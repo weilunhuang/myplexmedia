@@ -67,7 +67,6 @@
     <Compile Include="Plex\Data\Types\MediaPart.cs" />
     <Compile Include="Plex\Data\Types\MediaPartStream.cs" />
     <Compile Include="Plex\Data\Types\MyPlexUser.cs" />
-    <Compile Include="Plex\Data\Types\NewDataSet.cs" />
     <Compile Include="Plex\PlexException.cs" />
     <Compile Include="Plex\PlexInterface.cs" />
     <Compile Include="Plex\Connection\PlexServer.cs" />
