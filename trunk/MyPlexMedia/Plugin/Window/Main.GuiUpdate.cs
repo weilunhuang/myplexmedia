@@ -41,7 +41,7 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private static void PlexInterface_OnResponseProgress(object userToken, int progress) {
-            if (progress < 5) {
+            if (progress < 1 || progress > 99) {
                 return;
             }
             CommonDialogs.ShowProgressDialog(progress, Settings.PLUGIN_NAME, "Fetching Plex Items...",
@@ -51,13 +51,15 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private void SetBackgroundImage(string imagePath) {
-            if (ctrlBackgroundImage == null || ctrlBackgroundImage.ImagePath.Equals(imagePath)) {
+            if (ctrlBackgroundImage == null || ctrlBackgroundImage.FileName.Equals(imagePath)) {
                 return;
             }
-            if (!String.IsNullOrEmpty(imagePath) && File.Exists(imagePath) ) {
-                ctrlBackgroundImage.SetFileName(imagePath);
-            } else {
-                ctrlBackgroundImage.SetFileName(Settings.PLEX_BACKGROUND_DEFAULT);
+            if (!String.IsNullOrEmpty(imagePath) && File.Exists(imagePath)) {
+                //GUITextureManager.ReleaseTexture(ctrlBackgroundImage.FileName);
+                //ctrlBackgroundImage.RemoveMemoryImageTexture();
+                if (GUITextureManager.Load(imagePath, 0, 0, 0, true) > 0) {
+                    ctrlBackgroundImage.SetFileName(imagePath);
+                }
             }
             //ctrlBackgroundImage.RemoveMemoryImageTexture();
             //ctrlBackgroundImage.DoUpdate();
@@ -66,33 +68,38 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private static void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
-            PlexInterface.ArtworkRetriever.ResetQueue();
             CommonDialogs.ShowWaitCursor();
         }
 
-        private void Navigation_OnMenuItemsFetchCompleted(List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex,
-                                                          Settings.PlexSectionLayout preferredLayout) {
-            GUIPropertyManager.SetProperty("#currentmodule", String.Join(">", ((IEnumerable<string>)Navigation.History).Reverse().Take(3).Reverse().ToArray()));
-            CurrentLayout = preferredLayout.Layout;
-            SwitchLayout();
-            facadeLayout.Clear();
-            facadeLayout.ListLayout.Clear();
-            facadeLayout.CoverFlowLayout.Clear();
-            facadeLayout.ThumbnailLayout.Clear();
-            facadeLayout.FilmstripLayout.Clear();
-            facadeLayout.ListLayout.Clear();
-            facadeLayout.PlayListLayout.Clear();
-            fetchedMenuItems.ForEach(item => facadeLayout.Add(item as MenuItem));
-            facadeLayout.RefreshCoverArt();
-            facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
-            facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
-            CommonDialogs.HideWaitCursor();
-            CommonDialogs.HideProgressDialog();
+        private void Navigation_OnMenuItemsFetchCompleted(IMenuItem parentItem, int selectedFacadeIndex) {
+            if (parentItem.ChildItems == null || parentItem.ChildItems.Count < 1) {
+
+            }
+            try {
+                GUIPropertyManager.SetProperty("#currentmodule", GetHistory(parentItem));
+                CurrentLayout = parentItem.PreferredLayout.Layout;
+                SwitchLayout();
+                facadeLayout.Clear();
+                parentItem.ChildItems.ForEach(item => facadeLayout.Add(item as MenuItem));
+                facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
+                facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
+                CommonDialogs.HideWaitCursor();
+                CommonDialogs.HideProgressDialog();
+                SetBackgroundImage(parentItem.ChildItems[selectedFacadeIndex].BackgroundImage);
+            } catch {
+
+            }
         }
 
         private void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {
             SetBackgroundImage(selectedItem.BackgroundImage);
         }
 
+        private string GetHistory(IMenuItem current, string concat = "", int level = 0) {
+            if (level < 2 && current.Parent != null) {
+                concat = String.Format("{0}>", GetHistory(current.Parent, concat, ++level));
+            }
+            return concat + current.Name;
+        }
     }
 }

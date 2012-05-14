@@ -97,18 +97,18 @@ namespace MyPlexMedia.Plugin.Window {
                 if (FacadeVideo == null) {
                     GUIGroup group = facadeLayout.LoadControl(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.video.Title.xml"))[0] as GUIGroup;
                     FacadeVideo = (GUIFacadeControl)group.Children.GetControlById(50);
-                    FacadeVideo.BeginInit();
+                    FacadeVideo.OnInit();
                 }
                 if (FacadeAudio == null) {
                     GUIGroup group = facadeLayout.LoadControl(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.music.xml"))[0] as GUIGroup;
                     FacadeAudio = (GUIFacadeControl)group.Children.GetControlById(50);
-                    FacadeAudio.BeginInit();
+                    FacadeAudio.OnInit();
                 }
                 if (FacadePictures == null) {
                     GUIGroup group = facadeLayout.LoadControl(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.pictures.xml"))[0] as GUIGroup;
                     FacadePictures = (GUIFacadeControl)group.Children.GetControlById(50);
                 }
-            } catch { 
+            } catch {
             }
         }
 
@@ -135,12 +135,12 @@ namespace MyPlexMedia.Plugin.Window {
                     break;
                 default:
                 case Settings.SectionType.Video:
-                      facadeLayout.CoverFlowLayout = FacadeVideo.CoverFlowLayout;
-                      //facadeLayout.ListLayout = FacadeVideo.ListLayout;
-                      //facadeLayout.AlbumListLayout = FacadeVideo.AlbumListLayout;
-                      //facadeLayout.FilmstripLayout = FacadeVideo.FilmstripLayout;
-                      //facadeLayout.PlayListLayout = FacadeVideo.PlayListLayout;
-                      //facadeLayout.ThumbnailLayout = FacadeVideo.ThumbnailLayout;
+                    facadeLayout.CoverFlowLayout = FacadeVideo.CoverFlowLayout;
+                    //facadeLayout.ListLayout = FacadeVideo.ListLayout;
+                    //facadeLayout.AlbumListLayout = FacadeVideo.AlbumListLayout;
+                    //facadeLayout.FilmstripLayout = FacadeVideo.FilmstripLayout;
+                    //facadeLayout.PlayListLayout = FacadeVideo.PlayListLayout;
+                    //facadeLayout.ThumbnailLayout = FacadeVideo.ThumbnailLayout;
                     break;
             } 
             Navigation.CurrentItem.PreferredLayout = new Settings.PlexSectionLayout {

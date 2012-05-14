@@ -24,6 +24,7 @@ using System;
 using PlexMediaCenter.Plex;
 using PlexMediaCenter.Plex.Data.Types;
 using PlexMediaCenter.Plex.Connection;
+using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     internal class PlexItemDirectory : PlexItemBase {
@@ -50,8 +51,16 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         void PlexItemDirectory_OnRetrieveArt(MediaPortal.GUI.Library.GUIListItem item) {
             if (item.Equals(this)) {
-                PlexInterface.ArtworkRetriever.QueueArtworkItem(SetIcon, UriPath, Directory.thumb);
-                PlexInterface.ArtworkRetriever.QueueArtworkItem(SetBackground, UriPath, Directory.art);
+                if (Directory.thumb != null) {
+                    PlexInterface.ArtworkRetriever.QueueArtworkItem(SetIcon, UriPath, Directory.thumb);
+                } else {
+                    SetIcon(Settings.PLEX_ICON_DEFAULT);
+                }
+                if (Directory.art != null) {
+                    PlexInterface.ArtworkRetriever.QueueArtworkItem(SetBackground, UriPath, Directory.art);
+                } else {
+                    SetBackground(Settings.PLEX_BACKGROUND_DEFAULT);
+                }
             }
         }
 

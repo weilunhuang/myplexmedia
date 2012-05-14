@@ -65,6 +65,10 @@ namespace PlexMediaCenter.Plex.Data {
         protected override void OnDoWork(DoWorkEventArgs e) {
             foreach (var client in QueueClients) {
                 ArtworkQueueItem currentItem = QueueArtwork.Dequeue();
+                if (currentItem == null) {
+                    QueueClients.Enqueue(client);
+                    continue;
+                }
                 try {
                     PlexInterface.GetPlexServerFromUri(currentItem.ImageUrl).CurrentConnection.AddAuthHeaders(client);
                     if (!File.Exists(currentItem.ImageLocalPath)) {
@@ -77,11 +81,16 @@ namespace PlexMediaCenter.Plex.Data {
             }
         }
 
+        protected override void OnRunWorkerCompleted(RunWorkerCompletedEventArgs e) {
+            base.OnRunWorkerCompleted(e);
+        }
+
         void DownloadFileCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e) {
             if (e.UserState != null && e.UserState is ArtworkQueueItem) {
                 ArtworkQueueItem currentItem = e.UserState as ArtworkQueueItem;
                 currentItem.FinishedCallback.Invoke(currentItem.ImageLocalPath);
             }
+            QueueClients.Enqueue((WebClient)sender);
         }
 
         public void ResetQueue() {
@@ -97,8 +106,8 @@ namespace PlexMediaCenter.Plex.Data {
                 //Image locally available so nothing to do...
                 downloadFinishedCallback.Invoke(localImagePath);
             } else {
-               QueueArtwork.Enqueue(new ArtworkQueueItem(new Uri(new UriBuilder(sourcePath.Scheme, sourcePath.Host, sourcePath.Port).Uri, imageRelativePath), localImagePath,
-                                                                  downloadFinishedCallback));
+                QueueArtwork.Enqueue(new ArtworkQueueItem(new Uri(new UriBuilder(sourcePath.Scheme, sourcePath.Host, sourcePath.Port).Uri, imageRelativePath), localImagePath,
+                                                                   downloadFinishedCallback));
             }
         }
 
@@ -162,7 +171,11 @@ namespace PlexMediaCenter.Plex.Data {
 
             public T Dequeue() {
                 _semaphore.WaitOne();
-                lock (_queue) return _queue.Dequeue();
+                lock (_queue) {
+                    try { return _queue.Dequeue(); } catch {
+                        return default(T);
+                    }
+                }
             }
 
             public IEnumerator<T> GetEnumerator() {

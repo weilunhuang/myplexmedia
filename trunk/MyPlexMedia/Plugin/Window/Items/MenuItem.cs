@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using MediaPortal.GUI.Library;
+using MediaPortal.Util;
 using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Items {
@@ -39,6 +40,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             IconImage = Settings.PLEX_ICON_DEFAULT;
             IconImageBig = Settings.PLEX_ICON_DEFAULT;
             ThumbnailImage = Settings.PLEX_ICON_DEFAULT;
+            BackgroundImage = Settings.PLEX_BACKGROUND_DEFAULT;
             RetrieveArt = false;
         }
 

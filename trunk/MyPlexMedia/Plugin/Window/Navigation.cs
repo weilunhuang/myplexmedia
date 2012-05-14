@@ -37,8 +37,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         public delegate void OnErrorOccuredEventHandler(PlexException e);
 
-        public delegate void OnMenuItemsFetchCompletedEventHandler(
-            List<IMenuItem> fetchedMenuItems, int selectedFacadeIndex, Settings.PlexSectionLayout preferredLayout);
+        public delegate void OnMenuItemsFetchCompletedEventHandler(IMenuItem parentItem, int selectedFacadeIndex);
 
         public delegate void OnMenuItemsFetchStartedEventHandler(IMenuItem itemToFetch);
 
@@ -48,8 +47,7 @@ namespace MyPlexMedia.Plugin.Window {
             PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
             PlexInterface.OnResponseReceived += PlexInterface_OnResponseReceived;
             CommonDialogs.OnProgressCancelled += CommonDialogs_OnProgressCancelled;
-            History = new List<string> { Settings.PLUGIN_NAME };
-            RootItem = new PlexItemBase(null, "Root Item", null);
+            RootItem = new PlexItemBase(null, "MyPlexMedia", null);
             ServerItem = new MenuItem(RootItem, "Plex Servers");
             RootMenu = new List<IMenuItem> { ServerItem };
             RootItem.SetChildItems(RootMenu);
@@ -62,7 +60,6 @@ namespace MyPlexMedia.Plugin.Window {
         private static MenuItem ServerItem { get; set; }
         private static List<IMenuItem> ServerMenu { get; set; }
         public static IMenuItem CurrentItem { get; set; }
-        public static List<string> History { get; set; }
         public static event OnErrorOccuredEventHandler OnErrorOccured;
         public static event OnMenuItemsFetchStartedEventHandler OnMenuItemsFetchStarted;
         public static event OnMenuItemsFetchCompletedEventHandler OnMenuItemsFetchCompleted;
@@ -105,7 +102,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         internal static void FetchPreviousMenu(IMenuItem currentItem, int storeLastSelectedFacadeIndex) {
             if (currentItem == null || currentItem.Parent == null) return;
-            History.RemoveAt(History.Count - 1);
+            PlexInterface.ArtworkRetriever.ResetQueue();
             currentItem.LastSelectedChildIndex = storeLastSelectedFacadeIndex;
             ShowCurrentMenu(currentItem.Parent, currentItem.Parent.LastSelectedChildIndex);
         }
@@ -117,7 +114,7 @@ namespace MyPlexMedia.Plugin.Window {
                     parentItem.ChildItems.Where(item => item is PlexItemTrack).ToList().ConvertAll(
                         item => item as PlexItemTrack), parentItem.Name);
                 
-                OnMenuItemsFetchCompleted(parentItem.ChildItems, selectFacadeIndex, parentItem.PreferredLayout);
+                OnMenuItemsFetchCompleted(parentItem, selectFacadeIndex);
             } else {
                 return;
             }
@@ -149,7 +146,6 @@ namespace MyPlexMedia.Plugin.Window {
                     plexResponseConatiner.viewGroup.Equals("secondary")) {
                     parentItem.ViewItems = tmpList;
                 }
-                plexResponseConatiner.Video.ForEach(vid => vid.parentIndex = plexResponseConatiner.parentIndex);
                 tmpList.AddRange(
                     plexResponseConatiner.Video.ConvertAll<IMenuItem>(
                         vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));
@@ -177,7 +173,6 @@ namespace MyPlexMedia.Plugin.Window {
                     CommonDialogs.ShowNotifyDialog(10, "Plex Request", "Nothing found...", Settings.PLEX_ICON_DEFAULT_SEARCH, CommonDialogs.PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_OK);
                     return;
                 }
-                History.Add(item.Name);
                 ShowCurrentMenu(item, item.LastSelectedChildIndex);
             } else {
                 OnErrorOccured(new PlexException(typeof(Navigation), "Unexpected item type in received response!",
@@ -192,9 +187,9 @@ namespace MyPlexMedia.Plugin.Window {
             ServerMenu.Add(new ActionItem(null, "Add Plex Server...", Settings.PLEX_ICON_DEFAULT_ONLINE,
                                           AddNewPlexServer));
             ServerItem.SetChildItems(ServerMenu);
-            if (CurrentItem == ServerItem) {
-                ShowCurrentMenu(ServerItem, 0);
-            }
+            //if (CurrentItem != ServerItem) {
+            //    ShowCurrentMenu(ServerItem, 0);
+            //}
         }
 
         internal static void RefreshServerMenu() {

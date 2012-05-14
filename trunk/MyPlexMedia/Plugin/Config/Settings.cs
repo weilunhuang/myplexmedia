@@ -58,7 +58,6 @@ namespace MyPlexMedia.Plugin.Config {
         public static string PLEX_ARTWORK_CACHE_ROOT_PATH =
           Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs),
                        PLUGIN_NAME);
-        public static string PLEX_BUFFER_FILE = Path.Combine(PLEX_ARTWORK_CACHE_ROOT_PATH, "MyPlexBuffer.ts");
 
         public static string PLEX_SERVER_LIST_XML =
             Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Config),
@@ -108,7 +107,7 @@ namespace MyPlexMedia.Plugin.Config {
                                        {
                                            "default",
                                            new PlexSectionLayout
-                                               {Layout = GUIFacadeControl.Layout.List, Section = SectionType.Music}
+                                               {Layout = GUIFacadeControl.Layout.List, Section = SectionType.Video}
                                            },
                                        {
                                            "secondary",
