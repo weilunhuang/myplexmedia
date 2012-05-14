@@ -285,10 +285,10 @@
       <description>my label</description>
       <type>label</type>
       <id>121212</id>
-      <posX>80</posX>
-      <posY>60</posY>
+      <posX>400</posX>
+      <posY>95</posY>
       <label>#MyPlexMedia.Buffering.State</label>
-      <font>font13</font>
+      <font>font11</font>
       <textcolor>FFdddddd</textcolor>
     </control>
   </controls>

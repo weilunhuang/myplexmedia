@@ -29,9 +29,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public PlexItemSearch(IMenuItem parentItem, string title, Uri path, string userPrompt)
             : base(parentItem, title, path) {
             Prompt = userPrompt;
-            IconImage = Settings.PLEX_ICON_DEFAULT_SEARCH;
-            IconImageBig = Settings.PLEX_ICON_DEFAULT_SEARCH;
-            ThumbnailImage = Settings.PLEX_ICON_DEFAULT_SEARCH;
+            SetIcon(Settings.PLEX_ICON_DEFAULT_SEARCH);
             RetrieveArt = false;
         }
 

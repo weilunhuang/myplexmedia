@@ -68,10 +68,6 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 //logger.Info("Request Buffering Cancellation");
                 MediaBufferer.CancelAsync();
                 Transcoding.StopTranscoding(CurrentJob.ServerPath);
-                while (MediaBufferer.IsBusy) {
-                    Thread.Sleep(5000);
-                }
-                DeleteBufferFile();
             }
         }
 
@@ -90,8 +86,8 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         }
 
         private static void DeleteBufferFile() {
-            if (File.Exists(Settings.PLEX_BUFFER_FILE)) {
-                File.Delete(Settings.PLEX_BUFFER_FILE);
+            if (File.Exists(Path.Combine( Settings.CacheFolder, "MyPlexBuffer.ts"))) {
+                File.Delete(Path.Combine(Settings.CacheFolder, "MyPlexBuffer.ts"));
             }
         }
 
@@ -111,7 +107,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
             DeleteBufferFile();
             using (
-                FileStream bufferedMedia = new FileStream(Settings.PLEX_BUFFER_FILE, FileMode.Create, FileAccess.Write,
+                FileStream bufferedMedia = new FileStream(Path.Combine(Settings.CacheFolder, "MyPlexBuffer.ts"), FileMode.Create, FileAccess.Write,
                                                           FileShare.Read)
                 ) {
                 foreach (string segment in segments) {
@@ -121,6 +117,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                         IsPreBuffering = false;
                         bufferedMedia.Flush();
                         bufferedMedia.Close();
+                        bufferedMedia.Dispose();
                         break;
                     }
                     using (WebClient segmentFetcher = new WebClient()) {
@@ -137,7 +134,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                                                  currentJob);
                     if (++currentJob.SegmentsBuffered == currentJob.PreBufferSize) {
                         IsPreBuffering = false;
-                        OnPlayPreBufferedMedia(Settings.PLEX_BUFFER_FILE, currentJob);
+                        OnPlayPreBufferedMedia(Path.Combine(Settings.CacheFolder, "MyPlexBuffer.ts"), currentJob);
                     }
                 }
             }
@@ -190,7 +187,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             } else {
                 //logger.Info("BackGroundWorker -Buffering completed and was successful");
             }
-
+            DeleteBufferFile();
         }
     }
 

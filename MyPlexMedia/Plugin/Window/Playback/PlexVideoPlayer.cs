@@ -48,10 +48,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         static void g_Player_PlayBackEnded(g_Player.MediaType type, string filename) {
             Buffering.StopBuffering();
-            GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", String.Empty);
-            GUIPropertyManager.SetProperty("#TV.View.Percentage", String.Empty);
-            GUIPropertyManager.SetProperty("#TV.Record.percent2", String.Empty);
-            GUIPropertyManager.SetProperty("#TV.Record.percent3", String.Empty);
+            GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", string.Empty);
         }
 
         static void g_Player_PlayBackStopped(g_Player.MediaType type, int stoptime, string filename) {
@@ -118,14 +115,13 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             GUIPropertyManager.SetProperty("#TV.Record.percent3", "100");
             if (bufferJob.SegmentsBuffered <= bufferJob.PreBufferSize) {
                 CommonDialogs.ShowProgressDialog((int)bufferJob.PreBufferingProgress, "Pre-Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1}", bufferJob.SegmentsBuffered, bufferJob.PreBufferSize), String.Format("Completed: {0}%", bufferJob.PreBufferingProgress.ToString()), true);
-                GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Pre-Buffering...");
+                GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Buffering...");
             } else {
                 if (g_Player.Paused) {
                     CommonDialogs.ShowProgressDialog(currentProgress, "Buffering...", bufferJob.Video.title, String.Format("Segments: {0}/{1} ({2}%)", bufferJob.SegmentsBuffered, bufferJob.SegmentsCount, currentProgress.ToString()), "Current Buffer Status:");
                 } else {
                     CommonDialogs.HideProgressDialog();
                 }
-                GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", "Buffering...");
             }
         }
 

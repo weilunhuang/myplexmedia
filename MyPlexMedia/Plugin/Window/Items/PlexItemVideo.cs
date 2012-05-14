@@ -24,6 +24,7 @@ using System;
 using MediaPortal.GUI.Library;
 using MediaPortal.GUI.Video;
 using MediaPortal.Video.Database;
+using MyPlexMedia.Plugin.Config;
 using MyPlexMedia.Plugin.Window.Playback;
 using PlexMediaCenter.Plex;
 using PlexMediaCenter.Plex.Data.Types;
@@ -36,10 +37,12 @@ namespace MyPlexMedia.Plugin.Window.Items {
             RetrieveArt = true;
             OnRetrieveArt += new RetrieveCoverArtHandler(PlexItemVideo_OnRetrieveArt);
 
-            if (video.type.Equals("episode")) {
-                Label = String.Format("S{0:00}E{1:00}.{2}", new object[] { int.Parse(video.parentIndex), int.Parse(video.index), video.title });
-                video.title = Label;
-            }
+            try {
+                if (video.type.Equals("episode")) {
+                    Label = String.Format("S{0:00}E{1:00}.{2}", new object[] { int.Parse(video.parentIndex), int.Parse(video.index), video.title });
+                    video.title = Label;
+                }
+            } catch { }
 
             int duration;
             if (int.TryParse(Video.duration, out duration)) {
@@ -74,8 +77,18 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         void PlexItemVideo_OnRetrieveArt(GUIListItem item) {
-            PlexInterface.ArtworkRetriever.QueueArtworkItem(SetIcon, UriPath, Video.thumb);
-            PlexInterface.ArtworkRetriever.QueueArtworkItem(SetBackground, UriPath, Video.art);
+            if (item.Equals(this)) {
+                if (Video.thumb != null) {
+                    PlexInterface.ArtworkRetriever.QueueArtworkItem(SetIcon, UriPath, Video.thumb);
+                } else {
+                    SetIcon(Settings.PLEX_ICON_DEFAULT);
+                }
+                if (Video.art != null) {
+                    PlexInterface.ArtworkRetriever.QueueArtworkItem(SetBackground, UriPath, Video.art);
+                } else {
+                    SetBackground(Settings.PLEX_BACKGROUND_DEFAULT);
+                }
+            }
         }
 
         public MediaContainerVideo Video { get; set; }

@@ -33,13 +33,9 @@ namespace MyPlexMedia.Plugin.Window.Items {
             PlexServer = plexServer;
             SetIcon(PlexServer.IsOnline ? Settings.PLEX_ICON_DEFAULT_ONLINE : Settings.PLEX_ICON_DEFAULT_OFFLINE);
             Label2 = plexServer.CurrentConnection.HostAdress;
-            RetrieveArt = false;
         }
 
         private PlexServer PlexServer { get; set; }
 
-        public override void OnClicked(object sender, EventArgs e) {
-            Navigation.ShowRootMenu(PlexServer);
-        }
     }
 }

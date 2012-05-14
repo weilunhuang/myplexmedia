@@ -47,13 +47,13 @@ namespace MyPlexMedia.Plugin.Window.Items {
         protected virtual void SetIcon(string imagePath) {
             Utils.DoInsertExistingFileIntoCache(imagePath);
             IconImageBig = IconImage = ThumbnailImage = imagePath;
-            RetrieveArt = false;
+            //RetrieveArt = false;
         }
 
         protected virtual void SetBackground(string imagePath) {
             Utils.DoInsertExistingFileIntoCache(imagePath);
             BackgroundImage = imagePath;
-            RetrieveArt = false;
+            //RetrieveArt = false;
         }
 
         public virtual void SetMetaData(MediaContainer infoContainer) {
@@ -68,7 +68,6 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (ChildItems == null || ChildItems.Count < 1) {
                 Navigation.RequestChildItems(UriPath, this);
             } else {
-                Navigation.History.Add(Name);
                 Navigation.ShowCurrentMenu(this, LastSelectedChildIndex);
             }
         }
