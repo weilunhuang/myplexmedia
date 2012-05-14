@@ -75,7 +75,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Util\BonjourDiscovery.cs" />
     <Compile Include="Util\Encryption.cs" />
-    <Compile Include="Plex\Data\ArtworkRetriever.cs" />
+    <Compile Include="Plex\Data\ArtworkRetriever.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Util\SerializableDictionary.cs" />
     <Compile Include="Util\Serialization.cs" />
     <Compile Include="Util\Transcoding.cs" />

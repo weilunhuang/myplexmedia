@@ -65,8 +65,7 @@ namespace MyPlexMedia.Plugin.Window {
             LoadSettings();
             GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME);
             GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", string.Empty);
-            PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.CacheFolder,
-                               Settings.PLEX_ICON_DEFAULT);
+            PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.CacheFolder);
             PlexInterface.MyPlexLogin(Settings.MyPlexUser, Settings.MyPlexPass);
             //FacadeVideo = facadeLayout;
             //facadeLayout.LoadControl(GUIGraphicsContext.Skin + @"\common.facade.video.Title.xml");
@@ -90,7 +89,7 @@ namespace MyPlexMedia.Plugin.Window {
             } else {
                 Navigation.ShowCurrentMenu(Navigation.CurrentItem, 0);
             }
-            MenuItem_OnHasBackground(Settings.PLEX_BACKGROUND_DEFAULT);
+            SetBackgroundImage(Settings.PLEX_BACKGROUND_DEFAULT);
         }
 
         private void TryLoadFacades() {
@@ -210,7 +209,6 @@ namespace MyPlexMedia.Plugin.Window {
         private void RegisterEventHandlers() {
             PlexInterface.OnPlexError += PlexInterface_OnPlexError;
             PlexInterface.OnResponseProgress += PlexInterface_OnResponseProgress;
-            PlexItemBase.OnHasBackground += MenuItem_OnHasBackground;
             MenuItem.OnMenuItemSelected += MenuItem_OnMenuItemSelected;
             Navigation.OnMenuItemsFetchStarted += Navigation_OnMenuItemsFetchStarted;
             Navigation.OnMenuItemsFetchCompleted += Navigation_OnMenuItemsFetchCompleted;
@@ -220,7 +218,6 @@ namespace MyPlexMedia.Plugin.Window {
         private void UnRegisterEventHandlers() {
             PlexInterface.OnPlexError -= PlexInterface_OnPlexError;
             PlexInterface.OnResponseProgress -= PlexInterface_OnResponseProgress;
-            PlexItemBase.OnHasBackground -= MenuItem_OnHasBackground;
             MenuItem.OnMenuItemSelected -= MenuItem_OnMenuItemSelected;
             Navigation.OnMenuItemsFetchStarted -= Navigation_OnMenuItemsFetchStarted;
             Navigation.OnMenuItemsFetchCompleted -= Navigation_OnMenuItemsFetchCompleted;

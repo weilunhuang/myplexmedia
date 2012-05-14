@@ -116,6 +116,7 @@ namespace MyPlexMedia.Plugin.Window {
                 PlexAudioPlayer.CreateMusicPlayList(
                     parentItem.ChildItems.Where(item => item is PlexItemTrack).ToList().ConvertAll(
                         item => item as PlexItemTrack), parentItem.Name);
+                
                 OnMenuItemsFetchCompleted(parentItem.ChildItems, selectFacadeIndex, parentItem.PreferredLayout);
             } else {
                 return;

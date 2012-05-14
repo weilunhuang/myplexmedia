@@ -32,6 +32,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             IconImage = Settings.PLEX_ICON_DEFAULT_SEARCH;
             IconImageBig = Settings.PLEX_ICON_DEFAULT_SEARCH;
             ThumbnailImage = Settings.PLEX_ICON_DEFAULT_SEARCH;
+            RetrieveArt = false;
         }
 
         private string Prompt { get; set; }

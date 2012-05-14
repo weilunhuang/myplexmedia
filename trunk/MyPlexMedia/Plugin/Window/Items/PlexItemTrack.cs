@@ -34,8 +34,12 @@ namespace MyPlexMedia.Plugin.Window.Items {
             : base(parentItem, title, path) {
             Track = track;
             PlaybackAuthUrl = Transcoding.GetTrackPlaybackUrl(UriPath, Track);
-            IconImage = ThumbnailImage = ((PlexItemBase)parentItem).IconImage;
-            if (parentItem != null) IconImageBig = (parentItem as PlexItemBase).IconImageBig;
+            if (parentItem != null) {
+                IconImage = ((PlexItemBase)parentItem).IconImage;
+                ThumbnailImage = ((PlexItemBase)parentItem).ThumbnailImage;
+                IconImageBig = ((PlexItemBase)parentItem).IconImageBig;
+                BackgroundImage = ((PlexItemBase)parentItem).BackgroundImage;
+            }
             int duration = 0;
             int.TryParse(track.duration, out duration);
             Label2 = album;

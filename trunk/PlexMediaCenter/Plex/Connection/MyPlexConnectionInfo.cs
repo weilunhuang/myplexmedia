@@ -15,7 +15,7 @@ namespace PlexMediaCenter.Plex.Connection {
             AuthToken = authToken;
         }
 
-        internal override void AddAuthHeaders(ref WebClient webClient) {
+        internal override void AddAuthHeaders(WebClient webClient) {
             webClient.Headers["X-Plex-Token"] = AuthToken;
         }
 

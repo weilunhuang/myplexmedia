@@ -31,9 +31,8 @@ namespace MyPlexMedia.Plugin.Window.Items {
             : base(parentItem, title, path) {
             Directory = directory;
             IsFolder = true;
-
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetIcon, UriPath, Directory.thumb);
-            PlexInterface.ArtworkRetriever.QueueArtwork(SetImage, UriPath, Directory.art);
+            RetrieveArt = true;
+            OnRetrieveArt += new RetrieveCoverArtHandler(PlexItemDirectory_OnRetrieveArt);
 
             int duration;
             if (int.TryParse(Directory.duration, out duration)) {
@@ -46,6 +45,13 @@ namespace MyPlexMedia.Plugin.Window.Items {
             FileInfo = new MediaPortal.Util.FileInformation();
             if (!String.IsNullOrEmpty(Directory.originallyAvailableAt)) {
                 FileInfo.CreationTime = DateTime.Parse(Directory.originallyAvailableAt);
+            }
+        }
+
+        void PlexItemDirectory_OnRetrieveArt(MediaPortal.GUI.Library.GUIListItem item) {
+            if (item.Equals(this)) {
+                PlexInterface.ArtworkRetriever.QueueArtworkItem(SetIcon, UriPath, Directory.thumb);
+                PlexInterface.ArtworkRetriever.QueueArtworkItem(SetBackground, UriPath, Directory.art);
             }
         }
 

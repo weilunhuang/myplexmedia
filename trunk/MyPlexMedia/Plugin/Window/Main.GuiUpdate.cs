@@ -50,18 +50,23 @@ namespace MyPlexMedia.Plugin.Window {
 
         }
 
-        private void MenuItem_OnHasBackground(string imagePath) {
-            if (ctrlBackgroundImage == null || String.IsNullOrEmpty(imagePath) || !File.Exists(imagePath) || ctrlBackgroundImage.ImagePath.Equals(imagePath)) {
+        private void SetBackgroundImage(string imagePath) {
+            if (ctrlBackgroundImage == null || ctrlBackgroundImage.ImagePath.Equals(imagePath)) {
                 return;
             }
+            if (!String.IsNullOrEmpty(imagePath) && File.Exists(imagePath) ) {
+                ctrlBackgroundImage.SetFileName(imagePath);
+            } else {
+                ctrlBackgroundImage.SetFileName(Settings.PLEX_BACKGROUND_DEFAULT);
+            }
             //ctrlBackgroundImage.RemoveMemoryImageTexture();
-            ctrlBackgroundImage.SetFileName(imagePath);
             //ctrlBackgroundImage.DoUpdate();
             //ctrlBackgroundImage.Refresh();
             //GUIWindowManager.Process();
         }
 
         private static void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
+            PlexInterface.ArtworkRetriever.ResetQueue();
             CommonDialogs.ShowWaitCursor();
         }
 
@@ -86,17 +91,8 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {
-            UpdateGuiProperties(selectedItem);
+            SetBackgroundImage(selectedItem.BackgroundImage);
         }
-
-        private void UpdateGuiProperties(IMenuItem selectedItem) {
-            //if (!string.IsNullOrEmpty(selectedItem.BackgroundImage)) {
-            //    ctrlBackgroundImage.SetFileName(selectedItem.BackgroundImage);
-            //} else {
-            //    ctrlBackgroundImage.SetFileName(Settings.PLEX_BACKGROUND_DEFAULT);
-            //}
-        }
-
 
     }
 }
