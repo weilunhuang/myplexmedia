@@ -33,7 +33,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         public delegate void OnHasBackgroundEventHandler(string imagePath);
 
         #endregion
-        
+
         public PlexItemBase(IMenuItem parentItem, string title, Uri path)
             : base(parentItem, title) {
             if (path != null) {
@@ -44,10 +44,10 @@ namespace MyPlexMedia.Plugin.Window.Items {
             ViewItems = new List<IMenuItem>();
             Utils.SetDefaultIcons(this);
             SetIcon(Settings.PLEX_ICON_DEFAULT);
-            SetImage(Settings.PLEX_ARTWORK_DEFAULT);
+            SetImage(Settings.PLEX_BACKGROUND_DEFAULT);
         }
 
-        public static event OnHasBackgroundEventHandler OnHasBackground;
+        public static event OnHasBackgroundEventHandler OnHasBackground = delegate(string t) { };
 
         protected virtual void SetIcon(string imagePath) {
             Utils.DoInsertExistingFileIntoCache(imagePath);
@@ -80,10 +80,10 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         public override void OnSelected() {
+            base.OnSelected();
             if (!String.IsNullOrEmpty(BackgroundImage)) {
                 OnHasBackground(BackgroundImage);
             }
-            base.OnSelected();
         }
     }
 }
