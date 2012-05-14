@@ -41,7 +41,7 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private static void PlexInterface_OnResponseProgress(object userToken, int progress) {
-            if (progress < 5 || progress > 95) {
+            if (progress < 5) {
                 return;
             }
             CommonDialogs.ShowProgressDialog(progress, Settings.PLUGIN_NAME, "Fetching Plex Items...",
@@ -58,7 +58,7 @@ namespace MyPlexMedia.Plugin.Window {
             ctrlBackgroundImage.SetFileName(imagePath);
             //ctrlBackgroundImage.DoUpdate();
             //ctrlBackgroundImage.Refresh();
-            GUIWindowManager.Process();
+            //GUIWindowManager.Process();
         }
 
         private static void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
@@ -85,12 +85,16 @@ namespace MyPlexMedia.Plugin.Window {
             CommonDialogs.HideProgressDialog();
         }
 
-        private static void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {
+        private void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {
             UpdateGuiProperties(selectedItem);
         }
 
-        private static void UpdateGuiProperties(IMenuItem selectedItem) {
-            //TODO: add custom skin properties
+        private void UpdateGuiProperties(IMenuItem selectedItem) {
+            //if (!string.IsNullOrEmpty(selectedItem.BackgroundImage)) {
+            //    ctrlBackgroundImage.SetFileName(selectedItem.BackgroundImage);
+            //} else {
+            //    ctrlBackgroundImage.SetFileName(Settings.PLEX_BACKGROUND_DEFAULT);
+            //}
         }
 
 

@@ -58,7 +58,7 @@ namespace MyPlexMedia.Plugin.Config {
         public static string PLEX_ARTWORK_CACHE_ROOT_PATH =
           Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs),
                        PLUGIN_NAME);
-        public static string PLEX_BUFFER_FILE = Path.Combine(CacheFolder, "MyPlexBuffer.ts");
+        public static string PLEX_BUFFER_FILE = Path.Combine(PLEX_ARTWORK_CACHE_ROOT_PATH, "MyPlexBuffer.ts");
 
         public static string PLEX_SERVER_LIST_XML =
             Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Config),
@@ -66,7 +66,7 @@ namespace MyPlexMedia.Plugin.Config {
 
         public static string PLEX_ARTWORK_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "default_fanart.png");
 
-      
+
         public static string SKINFILE_MAIN_WINDOW = GUIGraphicsContext.Skin + @"\MyPlexMedia.xml";
 
         public static string SKINFILE_DIALOG_BUFFERING = GUIGraphicsContext.Skin +
@@ -185,7 +185,7 @@ namespace MyPlexMedia.Plugin.Config {
                     SelectQualityPriorToPlayback = reader.GetValueAsBool(PLUGIN_NAME, "SelectQualityPriorToPlayback", true);
                     DeleteCacheOnExit = reader.GetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
                 }
-            } catch { 
+            } catch {
             }
         }
 

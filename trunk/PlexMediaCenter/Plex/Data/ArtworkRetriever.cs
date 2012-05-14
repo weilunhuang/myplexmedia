@@ -58,6 +58,10 @@ namespace PlexMediaCenter.Plex.Data {
                 downloadFinishedCallback.Invoke(localImagePath);
             } else {
                 //we need to put this in the Threadpool                 
+                int max;
+                int maxcomp;
+                ThreadPool.GetMaxThreads(out max, out maxcomp);
+                ThreadPool.SetMaxThreads(max, 10);
                 ThreadPool.QueueUserWorkItem(DownloadEnqueuedArtwork,
                                              new ArtworkQueueItem(new Uri(new UriBuilder(sourcePath.Scheme, sourcePath.Host, sourcePath.Port).Uri, imageRelativePath), localImagePath,
                                                                   downloadFinishedCallback));
@@ -69,7 +73,6 @@ namespace PlexMediaCenter.Plex.Data {
             WebClient downloader = new WebClient();
             try {
                 PlexInterface.GetPlexServerFromUri(currentItem.ImageUrl).CurrentConnection.AddAuthHeaders(ref downloader);
-                //currentItem.PlexConnection.AddAuthHeaders(ref downloader);
                 if (!File.Exists(currentItem.ImageLocalPath)) {
                     downloader.DownloadFile(currentItem.ImageUrl, currentItem.ImageLocalPath);
                 }
