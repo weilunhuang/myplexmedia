@@ -55,13 +55,13 @@ namespace PlexMediaCenter.Plex.Connection {
             PlexPort = plexPort;
         }
 
-        internal abstract void AddAuthHeaders(ref WebClient webClient);
+        internal abstract void AddAuthHeaders(WebClient webClient);
 
         internal abstract string GetAuthUrlParameters();
 
         public bool TryConnect(ref WebClient webClient) {
             if (CheckSocketConnection()) {
-                AddAuthHeaders(ref webClient);
+                AddAuthHeaders(webClient);
                 try {
                     string serverXmlResponse = webClient.DownloadString(UriPlexBase);
                     Capabilities = GetServerCapabilities(Serialization.DeSerializeXML<MediaContainer>(serverXmlResponse));

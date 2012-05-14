@@ -11,7 +11,7 @@ namespace PlexMediaCenter.Plex.Connection {
         :base(hostName,hostAdress, plexBonjourPort){
         }
 
-        internal override void AddAuthHeaders(ref WebClient webClient) {
+        internal override void AddAuthHeaders(WebClient webClient) {
 
         }
 

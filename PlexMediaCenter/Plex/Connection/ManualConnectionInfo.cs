@@ -18,7 +18,7 @@ namespace PlexMediaCenter.Plex.Connection {
             UserPass = EncryptPassword(userName, userPass);
         }
 
-        internal override void AddAuthHeaders(ref WebClient webClient) {
+        internal override void AddAuthHeaders(WebClient webClient) {
             webClient.Headers["X-Plex-User"] = UserName;
             webClient.Headers["X-Plex-Pass"] = UserPass;
         }

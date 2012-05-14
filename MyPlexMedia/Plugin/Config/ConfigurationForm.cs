@@ -43,8 +43,7 @@ namespace MyPlexMedia.Plugin.Config {
 
                 Settings.Load();
                 PlexInterface.OnPlexError += PlexInterface_OnPlexError;
-                PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH,
-                                   Settings.PLEX_ICON_DEFAULT);
+                PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH);
             } catch (Exception ex) {
                 Log.Error(ex);
             }

@@ -42,24 +42,18 @@ namespace MyPlexMedia.Plugin.Window.Items {
                               : new Uri((path.AbsoluteUri).EndsWith("/") ? path.AbsoluteUri : path.AbsoluteUri + "/");
             }
             ViewItems = new List<IMenuItem>();
-            Utils.SetDefaultIcons(this);
-            SetIcon(Settings.PLEX_ICON_DEFAULT);
-            SetImage(Settings.PLEX_BACKGROUND_DEFAULT);
         }
-
-        public static event OnHasBackgroundEventHandler OnHasBackground = delegate(string t) { };
 
         protected virtual void SetIcon(string imagePath) {
             Utils.DoInsertExistingFileIntoCache(imagePath);
-            IconImage = ThumbnailImage = imagePath;
-            RefreshCoverArt();
+            IconImageBig = IconImage = ThumbnailImage = imagePath;
+            RetrieveArt = false;
         }
 
-        protected void SetImage(string imagePath) {
+        protected virtual void SetBackground(string imagePath) {
             Utils.DoInsertExistingFileIntoCache(imagePath);
-            IconImageBig = imagePath;
             BackgroundImage = imagePath;
-            RefreshCoverArt();
+            RetrieveArt = false;
         }
 
         public virtual void SetMetaData(MediaContainer infoContainer) {
@@ -76,13 +70,6 @@ namespace MyPlexMedia.Plugin.Window.Items {
             } else {
                 Navigation.History.Add(Name);
                 Navigation.ShowCurrentMenu(this, LastSelectedChildIndex);
-            }
-        }
-
-        public override void OnSelected() {
-            base.OnSelected();
-            if (!String.IsNullOrEmpty(BackgroundImage)) {
-                OnHasBackground(BackgroundImage);
             }
         }
     }

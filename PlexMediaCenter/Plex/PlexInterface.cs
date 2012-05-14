@@ -55,7 +55,7 @@ namespace PlexMediaCenter.Plex {
 
         #region Initialization
 
-        public static void Init(string serverListXmlPath, string defaultBasePath, string defaultImage, WebClient webClient = default(WebClient)) {
+        public static void Init(string serverListXmlPath, string defaultBasePath, WebClient webClient = default(WebClient)) {
             if (webClient == null) {
                 webClient = new WebClient();
             }
@@ -66,7 +66,7 @@ namespace PlexMediaCenter.Plex {
             ServerManager = new ServerManager(ref PlexWebClient,serverListXmlPath);
             ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
 
-            ArtworkRetriever = new ArtworkRetriever(defaultBasePath, defaultBasePath);
+            ArtworkRetriever = new ArtworkRetriever(defaultBasePath);
             ArtworkRetriever.OnArtworkRetrievalError += MediaRetrieval_OnArtWorkRetrievalError;
         }
 

@@ -39,6 +39,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
             IconImage = Settings.PLEX_ICON_DEFAULT;
             IconImageBig = Settings.PLEX_ICON_DEFAULT;
             ThumbnailImage = Settings.PLEX_ICON_DEFAULT;
+            RetrieveArt = false;
         }
 
         #region IMenuItem Members
