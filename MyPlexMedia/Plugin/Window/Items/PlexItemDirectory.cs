@@ -28,6 +28,9 @@ using MyPlexMedia.Plugin.Config;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     internal class PlexItemDirectory : PlexItemBase {
+
+        public MediaContainerDirectory Directory { get; set; }
+
         public PlexItemDirectory(IMenuItem parentItem, string title, Uri path, MediaContainerDirectory directory)
             : base(parentItem, title, path) {
             Directory = directory;
@@ -50,21 +53,9 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         void PlexItemDirectory_OnRetrieveArt(MediaPortal.GUI.Library.GUIListItem item) {
-            if (item.Equals(this)) {
-                if (Directory.thumb != null) {
-                    PlexInterface.ArtworkRetriever.QueueArtworkItem(SetIcon, UriPath, Directory.thumb);
-                } else {
-                    SetIcon(Settings.PLEX_ICON_DEFAULT);
-                }
-                if (Directory.art != null) {
-                    PlexInterface.ArtworkRetriever.QueueArtworkItem(SetBackground, UriPath, Directory.art);
-                } else {
-                    SetBackground(Settings.PLEX_BACKGROUND_DEFAULT);
-                }
-            }
+            PlexInterface.ArtworkRetriever.QueueArtworkItem(SetIcon, Settings.PLEX_ICON_DEFAULT, UriPath, Directory.thumb);
+            PlexInterface.ArtworkRetriever.QueueArtworkItem(SetBackground, Settings.PLEX_BACKGROUND_DEFAULT, UriPath, Directory.art);
         }
-
-        public MediaContainerDirectory Directory { get; set; }
 
         public override void OnInfo() {
             if (String.IsNullOrEmpty(Directory.type)) return;

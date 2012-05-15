@@ -68,7 +68,7 @@ namespace MyPlexMedia.Plugin.Window {
             PlexInterface.RequestPlexItemsCancel();
         }
 
-        public static void ShowRootMenu(PlexServer selectedServer) {
+        public static void ShowServerRootMenu(PlexServer selectedServer) {
             MediaContainer plexSections = PlexInterface.TryGetPlexSections(selectedServer);
             if (plexSections == null) {
                 return;
@@ -83,20 +83,7 @@ namespace MyPlexMedia.Plugin.Window {
             ShowCurrentMenu(RootItem, 0);
         }
 
-        internal static void CreateStartupMenu(PlexServer lastSelectedOrDefaultServer) {
-            RefreshServerMenu();
-            if (lastSelectedOrDefaultServer != null) {
-                try {
-                    ShowRootMenu(lastSelectedOrDefaultServer);
-                    return;
-                } catch (Exception e) {
-                    OnErrorOccured(new PlexException(typeof(Navigation), "Creating startmenu failed!", e));
-                }
-            }
-            ShowCurrentMenu(ServerItem, 0);
-        }
-
-        internal static void ShowCurrentContextMenu() {
+       internal static void ShowCurrentContextMenu() {
             ContextMenu.ShowContextMenu(CurrentItem.Name, CurrentItem.ViewItems);
         }
 
@@ -108,15 +95,16 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         internal static void ShowCurrentMenu(IMenuItem parentItem, int selectFacadeIndex) {
+            if (parentItem == null) {
+                ShowCurrentMenu(ServerItem, 0);
+                return;
+            }
             if (parentItem.ChildItems != null && parentItem.ChildItems.Count > 0) {
                 CurrentItem = parentItem;
                 PlexAudioPlayer.CreateMusicPlayList(
                     parentItem.ChildItems.Where(item => item is PlexItemTrack).ToList().ConvertAll(
                         item => item as PlexItemTrack), parentItem.Name);
-                
                 OnMenuItemsFetchCompleted(parentItem, selectFacadeIndex);
-            } else {
-                return;
             }
         }
 

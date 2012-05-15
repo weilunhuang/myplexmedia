@@ -31,7 +31,7 @@ using PlexMediaCenter.Util;
 using System.Runtime.InteropServices;
 
 namespace PlexMediaCenter.Plex {
-    public static class PlexInterface {
+    public static class PlexInterface  {
         #region Events & Delegates
 
         public delegate void OnPlexErrorEventHandler(PlexException e);
@@ -50,24 +50,29 @@ namespace PlexMediaCenter.Plex {
         public static MyPlex MyPlex { get; private set; }
         public static ServerManager ServerManager { get; private set; }
         public static ArtworkRetriever ArtworkRetriever { get; private set; }
+        public static bool Initialized { get; private set; }
 
         #endregion
 
         #region Initialization
 
-        public static void Init(string serverListXmlPath, string defaultBasePath, WebClient webClient = default(WebClient)) {
-            if (webClient == null) {
-                webClient = new WebClient();
-            }
-            PlexWebClient = webClient;
+        public static void Init(string serverListXmlPath, string defaultBasePath, bool downloadArtwork = true) {
+            PlexWebClient = new WebClient();
             PlexWebClient.DownloadDataCompleted += _webClient_DownloadDataCompleted;
             PlexWebClient.DownloadProgressChanged += _webClient_DownloadProgressChanged;
 
             ServerManager = new ServerManager(ref PlexWebClient,serverListXmlPath);
             ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
 
-            ArtworkRetriever = new ArtworkRetriever(defaultBasePath);
+            ArtworkRetriever = new ArtworkRetriever(defaultBasePath, downloadArtwork);
             ArtworkRetriever.OnArtworkRetrievalError += MediaRetrieval_OnArtWorkRetrievalError;
+            Initialized = true;
+        }
+
+        public static void DeInit() {
+            Initialized = false;
+            PlexWebClient.Dispose();
+            ArtworkRetriever.Dispose();
         }
 
         public static bool MyPlexLogin(string user, string pass) {
@@ -173,5 +178,6 @@ namespace PlexMediaCenter.Plex {
         }
 
         #endregion
+
     }
 }
