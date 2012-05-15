@@ -96,8 +96,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         internal static void ShowCurrentMenu(IMenuItem parentItem, int selectFacadeIndex) {
             if (parentItem == null) {
-                ShowCurrentMenu(ServerItem, 0);
-                return;
+                parentItem = RootItem;
             }
             if (parentItem.ChildItems != null && parentItem.ChildItems.Count > 0) {
                 CurrentItem = parentItem;
@@ -175,9 +174,9 @@ namespace MyPlexMedia.Plugin.Window {
             ServerMenu.Add(new ActionItem(null, "Add Plex Server...", Settings.PLEX_ICON_DEFAULT_ONLINE,
                                           AddNewPlexServer));
             ServerItem.SetChildItems(ServerMenu);
-            //if (CurrentItem != ServerItem) {
-            //    ShowCurrentMenu(ServerItem, 0);
-            //}
+            if (CurrentItem == RootItem) {
+                ShowCurrentMenu(ServerItem, 0);
+            }
         }
 
         internal static void RefreshServerMenu() {

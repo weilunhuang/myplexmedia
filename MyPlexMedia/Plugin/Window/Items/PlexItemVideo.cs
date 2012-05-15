@@ -84,6 +84,8 @@ namespace MyPlexMedia.Plugin.Window.Items {
                 MPARating = Video.contentRating
             };
             TVTag = movieDetails;
+            AlbumInfoTag = movieDetails;
+            MusicTag = movieDetails;
         }
 
         void PlexItemVideo_OnRetrieveArt(GUIListItem item) {

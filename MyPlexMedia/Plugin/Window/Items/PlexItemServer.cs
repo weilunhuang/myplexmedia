@@ -37,9 +37,5 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
         private PlexServer PlexServer { get; set; }
 
-
-        public override void OnClicked(object sender, EventArgs e) {
-            Navigation.ShowServerRootMenu(PlexServer);
-        }
     }
 }
