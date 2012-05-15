@@ -50,10 +50,6 @@ namespace MyPlexMedia.Plugin.Window {
         [SkinControlAttribute(2011)]
         protected GUIImage ctrlBackgroundImage;
 
-        private GUIFacadeControl FacadeVideo;
-        private GUIFacadeControl FacadeAudio;
-        private GUIFacadeControl FacadePictures;
-
         #endregion
 
         #region GUIWindow Base Class Overrides
@@ -69,6 +65,7 @@ namespace MyPlexMedia.Plugin.Window {
         public override bool Init() {
             Settings.Load();
             logger.Debug("Init()");
+
             return Load(Settings.SKINFILE_MAIN_WINDOW);
         }
 
@@ -79,14 +76,16 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         protected override void OnPageLoad() {
-            //GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME);
+            GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME);
+            GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", string.Empty);
             if (!PlexInterface.Initialized) {
                 PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.CacheFolder, Settings.DownloadArtwork);
                 if (!String.IsNullOrEmpty(Settings.MyPlexUser) && !String.IsNullOrEmpty(Settings.MyPlexPass)) {
                     PlexInterface.MyPlexLogin(Settings.MyPlexUser, Settings.MyPlexPass);
                 }
+                //FacadeVideo = facadeLayout;
+                //TryLoadFacades();
             }
-            TryLoadFacades();
             RegisterEventHandlers();
             SetBackgroundImage(Settings.PLEX_BACKGROUND_DEFAULT);
             Navigation.ShowCurrentMenu(Navigation.CurrentItem, 0);
@@ -97,7 +96,7 @@ namespace MyPlexMedia.Plugin.Window {
             Settings.Save();
             UnRegisterEventHandlers();
             base.OnPageDestroy(new_windowId);
-            logger.Info("OnPageDestroy({0})",new_windowId);
+            logger.Info("OnPageDestroy({0})", new_windowId);
         }
 
         protected override void SwitchLayout() {
@@ -105,16 +104,26 @@ namespace MyPlexMedia.Plugin.Window {
                 Layout = CurrentLayout,
                 Section = Navigation.CurrentItem.PreferredLayout.Section
             };
+            //if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin,"common.facade.music.xml"), out FacadeAudio)) {
+
+            //}
+            //if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.video.Title.xml"), out FacadeVideo)) {
+
+            //}
+            //if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.pictures.xml"), out FacadePictures)) {
+
+            //}
+
             switch (Navigation.CurrentItem.PreferredLayout.Section) {
                 case Settings.SectionType.Music:
-                    facadeLayout = FacadeAudio;
+                    LoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.music.xml"));
                     break;
                 case Settings.SectionType.Photo:
-                    facadeLayout = FacadePictures;
+                    LoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.pictures.xml"));
                     break;
                 default:
                 case Settings.SectionType.Video:
-                    facadeLayout = FacadeVideo;
+                    LoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.video.Title.xml"));
                     break;
             }
             base.SwitchLayout();
@@ -175,39 +184,58 @@ namespace MyPlexMedia.Plugin.Window {
 
         #region Private Methods
 
-        private void TryLoadFacades() {
-           
-                if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin,@"\common.facade.music.xml"), out FacadeAudio)) {
 
-                }
-                if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.video.Title.xml"), out FacadeVideo)) {
-
-                }
-                if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.pictures.xml"), out FacadePictures)) {
-
-                }
-          
-        }
-
-        private bool TryLoadFacade(string xmlFile, out GUIFacadeControl facadeControl) {
+        private void LoadFacade(string xmlFile) {
             XmlDocument doc = new XmlDocument();
             doc.Load(xmlFile);
-            XmlNode node = doc.SelectSingleNode("/window/controls/control/control[@id='50']");
+            XmlNode node = doc.SelectSingleNode("//*[type='group']");
             try {
-                GUIFacadeControl newControl = (GUIFacadeControl)GUIControlFactory.Create(GetID, node, new Dictionary<string, string>(), Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.video.Title.xml"));
-                newControl.GetID = 1000050;
-                newControl.WindowId = GetID;
                 lock (GUIGraphicsContext.RenderLock) {
-                    Children.Add(newControl);
+                    facadeLayout.Clear();
+                    GUIGroup group = (GUIGroup)GUIControlFactory.Create(GetID, node, new Dictionary<string, string>(), Path.Combine(GUIGraphicsContext.Skin, xmlFile));
+                    group.WindowId = GetID;
+                    group.PreAllocResources();
+                    group.AllocResources();
+                    facadeLayout = (GUIFacadeControl)group[0];
+                    controlList[7] = group;
+                    //facadeLayout.DoUpdate();
+                    //facadeLayout.OnInit();
+                    //facadeLayout.UpdateVisibility();
+                    //facadeLayout.NeedRefresh();
+                    //NeedRefresh();
+                    //UpdateButtonStates();
+                    //UpdateVisibility();
+                    //UpdateOverlay();
+                    //facadeLayout.BringIntoView();
+                    //InitControls();
                 }
-                facadeControl = newControl;
-                return true;
+
+
             } catch (Exception ex) {
                 Log.Error("Unable to load control. exception:{0}", ex.ToString());
             }
-            facadeControl = null;
-            return false;
+
         }
+        private IDictionary<string, string> LoadDefines(XmlDocument document) {
+            IDictionary<string, string> table = new Dictionary<string, string>();
+
+            try {
+                foreach (XmlNode node in document.SelectNodes("/window/define")) {
+                    string[] tokens = node.InnerText.Split(':');
+
+                    if (tokens.Length < 2) {
+                        continue;
+                    }
+
+                    table[tokens[0]] = tokens[1];
+                }
+            } catch (Exception e) {
+                Log.Error("GUIWindow.LoadDefines: {0}", e.Message);
+            }
+
+            return table;
+        }
+
 
         private void RegisterEventHandlers() {
             PlexInterface.OnPlexError += PlexInterface_OnPlexError;

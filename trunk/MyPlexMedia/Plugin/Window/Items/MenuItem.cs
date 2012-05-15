@@ -86,5 +86,9 @@ namespace MyPlexMedia.Plugin.Window.Items {
             childItems.ForEach(ch => ch.Parent = this);
             ChildItems = childItems;
         }
+
+        public override string ToString() {
+            return Name;
+        }
     }
 }

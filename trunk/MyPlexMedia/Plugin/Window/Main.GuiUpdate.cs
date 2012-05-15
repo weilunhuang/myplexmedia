@@ -62,9 +62,10 @@ namespace MyPlexMedia.Plugin.Window {
                 }
             }
             //ctrlBackgroundImage.RemoveMemoryImageTexture();
-            //ctrlBackgroundImage.DoUpdate();
-            //ctrlBackgroundImage.Refresh();
-            //GUIWindowManager.Process();
+            ctrlBackgroundImage.BringIntoView();
+            ctrlBackgroundImage.DoUpdate();
+            ctrlBackgroundImage.Refresh();
+            GUIWindowManager.Process();
         }
 
         private static void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
@@ -73,22 +74,18 @@ namespace MyPlexMedia.Plugin.Window {
 
         private void Navigation_OnMenuItemsFetchCompleted(IMenuItem parentItem, int selectedFacadeIndex) {
             if (parentItem.ChildItems == null || parentItem.ChildItems.Count < 1) {
-
+                return;
             }
-            try {
-                GUIPropertyManager.SetProperty("#currentmodule", GetHistory(parentItem));
-                CurrentLayout = parentItem.PreferredLayout.Layout;
-                SwitchLayout();
-                facadeLayout.Clear();
-                parentItem.ChildItems.ForEach(item => facadeLayout.Add(item as MenuItem));
-                facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
-                facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
-                CommonDialogs.HideWaitCursor();
-                CommonDialogs.HideProgressDialog();
-                SetBackgroundImage(parentItem.ChildItems[selectedFacadeIndex].BackgroundImage);
-            } catch {
-
-            }
+            GUIPropertyManager.SetProperty("#currentmodule", GetHistory(parentItem));
+            CurrentLayout = parentItem.PreferredLayout.Layout;
+            SwitchLayout();
+            facadeLayout.Clear();
+            parentItem.ChildItems.ForEach(item => facadeLayout.Add(item as MenuItem));
+            facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
+            facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
+            CommonDialogs.HideWaitCursor();
+            CommonDialogs.HideProgressDialog();
+            SetBackgroundImage(parentItem.ChildItems[selectedFacadeIndex].BackgroundImage);
         }
 
         private void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {

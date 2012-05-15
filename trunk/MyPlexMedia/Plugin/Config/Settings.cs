@@ -49,7 +49,7 @@ namespace MyPlexMedia.Plugin.Config {
         public const string PLUGIN_VERSION = "1.0.0";
         public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin to browse your Plex Media Server(s).";
 
-        public static string PLUGIN_LOG_FILE = Path.Combine(MpConf.GetFolder(MpConf.Dir.Log), PLUGIN_NAME + ".rtf");
+        public static string PLUGIN_LOG_FILE = Path.Combine(MpConf.GetFolder(MpConf.Dir.Log), PLUGIN_NAME + ".txt");
 
         public const int PLUGIN_WINDOW_ID = 20110614;
         public const int DIALOG_BUFFERING_WINDOW_ID = 20110615;
