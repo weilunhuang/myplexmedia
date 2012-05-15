@@ -38,9 +38,6 @@ namespace MyPlexMedia.Plugin.Config {
         public ConfigurationForm() {
             try {
                 InitializeComponent();
-                Load += ConfigurationForm_Load;
-                FormClosing += ConfigurationForm_FormClosing;
-
                 Settings.Load();
                 PlexInterface.OnPlexError += PlexInterface_OnPlexError;
                 PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.PLEX_ARTWORK_CACHE_ROOT_PATH);
@@ -60,7 +57,7 @@ namespace MyPlexMedia.Plugin.Config {
             }));
         }
 
-        private void ConfigurationForm_Load(object sender, EventArgs e) {
+        protected override void OnLoad(EventArgs e) {
             Text = String.Format("{0} - {1} - Configuration", Settings.PLUGIN_NAME, Settings.PLUGIN_VERSION);
             textBoxCheezRootFolder.Text = Settings.CacheFolder;
             checkBoxDeleteOnExit.Checked = Settings.DeleteCacheOnExit;
@@ -72,12 +69,9 @@ namespace MyPlexMedia.Plugin.Config {
             PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
             textBoxMyPlexPass.Text = Settings.MyPlexPass;
             textBoxMyPlexUser.Text = Settings.MyPlexUser;
-            if (!String.IsNullOrEmpty(Settings.MyPlexUser) && !String.IsNullOrEmpty(Settings.MyPlexPass)) {
-                buttonMyPlexLogin_Click(null, null);
-            }
         }
 
-        private void ConfigurationForm_FormClosing(object sender, FormClosingEventArgs e) {
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e) {
             Settings.CacheFolder = textBoxCheezRootFolder.Text;
             Settings.DeleteCacheOnExit = checkBoxDeleteOnExit.Checked;
             Settings.DefaultQualityLAN = (PlexQualities)comboBoxQualityLAN.SelectedValue;
@@ -85,6 +79,12 @@ namespace MyPlexMedia.Plugin.Config {
             Settings.MyPlexPass = textBoxMyPlexPass.Text;
             Settings.MyPlexUser = textBoxMyPlexUser.Text;
             Settings.Save();
+        }
+
+        protected override void OnShown(EventArgs e) {
+            if (!String.IsNullOrEmpty(Settings.MyPlexUser) && !String.IsNullOrEmpty(Settings.MyPlexPass)) {
+                buttonMyPlexLogin_Click(null, null);
+            }
         }
 
         private void buttonRefreshBonjourServers_Click(object sender, EventArgs e) {

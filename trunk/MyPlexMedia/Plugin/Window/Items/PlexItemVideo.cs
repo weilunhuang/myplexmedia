@@ -31,6 +31,9 @@ using PlexMediaCenter.Plex.Data.Types;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     public class PlexItemVideo : PlexItemBase {
+
+        public MediaContainerVideo Video { get; set; }
+
         public PlexItemVideo(IMenuItem parentItem, string title, Uri path, MediaContainerVideo video)
             : base(parentItem, title, path) {
             Video = video;
@@ -51,6 +54,13 @@ namespace MyPlexMedia.Plugin.Window.Items {
             if (!string.IsNullOrEmpty(Video.rating)) {
                 try {
                     Rating = float.Parse(Video.rating);
+                } catch {
+                }
+            }
+            if (!string.IsNullOrEmpty(Video.viewCount)) {
+                try {
+                    _dvdLabel = Video.viewCount;
+                    _isPlayed = Video.viewCount != "0";
                 } catch {
                 }
             }
@@ -77,21 +87,10 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         void PlexItemVideo_OnRetrieveArt(GUIListItem item) {
-            if (item.Equals(this)) {
-                if (Video.thumb != null) {
-                    PlexInterface.ArtworkRetriever.QueueArtworkItem(SetIcon, UriPath, Video.thumb);
-                } else {
-                    SetIcon(Settings.PLEX_ICON_DEFAULT);
-                }
-                if (Video.art != null) {
-                    PlexInterface.ArtworkRetriever.QueueArtworkItem(SetBackground, UriPath, Video.art);
-                } else {
-                    SetBackground(Settings.PLEX_BACKGROUND_DEFAULT);
-                }
-            }
+            PlexInterface.ArtworkRetriever.QueueArtworkItem(SetIcon, Settings.PLEX_ICON_DEFAULT, UriPath, Video.thumb);
+            PlexInterface.ArtworkRetriever.QueueArtworkItem(SetBackground, Settings.PLEX_BACKGROUND_DEFAULT, UriPath, Video.art);
         }
 
-        public MediaContainerVideo Video { get; set; }
 
         public override void OnClicked(object sender, EventArgs e) {
             PlexVideoPlayer.PlayBackMedia(UriPath, Video);

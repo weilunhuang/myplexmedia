@@ -61,10 +61,6 @@ namespace MyPlexMedia.Plugin.Window.Playback {
 
         private static bool BufferingPause { get; set; }
 
-        enum PlayType {
-            DirectPlay,
-            Transcode
-        }
 
         public static void PlayBackMedia(Uri itemPath, MediaContainerVideo video) {
             if (Buffering.IsBuffering) {
@@ -73,25 +69,20 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                     Buffering.StopBuffering();
                 } else { return; }
             }
-
+            long offset = 0;
+            if (long.TryParse(video.viewOffset, out offset) && offset > 0) {
+                if (!CommonDialogs.ShowCustomYesNo("Resume playback...", String.Format("Would you like to resume playback at {0}h or play from the beginning?", new DateTime(offset * TimeSpan.TicksPerMillisecond).ToString("HH:mm:ss")), "Resume", "Restart", true)) {
+                    //No was selected therefore reset to 0
+                    offset = 0;
+                }
+            }
             if (PlexInterface.ServerManager.TryFindPlexServer(itemPath).IsBonjour) {
-                //switch (CommonDialogs.ShowSelectionDialog<PlayType>()) {
-                //    case PlayType.DirectPlay:
-                //        PlayPlayerMainThread(itemPath.AbsoluteUri, video.title);
-                //        return;
-                //        break;
-                //    default:
-                //    case PlayType.Transcode:
-                //        //We're on the local network, therefore we use the LAN quality
-                //        Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityLAN);
-                //        break;
-                //}
                 //We're on the local network, therefore we use the LAN quality
                 Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityLAN);
             } else if (Settings.SelectQualityPriorToPlayback) {
-                Buffering.BufferMedia(itemPath, video, CommonDialogs.ShowSelectionDialog<PlexQualities>());
+                Buffering.BufferMedia(itemPath, video, CommonDialogs.ShowSelectionDialog<PlexQualities>(), offset);
             } else {
-                Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityWAN);
+                Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityWAN, offset);
             }
             CommonDialogs.ShowWaitCursor();
             BufferCheckTimer.Start();

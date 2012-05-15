@@ -62,6 +62,8 @@ namespace PlexMediaCenter.Plex.Data.Types
         private string parentIndexField;
         
         private string viewOffsetField;
+
+        private string viewCountField;
         
         /// <remarks/>
         [System.Xml.Serialization.XmlElementAttribute("Media")]
@@ -424,6 +426,17 @@ namespace PlexMediaCenter.Plex.Data.Types
             set
             {
                 this.viewOffsetField = value;
+            }
+        }
+
+        /// <remarks/>
+        [System.Xml.Serialization.XmlAttributeAttribute()]
+        public string viewCount {
+            get {
+                return this.viewCountField;
+            }
+            set {
+                this.viewCountField = value;
             }
         }
     }

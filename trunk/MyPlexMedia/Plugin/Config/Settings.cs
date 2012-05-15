@@ -26,7 +26,12 @@ using System.IO;
 using MediaPortal.GUI.Library;
 using MyPlexMedia.Plugin.Window.Playback;
 using MyPlexMedia.Plugin.Window.Dialogs;
-
+using PlexMediaCenter.Plex.Connection;
+using MediaPortal.Services;
+using NLog;
+using MpConf = MediaPortal.Configuration.Config;
+using NLog.Targets;
+using NLog.Config;
 namespace MyPlexMedia.Plugin.Config {
     public static class Settings {
         #region SectionType enum
@@ -44,6 +49,8 @@ namespace MyPlexMedia.Plugin.Config {
         public const string PLUGIN_VERSION = "1.0.0";
         public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin to browse your Plex Media Server(s).";
 
+        public static string PLUGIN_LOG_FILE = Path.Combine(MpConf.GetFolder(MpConf.Dir.Log), PLUGIN_NAME + ".rtf");
+
         public const int PLUGIN_WINDOW_ID = 20110614;
         public const int DIALOG_BUFFERING_WINDOW_ID = 20110615;
 
@@ -55,25 +62,22 @@ namespace MyPlexMedia.Plugin.Config {
         public static string PLEX_ICON_DEFAULT_BACK = Path.Combine(SKIN_FOLDER_MEDIA, "icon_back.png");
         public static string PLEX_ICON_DEFAULT_ONLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.png");
         public static string PLEX_ICON_DEFAULT_OFFLINE = Path.Combine(SKIN_FOLDER_MEDIA, "icon_offline.png");
-        public static string PLEX_ARTWORK_CACHE_ROOT_PATH =
-          Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Thumbs),
-                       PLUGIN_NAME);
+        public static string PLEX_ARTWORK_CACHE_ROOT_PATH = Path.Combine(MpConf.GetFolder(MpConf.Dir.Thumbs), PLUGIN_NAME);
 
-        public static string PLEX_SERVER_LIST_XML =
-            Path.Combine(MediaPortal.Configuration.Config.GetFolder(MediaPortal.Configuration.Config.Dir.Config),
-                         "PlexServers.xml");
+
+        public static string PLEX_SERVER_LIST_XML = Path.Combine(MpConf.GetFolder(MpConf.Dir.Config), "PlexServers.xml");
 
         public static string PLEX_ARTWORK_DEFAULT = Path.Combine(SKIN_FOLDER_MEDIA, "default_fanart.png");
 
 
         public static string SKINFILE_MAIN_WINDOW = GUIGraphicsContext.Skin + @"\MyPlexMedia.xml";
 
-        public static string SKINFILE_DIALOG_BUFFERING = GUIGraphicsContext.Skin +
-                                                         @"\MyPlexMedia.GuiDialogBufferingProgress.xml";
+        public static string SKINFILE_DIALOG_BUFFERING = GUIGraphicsContext.Skin + @"\MyPlexMedia.GuiDialogBufferingProgress.xml";
 
         public static string PLEX_ICON_DEFAULT_SEARCH = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.png");
 
         static Settings() {
+            InitLogger();
             DefaultLayout = CreatePreferredLayouts();
             //Set defaults           
             MyPlexUser = String.Empty;
@@ -82,7 +86,57 @@ namespace MyPlexMedia.Plugin.Config {
             DefaultQualityLAN = Window.Playback.PlexQualities._7_8000kbps_1080p;
             DefaultQualityWAN = Window.Playback.PlexQualities._3_1500kbps_480p;
             SelectQualityPriorToPlayback = true;
+            ShowDebugwindow = true;
             DeleteCacheOnExit = false;
+            DownloadArtwork = true;
+        }
+
+        public static MediaPortal.Profile.Settings MediaPortalSettings {
+            get {
+                return new MediaPortal.Profile.Settings(MpConf.GetFile(MpConf.Dir.Config, "MediaPortal.xml"));
+            }
+        }
+
+        private static void InitLogger() {
+            // if no configuration exists go ahead and create one
+            if (LogManager.Configuration == null) LogManager.Configuration = new LoggingConfiguration();
+
+            // build the logging target for moving pics logging
+            FileTarget pluginLogTarget = new FileTarget();
+            pluginLogTarget.Name = "moving-pictures";
+            pluginLogTarget.FileName = PLUGIN_LOG_FILE;
+            pluginLogTarget.Layout = "${date:format=dd-MMM-yyyy HH\\:mm\\:ss} " +
+                                "${level:fixedLength=true:padding=5} " +
+                                "[${logger:fixedLength=true:padding=20:shortName=true}]: ${message} " +
+                                "${exception:format=tostring}";
+
+            LogManager.Configuration.AddTarget("moving-pictures", pluginLogTarget);
+            // Get current Log Level from MediaPortal
+            LogLevel logLevel = LogLevel.Debug;
+            switch ((Level)MediaPortalSettings.GetValueAsInt("general", "loglevel", 0)) {
+                case Level.Error:
+                    logLevel = LogLevel.Error;
+                    break;
+                case Level.Warning:
+                    logLevel = LogLevel.Warn;
+                    break;
+                case Level.Information:
+                    logLevel = LogLevel.Info;
+                    break;
+                case Level.Debug:
+                default:
+                    logLevel = LogLevel.Debug;
+                    break;
+            }
+
+            // set the logging rules for moving pics logging
+            LoggingRule pluginRule = new LoggingRule("MyPlexMedia.*", logLevel, pluginLogTarget);
+            LoggingRule plexRule = new LoggingRule("PlexMediaCenter.*", logLevel, pluginLogTarget);
+            LogManager.Configuration.LoggingRules.Add(pluginRule);
+            LogManager.Configuration.LoggingRules.Add(plexRule);
+
+            // force NLog to reload the configuration data
+            LogManager.Configuration = LogManager.Configuration;
         }
 
         public static Window.Playback.PlexQualities DefaultQualityLAN { get; set; }
@@ -92,14 +146,14 @@ namespace MyPlexMedia.Plugin.Config {
         public static Dictionary<string, PlexSectionLayout> PreferredLayouts { get; private set; }
         public static PlexSectionLayout DefaultLayout { get; private set; }
 
-        public static PlexMediaCenter.Plex.Connection.PlexServer LastPlexServer { get; set; }
-
         public static int FetchCount { get; set; }
         public static string CacheFolder { get; set; }
         public static string MyPlexUser { get; set; }
         public static string MyPlexPass { get; set; }
         public static bool DeleteCacheOnExit { get; set; }
         public static bool SelectQualityPriorToPlayback { get; set; }
+        public static bool ShowDebugwindow { get; set; }
+        public static bool DownloadArtwork { get; set; }
 
         private static PlexSectionLayout CreatePreferredLayouts() {
             PreferredLayouts = new Dictionary<string, PlexSectionLayout>
@@ -169,23 +223,16 @@ namespace MyPlexMedia.Plugin.Config {
         /// </summary>
         public static void Load() {
             try {
-                using (
-                    MediaPortal.Profile.Settings reader =
-                        new MediaPortal.Profile.Settings(
-                            MediaPortal.Configuration.Config.GetFile(MediaPortal.Configuration.Config.Dir.Config,
-                                                                     "MediaPortal.xml"))) {
-                    if (!String.IsNullOrEmpty(reader.GetValue(PLUGIN_NAME, "CacheFolder"))) {
-                        CacheFolder = reader.GetValue(PLUGIN_NAME, "CacheFolder");
-                    }
-                    MyPlexUser = reader.GetValue(PLUGIN_NAME, "MyPlexUser");
-                    MyPlexPass = decryptString(reader.GetValue(PLUGIN_NAME, "MyPlexPass"));
-                    DefaultQualityLAN = Enum<PlexQualities>.Parse(reader.GetValueAsString(PLUGIN_NAME, "DefaultQualityLAN", DefaultQualityLAN.ToString()));
-                    DefaultQualityWAN = Enum<PlexQualities>.Parse(reader.GetValueAsString(PLUGIN_NAME, "DefaultQualityWAN", DefaultQualityWAN.ToString()));
-                    SelectQualityPriorToPlayback = reader.GetValueAsBool(PLUGIN_NAME, "SelectQualityPriorToPlayback", true);
-                    DeleteCacheOnExit = reader.GetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
-                }
-            } catch {
-            }
+                CacheFolder = MediaPortalSettings.GetValueAsString(PLUGIN_NAME, "CacheFolder", CacheFolder);
+                DefaultQualityLAN = Enum<PlexQualities>.Parse(MediaPortalSettings.GetValueAsString(PLUGIN_NAME, "DefaultQualityLAN", DefaultQualityLAN.ToString()));
+                DefaultQualityWAN = Enum<PlexQualities>.Parse(MediaPortalSettings.GetValueAsString(PLUGIN_NAME, "DefaultQualityWAN", DefaultQualityWAN.ToString()));
+                MyPlexUser = MediaPortalSettings.GetValue(PLUGIN_NAME, "MyPlexUser");
+                MyPlexPass = decryptString(MediaPortalSettings.GetValue(PLUGIN_NAME, "MyPlexPass"));
+                SelectQualityPriorToPlayback = MediaPortalSettings.GetValueAsBool(PLUGIN_NAME, "SelectQualityPriorToPlayback", true);
+                DeleteCacheOnExit = MediaPortalSettings.GetValueAsBool(PLUGIN_NAME, "DeleteCacheOnExit", DeleteCacheOnExit);
+                ShowDebugwindow = MediaPortalSettings.GetValueAsBool(PLUGIN_NAME, "ShowDebugwindow", ShowDebugwindow);
+                DownloadArtwork = MediaPortalSettings.GetValueAsBool(PLUGIN_NAME, "DownloadArtwork", DownloadArtwork);
+            } catch { }
         }
 
         /// <summary>
@@ -193,19 +240,13 @@ namespace MyPlexMedia.Plugin.Config {
         /// </summary>
         public static void Save() {
             try {
-                using (
-                    MediaPortal.Profile.Settings xmlwriter =
-                        new MediaPortal.Profile.Settings(
-                            MediaPortal.Configuration.Config.GetFile(MediaPortal.Configuration.Config.Dir.Config,
-                                                                     "MediaPortal.xml"))) {
-                    xmlwriter.SetValue(PLUGIN_NAME, "CacheFolder", CacheFolder);
-                    xmlwriter.SetValue(PLUGIN_NAME, "DefaultQualityLAN", DefaultQualityLAN);
-                    xmlwriter.SetValue(PLUGIN_NAME, "DefaultQualityWAN", DefaultQualityWAN);
-                    xmlwriter.SetValue(PLUGIN_NAME, "MyPlexUser", MyPlexUser);
-                    xmlwriter.SetValue(PLUGIN_NAME, "MyPlexPass", encryptString(MyPlexPass));
-                    xmlwriter.SetValueAsBool(PLUGIN_NAME, "SelectQualityPriorToPlayback", SelectQualityPriorToPlayback);
-
-                }
+                MediaPortalSettings.SetValue(PLUGIN_NAME, "CacheFolder", CacheFolder);
+                MediaPortalSettings.SetValue(PLUGIN_NAME, "DefaultQualityLAN", DefaultQualityLAN);
+                MediaPortalSettings.SetValue(PLUGIN_NAME, "DefaultQualityWAN", DefaultQualityWAN);
+                MediaPortalSettings.SetValue(PLUGIN_NAME, "MyPlexUser", MyPlexUser);
+                MediaPortalSettings.SetValue(PLUGIN_NAME, "MyPlexPass", encryptString(MyPlexPass));
+                MediaPortalSettings.SetValueAsBool(PLUGIN_NAME, "SelectQualityPriorToPlayback", SelectQualityPriorToPlayback);
+                MediaPortalSettings.SetValueAsBool(PLUGIN_NAME, "DownloadArtwork", DownloadArtwork);
             } catch { }
         }
 
@@ -254,9 +295,6 @@ namespace MyPlexMedia.Plugin.Config {
         }
 
         #endregion
-
-
-
 
     }
 }

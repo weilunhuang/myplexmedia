@@ -29,11 +29,16 @@ using MyPlexMedia.Plugin.Window.Items;
 using MyPlexMedia.Plugin.Window.Playback;
 using PlexMediaCenter.Plex;
 using WindowPlugins;
+using System;
+using System.Xml;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main : WindowPluginBase {
+        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+
         public Main() {
             GetID = Settings.PLUGIN_WINDOW_ID;
+            logger.Debug("Main()");
         }
 
         #region Enums
@@ -62,65 +67,37 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         public override bool Init() {
-            LoadSettings();
-            GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME);
-            GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", string.Empty);
-            PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.CacheFolder);
-            PlexInterface.MyPlexLogin(Settings.MyPlexUser, Settings.MyPlexPass);
-            //FacadeVideo = facadeLayout;
-            //facadeLayout.LoadControl(GUIGraphicsContext.Skin + @"\common.facade.video.Title.xml");
-
+            Settings.Load();
+            logger.Debug("Init()");
             return Load(Settings.SKINFILE_MAIN_WINDOW);
         }
 
-
-        protected override void LoadSettings() {
-            Settings.Load();
+        public override void DeInit() {
+            base.DeInit();
+            PlexInterface.DeInit();
+            logger.Debug("DeInit()");
         }
 
         protected override void OnPageLoad() {
-            base.OnPageLoad();
+            //GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME);
+            if (!PlexInterface.Initialized) {
+                PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.CacheFolder, Settings.DownloadArtwork);
+                if (!String.IsNullOrEmpty(Settings.MyPlexUser) && !String.IsNullOrEmpty(Settings.MyPlexPass)) {
+                    PlexInterface.MyPlexLogin(Settings.MyPlexUser, Settings.MyPlexPass);
+                }
+            }
             TryLoadFacades();
             RegisterEventHandlers();
-            if (Navigation.CurrentItem == null) {
-                Navigation.CreateStartupMenu(Settings.LastPlexServer);
-                CurrentLayout = Settings.DefaultLayout.Layout;
-                SwitchLayout();
-            } else {
-                Navigation.ShowCurrentMenu(Navigation.CurrentItem, 0);
-            }
             SetBackgroundImage(Settings.PLEX_BACKGROUND_DEFAULT);
-        }
-
-        private void TryLoadFacades() {
-            try {
-                if (FacadeVideo == null) {
-                    GUIGroup group = facadeLayout.LoadControl(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.video.Title.xml"))[0] as GUIGroup;
-                    FacadeVideo = (GUIFacadeControl)group.Children.GetControlById(50);
-                    FacadeVideo.OnInit();
-                    FacadeVideo.AllocResources();
-                }
-                if (FacadeAudio == null) {
-                    GUIGroup group = facadeLayout.LoadControl(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.music.xml"))[0] as GUIGroup;
-                    FacadeAudio = (GUIFacadeControl)group.Children.GetControlById(50);
-                    FacadeAudio.OnInit();
-                    FacadeAudio.AllocResources();
-                }
-                if (FacadePictures == null) {
-                    GUIGroup group = facadeLayout.LoadControl(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.pictures.xml"))[0] as GUIGroup;
-                    FacadePictures = (GUIFacadeControl)group.Children.GetControlById(50);
-                    FacadePictures.AllocResources();
-                }
-            } catch {
-            }
+            Navigation.ShowCurrentMenu(Navigation.CurrentItem, 0);
+            logger.Info("Init()");
         }
 
         protected override void OnPageDestroy(int new_windowId) {
+            Settings.Save();
             UnRegisterEventHandlers();
             base.OnPageDestroy(new_windowId);
-        }
-
-        protected override void OnShowViews() {
+            logger.Info("OnPageDestroy({0})",new_windowId);
         }
 
         protected override void SwitchLayout() {
@@ -128,29 +105,19 @@ namespace MyPlexMedia.Plugin.Window {
                 Layout = CurrentLayout,
                 Section = Navigation.CurrentItem.PreferredLayout.Section
             };
-            base.SwitchLayout();
             switch (Navigation.CurrentItem.PreferredLayout.Section) {
                 case Settings.SectionType.Music:
-                    facadeLayout.CoverFlowLayout = FacadeAudio.CoverFlowLayout;
-                    //facadeLayout.ListLayout = FacadeAudio.ListLayout;
-                    //facadeLayout.AlbumListLayout = FacadeAudio.AlbumListLayout;
-                    //facadeLayout.FilmstripLayout = FacadeAudio.FilmstripLayout;
-                    //facadeLayout.PlayListLayout = FacadeAudio.PlayListLayout;
-                    //facadeLayout.ThumbnailLayout = FacadeAudio.ThumbnailLayout;
+                    facadeLayout = FacadeAudio;
                     break;
                 case Settings.SectionType.Photo:
-                    //facadeLayout = FacadePictures;
+                    facadeLayout = FacadePictures;
                     break;
                 default:
                 case Settings.SectionType.Video:
-                    facadeLayout.CoverFlowLayout = FacadeVideo.CoverFlowLayout;
-                    //facadeLayout.ListLayout = FacadeVideo.ListLayout;
-                    //facadeLayout.AlbumListLayout = FacadeVideo.AlbumListLayout;
-                    //facadeLayout.FilmstripLayout = FacadeVideo.FilmstripLayout;
-                    //facadeLayout.PlayListLayout = FacadeVideo.PlayListLayout;
-                    //facadeLayout.ThumbnailLayout = FacadeVideo.ThumbnailLayout;
+                    facadeLayout = FacadeVideo;
                     break;
-            } 
+            }
+            base.SwitchLayout();
         }
 
         protected override bool AllowLayout(GUIFacadeControl.Layout layout) {
@@ -207,6 +174,40 @@ namespace MyPlexMedia.Plugin.Window {
         #endregion
 
         #region Private Methods
+
+        private void TryLoadFacades() {
+           
+                if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin,@"\common.facade.music.xml"), out FacadeAudio)) {
+
+                }
+                if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.video.Title.xml"), out FacadeVideo)) {
+
+                }
+                if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.pictures.xml"), out FacadePictures)) {
+
+                }
+          
+        }
+
+        private bool TryLoadFacade(string xmlFile, out GUIFacadeControl facadeControl) {
+            XmlDocument doc = new XmlDocument();
+            doc.Load(xmlFile);
+            XmlNode node = doc.SelectSingleNode("/window/controls/control/control[@id='50']");
+            try {
+                GUIFacadeControl newControl = (GUIFacadeControl)GUIControlFactory.Create(GetID, node, new Dictionary<string, string>(), Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.video.Title.xml"));
+                newControl.GetID = 1000050;
+                newControl.WindowId = GetID;
+                lock (GUIGraphicsContext.RenderLock) {
+                    Children.Add(newControl);
+                }
+                facadeControl = newControl;
+                return true;
+            } catch (Exception ex) {
+                Log.Error("Unable to load control. exception:{0}", ex.ToString());
+            }
+            facadeControl = null;
+            return false;
+        }
 
         private void RegisterEventHandlers() {
             PlexInterface.OnPlexError += PlexInterface_OnPlexError;
