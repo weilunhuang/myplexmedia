@@ -98,15 +98,18 @@ namespace MyPlexMedia.Plugin.Window {
                     GUIGroup group = facadeLayout.LoadControl(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.video.Title.xml"))[0] as GUIGroup;
                     FacadeVideo = (GUIFacadeControl)group.Children.GetControlById(50);
                     FacadeVideo.OnInit();
+                    FacadeVideo.AllocResources();
                 }
                 if (FacadeAudio == null) {
                     GUIGroup group = facadeLayout.LoadControl(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.music.xml"))[0] as GUIGroup;
                     FacadeAudio = (GUIFacadeControl)group.Children.GetControlById(50);
                     FacadeAudio.OnInit();
+                    FacadeAudio.AllocResources();
                 }
                 if (FacadePictures == null) {
                     GUIGroup group = facadeLayout.LoadControl(Path.Combine(GUIGraphicsContext.Skin, @"\common.facade.pictures.xml"))[0] as GUIGroup;
                     FacadePictures = (GUIFacadeControl)group.Children.GetControlById(50);
+                    FacadePictures.AllocResources();
                 }
             } catch {
             }
@@ -121,6 +124,11 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         protected override void SwitchLayout() {
+            Navigation.CurrentItem.PreferredLayout = new Settings.PlexSectionLayout {
+                Layout = CurrentLayout,
+                Section = Navigation.CurrentItem.PreferredLayout.Section
+            };
+            base.SwitchLayout();
             switch (Navigation.CurrentItem.PreferredLayout.Section) {
                 case Settings.SectionType.Music:
                     facadeLayout.CoverFlowLayout = FacadeAudio.CoverFlowLayout;
@@ -131,7 +139,7 @@ namespace MyPlexMedia.Plugin.Window {
                     //facadeLayout.ThumbnailLayout = FacadeAudio.ThumbnailLayout;
                     break;
                 case Settings.SectionType.Photo:
-                    facadeLayout = FacadePictures;
+                    //facadeLayout = FacadePictures;
                     break;
                 default:
                 case Settings.SectionType.Video:
@@ -143,12 +151,6 @@ namespace MyPlexMedia.Plugin.Window {
                     //facadeLayout.ThumbnailLayout = FacadeVideo.ThumbnailLayout;
                     break;
             } 
-            Navigation.CurrentItem.PreferredLayout = new Settings.PlexSectionLayout {
-                Layout = CurrentLayout,
-                Section = Navigation.CurrentItem.PreferredLayout.Section
-            };
-            base.SwitchLayout();
-          
         }
 
         protected override bool AllowLayout(GUIFacadeControl.Layout layout) {
