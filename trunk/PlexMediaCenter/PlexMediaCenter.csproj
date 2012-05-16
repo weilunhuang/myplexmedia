@@ -91,13 +91,7 @@
     <Content Include="Resources\dll\ZeroconfService.dll" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Plex\Data\Types\PlexWebProtocol.xsc">
-      <DependentUpon>PlexWebProtocol.xsd</DependentUpon>
-    </None>
     <None Include="Plex\Data\Types\PlexWebProtocol.xsd" />
-    <None Include="Plex\Data\Types\PlexWebProtocol.xss">
-      <DependentUpon>PlexWebProtocol.xsd</DependentUpon>
-    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

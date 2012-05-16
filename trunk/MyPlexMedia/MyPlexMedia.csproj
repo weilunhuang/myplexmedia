@@ -102,7 +102,6 @@
     <Compile Include="Plugin\Window\Items\PlexItemTrack.cs" />
     <Compile Include="Plugin\Window\Items\PlexItemVideo.cs" />
     <Compile Include="Plugin\Window\Main.cs" />
-    <Compile Include="Plugin\Window\Main.GuiUpdate.cs" />
     <Compile Include="Plugin\Window\Navigation.cs" />
     <Compile Include="Plugin\Window\Playback\Buffering.cs" />
     <Compile Include="Plugin\Window\Playback\PlexQualities.cs" />
@@ -148,23 +147,18 @@
     <Content Include="Resources\dll\NLog.dll" />
     <Content Include="Resources\dll\utils.dll" />
     <Content Include="Resources\dll\WindowPlugins.dll" />
+    <Content Include="Skin\MyPlexMedia.xml" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_disabled.png" />
     <EmbeddedResource Include="Resources\img\MyPlexMedia_enabled.png" />
     <None Include="Resources\img\config_ctripes.png" />
     <None Include="Resources\img\my-logo.png" />
     <None Include="Resources\img\logo_myPlex.png" />
-    <Content Include="Skin\Media\MyPlexMedia_Audio.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Skin\Media\MyPlexMedia\default_background.jpg" />
     <Content Include="Skin\Media\MyPlexMedia\icon_back.png" />
     <Content Include="Skin\Media\MyPlexMedia\icon_bonjour.png" />
     <None Include="Skin\Media\MyPlexMedia\icon_default.png" />
     <Content Include="Skin\Media\MyPlexMedia\icon_offline.png" />
     <Content Include="Skin\Media\MyPlexMedia\icon_online.png" />
-    <Content Include="Skin\Media\MyPlexMedia.xml">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Skin\Media\hover_MyPlexMedia.png" />
   </ItemGroup>
   <ItemGroup>

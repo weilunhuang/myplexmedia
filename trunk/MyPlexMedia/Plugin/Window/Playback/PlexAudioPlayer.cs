@@ -60,7 +60,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             PlayItem(track.PlaybackAuthUrl.AbsoluteUri);
             new System.Threading.Thread(delegate(object o) {
                 System.Threading.Thread.Sleep(2000);
-                SetGuiProperties(o);
+                SetGuiProperties((Song)o);
             }).Start(track.MusicTag);
         }
 
@@ -72,16 +72,15 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             
         }
 
-        private static void SetGuiProperties(object song) {
-            Song nowPlaying = song as Song;
-            GUIPropertyManager.SetProperty("#Play.Current.Title", nowPlaying.Title);
-            GUIPropertyManager.SetProperty("#Play.Current.File", nowPlaying.FileName);
-            GUIPropertyManager.SetProperty("#Play.Current.Thumb", nowPlaying.WebImage);
-            GUIPropertyManager.SetProperty("#Play.Current.Artist", nowPlaying.Artist);
-            GUIPropertyManager.SetProperty("#Play.Current.Album", nowPlaying.Album);
-            GUIPropertyManager.SetProperty("#Play.Current.Track", nowPlaying.Track.ToString());
-            GUIPropertyManager.SetProperty("#Play.Current.Duration", nowPlaying.Duration.ToString());
-            GUIPropertyManager.SetProperty("#Play.Current.Year", nowPlaying.Year.ToString());
+        private static void SetGuiProperties(Song song) {
+            GUIPropertyManager.SetProperty("#Play.Current.Title", song.Title);
+            GUIPropertyManager.SetProperty("#Play.Current.File", song.FileName);
+            GUIPropertyManager.SetProperty("#Play.Current.Thumb", song.WebImage);
+            GUIPropertyManager.SetProperty("#Play.Current.Artist", song.Artist);
+            GUIPropertyManager.SetProperty("#Play.Current.Album", song.Album);
+            GUIPropertyManager.SetProperty("#Play.Current.Track", song.Track.ToString());
+            GUIPropertyManager.SetProperty("#Play.Current.Duration", song.Duration.ToString());
+            GUIPropertyManager.SetProperty("#Play.Current.Year", song.Year.ToString());
           
         }
     }
