@@ -22,6 +22,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using MediaPortal.GUI.Library;
 using MyPlexMedia.Plugin.Config;
 using MyPlexMedia.Plugin.Window.Dialogs;
@@ -184,7 +185,6 @@ namespace MyPlexMedia.Plugin.Window {
 
         #region Private Methods
 
-
         private void LoadFacade(string xmlFile) {
             XmlDocument doc = new XmlDocument();
             doc.Load(xmlFile);
@@ -198,44 +198,75 @@ namespace MyPlexMedia.Plugin.Window {
                     group.AllocResources();
                     facadeLayout = (GUIFacadeControl)group[0];
                     controlList[7] = group;
-                    //facadeLayout.DoUpdate();
-                    //facadeLayout.OnInit();
-                    //facadeLayout.UpdateVisibility();
-                    //facadeLayout.NeedRefresh();
-                    //NeedRefresh();
-                    //UpdateButtonStates();
-                    //UpdateVisibility();
-                    //UpdateOverlay();
-                    //facadeLayout.BringIntoView();
-                    //InitControls();
                 }
-
-
             } catch (Exception ex) {
                 Log.Error("Unable to load control. exception:{0}", ex.ToString());
             }
-
         }
-        private IDictionary<string, string> LoadDefines(XmlDocument document) {
-            IDictionary<string, string> table = new Dictionary<string, string>();
 
-            try {
-                foreach (XmlNode node in document.SelectNodes("/window/define")) {
-                    string[] tokens = node.InnerText.Split(':');
+        private static void PlexInterface_OnPlexError(PlexException plexError) {
+            Log.Error(plexError);
+            CommonDialogs.HideProgressDialog();
+            CommonDialogs.ShowNotifyDialog(30, Settings.PLUGIN_NAME + " Error!", plexError.ErrorSource.ToString() + ": " + plexError.Message, Settings.PLEX_ICON_DEFAULT_OFFLINE, CommonDialogs.PLUGIN_NOTIFY_WINDOWS.WINDOW_DIALOG_AUTO);
+        }
 
-                    if (tokens.Length < 2) {
-                        continue;
-                    }
-
-                    table[tokens[0]] = tokens[1];
-                }
-            } catch (Exception e) {
-                Log.Error("GUIWindow.LoadDefines: {0}", e.Message);
+        private static void PlexInterface_OnResponseProgress(object userToken, int progress) {
+            if (progress < 1 || progress > 99) {
+                return;
             }
-
-            return table;
+            CommonDialogs.ShowProgressDialog(progress, Settings.PLUGIN_NAME, "Fetching Plex Items...",
+                                             ((IMenuItem)userToken).Parent.Name + " > " + ((IMenuItem)userToken).Name,
+                                             String.Format("Current Progress: {0,3}%", progress.ToString()));
         }
 
+        private void SetBackgroundImage(string imagePath) {
+            if (ctrlBackgroundImage == null || ctrlBackgroundImage.FileName.Equals(imagePath)) {
+                return;
+            }
+            if (!String.IsNullOrEmpty(imagePath) && File.Exists(imagePath)) {
+                //GUITextureManager.ReleaseTexture(ctrlBackgroundImage.FileName);
+                //ctrlBackgroundImage.RemoveMemoryImageTexture();
+                if (GUITextureManager.Load(imagePath, 0, 0, 0, true) > 0) {
+                    ctrlBackgroundImage.SetFileName(imagePath);
+                }
+            }
+            //ctrlBackgroundImage.RemoveMemoryImageTexture();
+            //ctrlBackgroundImage.BringIntoView();
+            //ctrlBackgroundImage.DoUpdate();
+            //ctrlBackgroundImage.Refresh();
+            //GUIWindowManager.Process();
+        }
+
+        private static void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
+            CommonDialogs.ShowWaitCursor();
+        }
+
+        private void Navigation_OnMenuItemsFetchCompleted(IMenuItem parentItem, int selectedFacadeIndex) {
+            if (parentItem.ChildItems == null || parentItem.ChildItems.Count < 1) {
+                return;
+            }
+            GUIPropertyManager.SetProperty("#currentmodule", GetHistory(parentItem));
+            CurrentLayout = parentItem.PreferredLayout.Layout;
+            SwitchLayout();
+            facadeLayout.Clear();
+            parentItem.ChildItems.ForEach(item => facadeLayout.Add(item as MenuItem));
+            facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
+            facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
+            CommonDialogs.HideWaitCursor();
+            CommonDialogs.HideProgressDialog();
+            SetBackgroundImage(parentItem.ChildItems[selectedFacadeIndex].BackgroundImage);
+        }
+
+        private void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {
+            SetBackgroundImage(selectedItem.BackgroundImage);
+        }
+
+        private string GetHistory(IMenuItem current, string concat = "", int level = 0) {
+            if (level < 2 && current.Parent != null) {
+                concat = String.Format("{0}>", GetHistory(current.Parent, concat, ++level));
+            }
+            return concat + current.Name;
+        }
 
         private void RegisterEventHandlers() {
             PlexInterface.OnPlexError += PlexInterface_OnPlexError;

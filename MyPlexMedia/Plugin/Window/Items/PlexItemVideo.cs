@@ -21,6 +21,7 @@
 #endregion
 
 using System;
+using System.Linq;
 using MediaPortal.GUI.Library;
 using MediaPortal.GUI.Video;
 using MediaPortal.Video.Database;
@@ -33,6 +34,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
     public class PlexItemVideo : PlexItemBase {
 
         public MediaContainerVideo Video { get; set; }
+        private IMDBMovie MovieDetails { get; set; }
 
         public PlexItemVideo(IMenuItem parentItem, string title, Uri path, MediaContainerVideo video)
             : base(parentItem, title, path) {
@@ -73,19 +75,19 @@ namespace MyPlexMedia.Plugin.Window.Items {
                 FileInfo.CreationTime = DateTime.Parse(Video.originallyAvailableAt);
                 Label2 = FileInfo.CreationTime.ToShortDateString();
             }
-            IMDBMovie movieDetails = new IMDBMovie {
+            MovieDetails = new IMDBMovie {
                 Plot = Video.summary,
                 ThumbURL = IconImage,
                 PlotOutline = Video.tagline,
                 Title = Video.title,
-                RunTime = Duration,
+                RunTime = Duration / 60000,
                 Rating = Rating,
                 Year = Year,
-                MPARating = Video.contentRating
+                MPARating = Video.contentRating,
+                TagLine = Video.tagline,
+                Genre = string.Join(" | ", Video.Genre.Select(x=>x.tag).ToArray())
             };
-            TVTag = movieDetails;
-            AlbumInfoTag = movieDetails;
-            MusicTag = movieDetails;
+            TVTag = MovieDetails;
         }
 
         void PlexItemVideo_OnRetrieveArt(GUIListItem item) {
@@ -93,6 +95,25 @@ namespace MyPlexMedia.Plugin.Window.Items {
             PlexInterface.ArtworkRetriever.QueueArtworkItem(SetBackground, Settings.PLEX_BACKGROUND_DEFAULT, UriPath, Video.art);
         }
 
+        public override void SetMetaData(MediaContainer infoContainer) {
+            
+        }
+
+        public override void OnSelected() {
+            if (MovieDetails != null) {
+                GUIPropertyManager.SetProperty("#title", MovieDetails.Title);
+                GUIPropertyManager.SetProperty("#genre", MovieDetails.Genre);
+                GUIPropertyManager.SetProperty("#runtime", MovieDetails.RunTime.ToString());
+                GUIPropertyManager.SetProperty("#year", MovieDetails.Year.ToString());
+                GUIPropertyManager.SetProperty("#plot", MovieDetails.Plot);
+                GUIPropertyManager.SetProperty("#plotoutline", MovieDetails.PlotOutline);
+                GUIPropertyManager.SetProperty("#cast", string.Empty);
+                GUIPropertyManager.SetProperty("#tagline", MovieDetails.TagLine);
+                GUIPropertyManager.SetProperty("#thumb", IconImageBig);
+                GUIPropertyManager.SetProperty("#iswatched", _isPlayed.ToString());
+            }
+            base.OnSelected();
+        }
 
         public override void OnClicked(object sender, EventArgs e) {
             PlexVideoPlayer.PlayBackMedia(UriPath, Video);

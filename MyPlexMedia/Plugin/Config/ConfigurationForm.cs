@@ -59,7 +59,7 @@ namespace MyPlexMedia.Plugin.Config {
 
         protected override void OnLoad(EventArgs e) {
             Text = String.Format("{0} - {1} - Configuration", Settings.PLUGIN_NAME, Settings.PLUGIN_VERSION);
-            textBoxCheezRootFolder.Text = Settings.CacheFolder;
+            textBoxCacheFolder.Text = Settings.CacheFolder;
             checkBoxDeleteOnExit.Checked = Settings.DeleteCacheOnExit;
             comboBoxQualityLAN.DataSource = Enum.GetValues(typeof(PlexQualities));
             comboBoxQualityLAN.SelectedItem = Settings.DefaultQualityLAN;
@@ -69,15 +69,17 @@ namespace MyPlexMedia.Plugin.Config {
             PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
             textBoxMyPlexPass.Text = Settings.MyPlexPass;
             textBoxMyPlexUser.Text = Settings.MyPlexUser;
+            checkBoxDownloadArtwork.Checked = Settings.DownloadArtwork;
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e) {
-            Settings.CacheFolder = textBoxCheezRootFolder.Text;
+            Settings.CacheFolder = textBoxCacheFolder.Text;
             Settings.DeleteCacheOnExit = checkBoxDeleteOnExit.Checked;
             Settings.DefaultQualityLAN = (PlexQualities)comboBoxQualityLAN.SelectedValue;
             Settings.DefaultQualityWAN = (PlexQualities)comboBoxQualityWAN.SelectedValue;
             Settings.MyPlexPass = textBoxMyPlexPass.Text;
             Settings.MyPlexUser = textBoxMyPlexUser.Text;
+            Settings.DownloadArtwork = checkBoxDownloadArtwork.Checked;
             Settings.Save();
         }
 
