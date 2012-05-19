@@ -44,10 +44,17 @@ namespace MyPlexMedia.Plugin.Window.Items {
 
             try {
                 if (video.type.Equals("episode")) {
-                    Label = String.Format("S{0:00}E{1:00}.{2}", new object[] { int.Parse(video.parentIndex), int.Parse(video.index), video.title });
+                    int season;
+                    if (int.TryParse(video.parentIndex, out season)) {
+                        Label = String.Format("S{0:00}", season);
+                    } else {
+                        Label = string.Empty;
+                    }
+                    Label = Label + String.Format("E{0:00}.{1}", int.Parse(video.index), video.title);
                     video.title = Label;
                 }
-            } catch { }
+            } catch { 
+            }
 
             int duration;
             if (int.TryParse(Video.duration, out duration)) {
@@ -96,7 +103,7 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         public override void SetMetaData(MediaContainer infoContainer) {
-            
+
         }
 
         public override void OnSelected() {

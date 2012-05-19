@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using MediaPortal.GUI.Library;
 using MediaPortal.Util;
 using MyPlexMedia.Plugin.Config;
 using PlexMediaCenter.Plex.Data.Types;
@@ -45,15 +46,17 @@ namespace MyPlexMedia.Plugin.Window.Items {
         }
 
         protected virtual void SetIcon(string imagePath) {
-            Utils.DoInsertExistingFileIntoCache(imagePath);
-            IconImageBig = IconImage = ThumbnailImage = imagePath;
-            //RetrieveArt = false;
+            //if (GUITextureManager.Load(imagePath, 0, 0, 0, true) > 0) {
+                IconImageBig = IconImage = ThumbnailImage = imagePath;
+                //RetrieveArt = false;
+            //}
         }
 
         protected virtual void SetBackground(string imagePath) {
-            Utils.DoInsertExistingFileIntoCache(imagePath);
-            BackgroundImage = imagePath;
-            //RetrieveArt = false;
+            //if (GUITextureManager.Load(imagePath, 0, 0, 0, true) > 0) {
+                BackgroundImage = imagePath;
+                //RetrieveArt = false;
+            //}
         }
 
         public virtual void SetMetaData(MediaContainer infoContainer) {

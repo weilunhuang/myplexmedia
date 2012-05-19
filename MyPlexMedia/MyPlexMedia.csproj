@@ -93,6 +93,7 @@
     <Compile Include="Plugin\Window\Dialogs\Enum.cs" />
     <Compile Include="Plugin\Window\Items\ActionItem.cs" />
     <Compile Include="Plugin\Window\Dialogs\EPluginButtons.cs" />
+    <Compile Include="Plugin\Window\Items\PlexItemPhoto.cs" />
     <Compile Include="Plugin\Window\Items\PlexItemServer.cs" />
     <Compile Include="Plugin\Window\Items\IMenuItem.cs" />
     <Compile Include="Plugin\Window\Items\MenuItem.cs" />

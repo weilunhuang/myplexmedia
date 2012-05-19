@@ -109,7 +109,7 @@ namespace PlexMediaCenter.Util {
                                               int quality, bool is3G) {
             string transcodePath = "/video/:/transcode/segmented/start.m3u8?";
             transcodePath += "identifier=com.plexapp.plugins.library";
-            transcodePath += "&offset=" + offset;
+            transcodePath += "&time=" + offset;
             transcodePath += "&quality=" + quality;
             //transcodePath += "&minquality=0";
             //transcodePath += "&maxquality=1";

@@ -75,15 +75,16 @@ namespace PlexMediaCenter.Plex.Data {
             }
             ImageBasePath = basePath;
             EnableDownload = enableDownload;
+            QueueClients = new BlockingQueue<WebClient>(MAX_CLIENTS);
+            QueueArtwork = new BlockingQueue<ArtworkQueueItem>(int.MaxValue);
+
             if (enableDownload) {
-                QueueClients = new BlockingQueue<WebClient>(MAX_CLIENTS);
                 for (int i = 0; i < MAX_CLIENTS; ++i) {
                     var cli = new WebClient();
                     cli.DownloadFileCompleted += DownloadFileCompleted;
                     QueueClients.Enqueue(cli);
                 }
 
-                QueueArtwork = new BlockingQueue<ArtworkQueueItem>(int.MaxValue);
                 RunWorkerAsync();
             }
         }
@@ -145,8 +146,10 @@ namespace PlexMediaCenter.Plex.Data {
         }
 
         public void Dispose() {
-            QueueClients.Dispose();
-            QueueArtwork.Dispose();
+            try {
+                QueueClients.Dispose();
+                QueueArtwork.Dispose();
+            } catch { }
         }
     }
 }

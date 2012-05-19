@@ -161,7 +161,7 @@ namespace MyPlexMedia.Plugin.Config {
                                        {
                                            "default",
                                            new PlexSectionLayout
-                                               {Layout = GUIFacadeControl.Layout.List, Section = SectionType.Video}
+                                               {Layout = GUIFacadeControl.Layout.List, Section = SectionType.Music}
                                            },
                                        {
                                            "secondary",
@@ -171,15 +171,12 @@ namespace MyPlexMedia.Plugin.Config {
                                        {
                                            "artist",
                                            new PlexSectionLayout
-                                               {
-                                                   Layout = GUIFacadeControl.Layout.LargeIcons,
-                                                   Section = SectionType.Music
-                                               }
+                                               {Layout = GUIFacadeControl.Layout.LargeIcons, Section = SectionType.Music }
                                            },
                                        {
                                            "album",
                                            new PlexSectionLayout
-                                               {Layout = GUIFacadeControl.Layout.CoverFlow, Section = SectionType.Music}
+                                               {Layout = GUIFacadeControl.Layout.AlbumView, Section = SectionType.Music}
                                            },
                                        {
                                            "show",
@@ -189,7 +186,7 @@ namespace MyPlexMedia.Plugin.Config {
                                        {
                                            "season",
                                            new PlexSectionLayout
-                                               {Layout = GUIFacadeControl.Layout.Filmstrip, Section = SectionType.Video}
+                                               {Layout = GUIFacadeControl.Layout.CoverFlow, Section = SectionType.Video}
                                            },
                                        {
                                            "episode",
@@ -206,9 +203,14 @@ namespace MyPlexMedia.Plugin.Config {
                                            new PlexSectionLayout
                                                {Layout = GUIFacadeControl.Layout.CoverFlow, Section = SectionType.Video}
                                            },
+                                                  {
+                                            "photo",
+                                            new PlexSectionLayout
+                                                {Layout = GUIFacadeControl.Layout.LargeIcons, Section = SectionType.Photo}
+                                            },
                                    };
             //return default Layout
-            return new PlexSectionLayout { Layout = GUIFacadeControl.Layout.List, Section = SectionType.Video };
+            return PreferredLayouts["default"];
         }
 
         public static PlexSectionLayout GetPreferredLayout(string viewGroup) {

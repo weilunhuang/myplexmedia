@@ -1,322 +1,232 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema id="NewDataSet" xmlns="" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata" xmlns:msprop="urn:schemas-microsoft-com:xml-msprop">
-  <xs:annotation>
-    <xs:appinfo source="urn:schemas-microsoft-com:xml-msdatasource">
-      <DataSource DefaultConnectionIndex="0" FunctionsComponentName="QueriesTableAdapter" Modifier="AutoLayout, AnsiClass, Class, Public" SchemaSerializationMode="IncludeSchema" xmlns="urn:schemas-microsoft-com:xml-msdatasource">
-        <Connections />
-        <Tables />
-        <Sources />
-      </DataSource>
-    </xs:appinfo>
-  </xs:annotation>
-  <xs:element name="Genre" msprop:Generator_TableClassName="GenreDataTable" msprop:Generator_TableVarName="tableGenre" msprop:Generator_TablePropName="Genre" msprop:Generator_RowDeletingName="GenreRowDeleting" msprop:Generator_UserTableName="Genre" msprop:Generator_RowChangingName="GenreRowChanging" msprop:Generator_RowEvHandlerName="GenreRowChangeEventHandler" msprop:Generator_RowDeletedName="GenreRowDeleted" msprop:Generator_RowEvArgName="GenreRowChangeEvent" msprop:Generator_RowChangedName="GenreRowChanged" msprop:Generator_RowClassName="GenreRow">
-    <xs:complexType>
-      <xs:attribute name="tag" msprop:Generator_ColumnVarNameInTable="columntag" msprop:Generator_ColumnPropNameInRow="tag" msprop:Generator_ColumnPropNameInTable="tagColumn" msprop:Generator_UserColumnName="tag" type="xs:string" />
-      <xs:attribute name="id" msprop:Generator_ColumnVarNameInTable="columnid" msprop:Generator_ColumnPropNameInRow="id" msprop:Generator_ColumnPropNameInTable="idColumn" msprop:Generator_UserColumnName="id" type="xs:string" />
-      <xs:attribute name="Directory_Id" msprop:Generator_ColumnVarNameInTable="columnDirectory_Id" msprop:Generator_ColumnPropNameInRow="Directory_Id" msprop:Generator_ColumnPropNameInTable="Directory_IdColumn" msprop:Generator_UserColumnName="Directory_Id" type="xs:int" use="prohibited" />
-      <xs:attribute name="Video_Id" msprop:Generator_ColumnVarNameInTable="columnVideo_Id" msprop:Generator_ColumnPropNameInRow="Video_Id" msprop:Generator_ColumnPropNameInTable="Video_IdColumn" msprop:Generator_UserColumnName="Video_Id" type="xs:int" use="prohibited" />
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="Media" msprop:Generator_TableClassName="MediaDataTable" msprop:Generator_TableVarName="tableMedia" msprop:Generator_TablePropName="Media" msprop:Generator_RowDeletingName="MediaRowDeleting" msprop:Generator_UserTableName="Media" msprop:Generator_RowChangingName="MediaRowChanging" msprop:Generator_RowEvHandlerName="MediaRowChangeEventHandler" msprop:Generator_RowDeletedName="MediaRowDeleted" msprop:Generator_RowEvArgName="MediaRowChangeEvent" msprop:Generator_RowChangedName="MediaRowChanged" msprop:Generator_RowClassName="MediaRow">
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+<xs:element name="user">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="Part" msprop:Generator_TableClassName="PartDataTable" msprop:Generator_TableVarName="tablePart" msprop:Generator_TablePropName="Part" msprop:Generator_RowDeletingName="PartRowDeleting" msprop:Generator_UserTableName="Part" msprop:Generator_RowChangingName="PartRowChanging" msprop:Generator_RowEvHandlerName="PartRowChangeEventHandler" msprop:Generator_RowDeletedName="PartRowDeleted" msprop:Generator_RowEvArgName="PartRowChangeEvent" msprop:Generator_RowChangedName="PartRowChanged" msprop:Generator_RowClassName="PartRow" minOccurs="0" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="Stream" msprop:Generator_TableClassName="StreamDataTable" msprop:Generator_TableVarName="tableStream" msprop:Generator_TablePropName="Stream" msprop:Generator_RowDeletingName="StreamRowDeleting" msprop:Generator_UserTableName="Stream" msprop:Generator_RowChangingName="StreamRowChanging" msprop:Generator_RowEvHandlerName="StreamRowChangeEventHandler" msprop:Generator_RowDeletedName="StreamRowDeleted" msprop:Generator_RowEvArgName="StreamRowChangeEvent" msprop:Generator_RowChangedName="StreamRowChanged" msprop:Generator_RowClassName="StreamRow" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:attribute name="id" msprop:Generator_ColumnVarNameInTable="columnid" msprop:Generator_ColumnPropNameInRow="id" msprop:Generator_ColumnPropNameInTable="idColumn" msprop:Generator_UserColumnName="id" type="xs:string" />
-                  <xs:attribute name="streamType" msprop:Generator_ColumnVarNameInTable="columnstreamType" msprop:Generator_ColumnPropNameInRow="streamType" msprop:Generator_ColumnPropNameInTable="streamTypeColumn" msprop:Generator_UserColumnName="streamType" type="xs:string" />
-                  <xs:attribute name="codec" msprop:Generator_ColumnVarNameInTable="columncodec" msprop:Generator_ColumnPropNameInRow="codec" msprop:Generator_ColumnPropNameInTable="codecColumn" msprop:Generator_UserColumnName="codec" type="xs:string" />
-                  <xs:attribute name="index" msprop:Generator_ColumnVarNameInTable="columnindex" msprop:Generator_ColumnPropNameInRow="index" msprop:Generator_ColumnPropNameInTable="indexColumn" msprop:Generator_UserColumnName="index" type="xs:string" />
-                  <xs:attribute name="selected" msprop:Generator_ColumnVarNameInTable="columnselected" msprop:Generator_ColumnPropNameInRow="selected" msprop:Generator_ColumnPropNameInTable="selectedColumn" msprop:Generator_UserColumnName="selected" type="xs:string" />
-                  <xs:attribute name="key" msprop:Generator_ColumnVarNameInTable="columnkey" msprop:Generator_ColumnPropNameInRow="key" msprop:Generator_ColumnPropNameInTable="keyColumn" msprop:Generator_UserColumnName="key" type="xs:string" />
-                  <xs:attribute name="Part_Id" msprop:Generator_ColumnVarNameInTable="columnPart_Id" msprop:Generator_ColumnPropNameInRow="Part_Id" msprop:Generator_ColumnPropNameInTable="Part_IdColumn" msprop:Generator_UserColumnName="Part_Id" type="xs:int" use="prohibited" />
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-            <xs:attribute name="id" msprop:Generator_ColumnVarNameInTable="columnid" msprop:Generator_ColumnPropNameInRow="id" msprop:Generator_ColumnPropNameInTable="idColumn" msprop:Generator_UserColumnName="id" type="xs:string" />
-            <xs:attribute name="key" msprop:Generator_ColumnVarNameInTable="columnkey" msprop:Generator_ColumnPropNameInRow="key" msprop:Generator_ColumnPropNameInTable="keyColumn" msprop:Generator_UserColumnName="key" type="xs:string" />
-            <xs:attribute name="duration" msprop:Generator_ColumnVarNameInTable="columnduration" msprop:Generator_ColumnPropNameInRow="duration" msprop:Generator_ColumnPropNameInTable="durationColumn" msprop:Generator_UserColumnName="duration" type="xs:string" />
-            <xs:attribute name="file" msprop:Generator_ColumnVarNameInTable="columnfile" msprop:Generator_ColumnPropNameInRow="file" msprop:Generator_ColumnPropNameInTable="fileColumn" msprop:Generator_UserColumnName="file" type="xs:string" />
-            <xs:attribute name="size" msprop:Generator_ColumnVarNameInTable="columnsize" msprop:Generator_ColumnPropNameInRow="size" msprop:Generator_ColumnPropNameInTable="sizeColumn" msprop:Generator_UserColumnName="size" type="xs:string" />
-            <xs:attribute name="Part_Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnPart_Id" msprop:Generator_ColumnPropNameInRow="Part_Id" msprop:Generator_ColumnPropNameInTable="Part_IdColumn" msprop:Generator_UserColumnName="Part_Id" type="xs:int" msdata:AllowDBNull="false" use="prohibited" />
-            <xs:attribute name="Media_Id" msprop:Generator_ColumnVarNameInTable="columnMedia_Id" msprop:Generator_ColumnPropNameInRow="Media_Id" msprop:Generator_ColumnPropNameInTable="Media_IdColumn" msprop:Generator_UserColumnName="Media_Id" type="xs:int" use="prohibited" />
-          </xs:complexType>
+        <xs:element name="username" type="xs:string" minOccurs="0" />
+        <xs:element name="email" type="xs:string" minOccurs="0" />
+        <xs:element name="authentication-token" type="xs:string" minOccurs="0" />
+        <xs:element name="joined-at" nillable="true" type="xs:string" minOccurs="0">
         </xs:element>
       </xs:sequence>
-      <xs:attribute name="id" msprop:Generator_ColumnVarNameInTable="columnid" msprop:Generator_ColumnPropNameInRow="id" msprop:Generator_ColumnPropNameInTable="idColumn" msprop:Generator_UserColumnName="id" type="xs:string" />
-      <xs:attribute name="duration" msprop:Generator_ColumnVarNameInTable="columnduration" msprop:Generator_ColumnPropNameInRow="duration" msprop:Generator_ColumnPropNameInTable="durationColumn" msprop:Generator_UserColumnName="duration" type="xs:string" />
-      <xs:attribute name="bitrate" msprop:Generator_ColumnVarNameInTable="columnbitrate" msprop:Generator_ColumnPropNameInRow="bitrate" msprop:Generator_ColumnPropNameInTable="bitrateColumn" msprop:Generator_UserColumnName="bitrate" type="xs:string" />
-      <xs:attribute name="aspectRatio" msprop:Generator_ColumnVarNameInTable="columnaspectRatio" msprop:Generator_ColumnPropNameInRow="aspectRatio" msprop:Generator_ColumnPropNameInTable="aspectRatioColumn" msprop:Generator_UserColumnName="aspectRatio" type="xs:string" />
-      <xs:attribute name="audioChannels" msprop:Generator_ColumnVarNameInTable="columnaudioChannels" msprop:Generator_ColumnPropNameInRow="audioChannels" msprop:Generator_ColumnPropNameInTable="audioChannelsColumn" msprop:Generator_UserColumnName="audioChannels" type="xs:string" />
-      <xs:attribute name="audioCodec" msprop:Generator_ColumnVarNameInTable="columnaudioCodec" msprop:Generator_ColumnPropNameInRow="audioCodec" msprop:Generator_ColumnPropNameInTable="audioCodecColumn" msprop:Generator_UserColumnName="audioCodec" type="xs:string" />
-      <xs:attribute name="videoCodec" msprop:Generator_ColumnVarNameInTable="columnvideoCodec" msprop:Generator_ColumnPropNameInRow="videoCodec" msprop:Generator_ColumnPropNameInTable="videoCodecColumn" msprop:Generator_UserColumnName="videoCodec" type="xs:string" />
-      <xs:attribute name="videoResolution" msprop:Generator_ColumnVarNameInTable="columnvideoResolution" msprop:Generator_ColumnPropNameInRow="videoResolution" msprop:Generator_ColumnPropNameInTable="videoResolutionColumn" msprop:Generator_UserColumnName="videoResolution" type="xs:string" />
-      <xs:attribute name="container" msprop:Generator_ColumnVarNameInTable="columncontainer" msprop:Generator_ColumnPropNameInRow="container" msprop:Generator_ColumnPropNameInTable="containerColumn" msprop:Generator_UserColumnName="container" type="xs:string" />
-      <xs:attribute name="videoFrameRate" msprop:Generator_ColumnVarNameInTable="columnvideoFrameRate" msprop:Generator_ColumnPropNameInRow="videoFrameRate" msprop:Generator_ColumnPropNameInTable="videoFrameRateColumn" msprop:Generator_UserColumnName="videoFrameRate" type="xs:string" />
-      <xs:attribute name="Media_Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnMedia_Id" msprop:Generator_ColumnPropNameInRow="Media_Id" msprop:Generator_ColumnPropNameInTable="Media_IdColumn" msprop:Generator_UserColumnName="Media_Id" type="xs:int" msdata:AllowDBNull="false" use="prohibited" />
-      <xs:attribute name="Video_Id" msprop:Generator_ColumnVarNameInTable="columnVideo_Id" msprop:Generator_ColumnPropNameInRow="Video_Id" msprop:Generator_ColumnPropNameInTable="Video_IdColumn" msprop:Generator_UserColumnName="Video_Id" type="xs:int" use="prohibited" />
-      <xs:attribute name="Track_Id" msprop:Generator_ColumnVarNameInTable="columnTrack_Id" msprop:Generator_ColumnPropNameInRow="Track_Id" msprop:Generator_ColumnPropNameInTable="Track_IdColumn" msprop:Generator_UserColumnName="Track_Id" type="xs:int" use="prohibited" />
     </xs:complexType>
   </xs:element>
-  <xs:element name="user" msprop:Generator_TableClassName="userDataTable" msprop:Generator_TableVarName="tableuser" msprop:Generator_TablePropName="user" msprop:Generator_RowDeletingName="userRowDeleting" msprop:Generator_UserTableName="user" msprop:Generator_RowChangingName="userRowChanging" msprop:Generator_RowEvHandlerName="userRowChangeEventHandler" msprop:Generator_RowDeletedName="userRowDeleted" msprop:Generator_RowEvArgName="userRowChangeEvent" msprop:Generator_RowChangedName="userRowChanged" msprop:Generator_RowClassName="userRow">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="username" msprop:Generator_ColumnVarNameInTable="columnusername" msprop:Generator_ColumnPropNameInRow="username" msprop:Generator_ColumnPropNameInTable="usernameColumn" msprop:Generator_UserColumnName="username" type="xs:string" minOccurs="0" />
-        <xs:element name="email" msprop:Generator_ColumnVarNameInTable="columnemail" msprop:Generator_ColumnPropNameInRow="email" msprop:Generator_ColumnPropNameInTable="emailColumn" msprop:Generator_UserColumnName="email" type="xs:string" minOccurs="0" />
-        <xs:element name="authentication-token" msprop:Generator_ColumnVarNameInTable="_columnauthentication_token" msprop:Generator_ColumnPropNameInRow="_authentication_token" msprop:Generator_ColumnPropNameInTable="_authentication_tokenColumn" msprop:Generator_UserColumnName="authentication-token" type="xs:string" minOccurs="0" />
-        <xs:element name="joined-at" nillable="true" msprop:Generator_TableClassName="_joined_atDataTable" msprop:Generator_TableVarName="_tablejoined_at" msprop:Generator_TablePropName="_joined_at" msprop:Generator_RowDeletingName="_joined_atRowDeleting" msprop:Generator_UserTableName="joined-at" msprop:Generator_RowChangingName="_joined_atRowChanging" msprop:Generator_RowEvHandlerName="_joined_atRowChangeEventHandler" msprop:Generator_RowDeletedName="_joined_atRowDeleted" msprop:Generator_RowEvArgName="_joined_atRowChangeEvent" msprop:Generator_RowChangedName="_joined_atRowChanged" msprop:Generator_RowClassName="_joined_atRow" minOccurs="0" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:simpleContent msprop:Generator_ColumnVarNameInTable="_columnjoined_at_Text" msprop:Generator_ColumnPropNameInRow="_joined_at_Text" msprop:Generator_ColumnPropNameInTable="_joined_at_TextColumn" msprop:Generator_UserColumnName="joined-at_Text" msdata:ColumnName="joined-at_Text" msdata:Ordinal="1">
-              <xs:extension base="xs:string">
-                <xs:attribute name="type" msprop:Generator_ColumnVarNameInTable="columntype" msprop:Generator_ColumnPropNameInRow="type" msprop:Generator_ColumnPropNameInTable="typeColumn" msprop:Generator_UserColumnName="type" type="xs:string" />
-                <xs:attribute name="user_Id" msprop:Generator_ColumnVarNameInTable="columnuser_Id" msprop:Generator_ColumnPropNameInRow="user_Id" msprop:Generator_ColumnPropNameInTable="user_IdColumn" msprop:Generator_UserColumnName="user_Id" type="xs:int" use="prohibited" />
-              </xs:extension>
-            </xs:simpleContent>
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-      <xs:attribute name="user_Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnuser_Id" msprop:Generator_ColumnPropNameInRow="user_Id" msprop:Generator_ColumnPropNameInTable="user_IdColumn" msprop:Generator_UserColumnName="user_Id" type="xs:int" msdata:AllowDBNull="false" use="prohibited" />
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="MediaContainer" msprop:Generator_TableClassName="MediaContainerDataTable" msprop:Generator_TableVarName="tableMediaContainer" msprop:Generator_TablePropName="MediaContainer" msprop:Generator_RowDeletingName="MediaContainerRowDeleting" msprop:Generator_UserTableName="MediaContainer" msprop:Generator_RowChangingName="MediaContainerRowChanging" msprop:Generator_RowEvHandlerName="MediaContainerRowChangeEventHandler" msprop:Generator_RowDeletedName="MediaContainerRowDeleted" msprop:Generator_RowEvArgName="MediaContainerRowChangeEvent" msprop:Generator_RowChangedName="MediaContainerRowChanged" msprop:Generator_RowClassName="MediaContainerRow">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element name="Server" msprop:Generator_TableClassName="ServerDataTable" msprop:Generator_TableVarName="tableServer" msprop:Generator_TablePropName="Server" msprop:Generator_RowDeletingName="ServerRowDeleting" msprop:Generator_UserTableName="Server" msprop:Generator_RowChangingName="ServerRowChanging" msprop:Generator_RowEvHandlerName="ServerRowChangeEventHandler" msprop:Generator_RowDeletedName="ServerRowDeleted" msprop:Generator_RowEvArgName="ServerRowChangeEvent" msprop:Generator_RowChangedName="ServerRowChanged" msprop:Generator_RowClassName="ServerRow" minOccurs="0" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:attribute name="name" msprop:Generator_ColumnVarNameInTable="columnname" msprop:Generator_ColumnPropNameInRow="name" msprop:Generator_ColumnPropNameInTable="nameColumn" msprop:Generator_UserColumnName="name" type="xs:string" />
-            <xs:attribute name="address" msprop:Generator_ColumnVarNameInTable="columnaddress" msprop:Generator_ColumnPropNameInRow="address" msprop:Generator_ColumnPropNameInTable="addressColumn" msprop:Generator_UserColumnName="address" type="xs:string" />
-            <xs:attribute name="port" msprop:Generator_ColumnVarNameInTable="columnport" msprop:Generator_ColumnPropNameInRow="port" msprop:Generator_ColumnPropNameInTable="portColumn" msprop:Generator_UserColumnName="port" type="xs:string" />
-            <xs:attribute name="host" msprop:Generator_ColumnVarNameInTable="columnhost" msprop:Generator_ColumnPropNameInRow="host" msprop:Generator_ColumnPropNameInTable="hostColumn" msprop:Generator_UserColumnName="host" type="xs:string" />
-            <xs:attribute name="machineIdentifier" msprop:Generator_ColumnVarNameInTable="columnmachineIdentifier" msprop:Generator_ColumnPropNameInRow="machineIdentifier" msprop:Generator_ColumnPropNameInTable="machineIdentifierColumn" msprop:Generator_UserColumnName="machineIdentifier" type="xs:string" />
-            <xs:attribute name="createdAt" msprop:Generator_ColumnVarNameInTable="columncreatedAt" msprop:Generator_ColumnPropNameInRow="createdAt" msprop:Generator_ColumnPropNameInTable="createdAtColumn" msprop:Generator_UserColumnName="createdAt" type="xs:string" />
-            <xs:attribute name="updatedAt" msprop:Generator_ColumnVarNameInTable="columnupdatedAt" msprop:Generator_ColumnPropNameInRow="updatedAt" msprop:Generator_ColumnPropNameInTable="updatedAtColumn" msprop:Generator_UserColumnName="updatedAt" type="xs:string" />
-            <xs:attribute name="owned" msprop:Generator_ColumnVarNameInTable="columnowned" msprop:Generator_ColumnPropNameInRow="owned" msprop:Generator_ColumnPropNameInTable="ownedColumn" msprop:Generator_UserColumnName="owned" type="xs:string" />
-            <xs:attribute name="MediaContainer_Id" msprop:Generator_ColumnVarNameInTable="columnMediaContainer_Id" msprop:Generator_ColumnPropNameInRow="MediaContainer_Id" msprop:Generator_ColumnPropNameInTable="MediaContainer_IdColumn" msprop:Generator_UserColumnName="MediaContainer_Id" type="xs:int" use="prohibited" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Directory" msprop:Generator_TableClassName="DirectoryDataTable" msprop:Generator_TableVarName="tableDirectory" msprop:Generator_TablePropName="Directory" msprop:Generator_RowDeletingName="DirectoryRowDeleting" msprop:Generator_UserTableName="Directory" msprop:Generator_RowChangingName="DirectoryRowChanging" msprop:Generator_RowEvHandlerName="DirectoryRowChangeEventHandler" msprop:Generator_RowDeletedName="DirectoryRowDeleted" msprop:Generator_RowEvArgName="DirectoryRowChangeEvent" msprop:Generator_RowChangedName="DirectoryRowChanged" msprop:Generator_RowClassName="DirectoryRow" minOccurs="0" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="Location" msprop:Generator_TableClassName="LocationDataTable" msprop:Generator_TableVarName="tableLocation" msprop:Generator_TablePropName="Location" msprop:Generator_RowDeletingName="LocationRowDeleting" msprop:Generator_UserTableName="Location" msprop:Generator_RowChangingName="LocationRowChanging" msprop:Generator_RowEvHandlerName="LocationRowChangeEventHandler" msprop:Generator_RowDeletedName="LocationRowDeleted" msprop:Generator_RowEvArgName="LocationRowChangeEvent" msprop:Generator_RowChangedName="LocationRowChanged" msprop:Generator_RowClassName="LocationRow" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:attribute name="path" msprop:Generator_ColumnVarNameInTable="columnpath" msprop:Generator_ColumnPropNameInRow="path" msprop:Generator_ColumnPropNameInTable="pathColumn" msprop:Generator_UserColumnName="path" type="xs:string" />
-                  <xs:attribute name="Directory_Id" msprop:Generator_ColumnVarNameInTable="columnDirectory_Id" msprop:Generator_ColumnPropNameInRow="Directory_Id" msprop:Generator_ColumnPropNameInTable="Directory_IdColumn" msprop:Generator_UserColumnName="Directory_Id" type="xs:int" use="prohibited" />
-                </xs:complexType>
-              </xs:element>
-              <xs:element ref="Genre" minOccurs="0" maxOccurs="unbounded" />
-            </xs:sequence>
-            <xs:attribute name="ratingKey" msprop:Generator_ColumnVarNameInTable="columnratingKey" msprop:Generator_ColumnPropNameInRow="ratingKey" msprop:Generator_ColumnPropNameInTable="ratingKeyColumn" msprop:Generator_UserColumnName="ratingKey" type="xs:string" />
-            <xs:attribute name="key" msprop:Generator_ColumnVarNameInTable="columnkey" msprop:Generator_ColumnPropNameInRow="key" msprop:Generator_ColumnPropNameInTable="keyColumn" msprop:Generator_UserColumnName="key" type="xs:string" />
-            <xs:attribute name="studio" msprop:Generator_ColumnVarNameInTable="columnstudio" msprop:Generator_ColumnPropNameInRow="studio" msprop:Generator_ColumnPropNameInTable="studioColumn" msprop:Generator_UserColumnName="studio" type="xs:string" />
-            <xs:attribute name="type" msprop:Generator_ColumnVarNameInTable="columntype" msprop:Generator_ColumnPropNameInRow="type" msprop:Generator_ColumnPropNameInTable="typeColumn" msprop:Generator_UserColumnName="type" type="xs:string" />
-            <xs:attribute name="title" msprop:Generator_ColumnVarNameInTable="columntitle" msprop:Generator_ColumnPropNameInRow="title" msprop:Generator_ColumnPropNameInTable="titleColumn" msprop:Generator_UserColumnName="title" type="xs:string" />
-            <xs:attribute name="contentRating" msprop:Generator_ColumnVarNameInTable="columncontentRating" msprop:Generator_ColumnPropNameInRow="contentRating" msprop:Generator_ColumnPropNameInTable="contentRatingColumn" msprop:Generator_UserColumnName="contentRating" type="xs:string" />
-            <xs:attribute name="summary" msprop:Generator_ColumnVarNameInTable="columnsummary" msprop:Generator_ColumnPropNameInRow="summary" msprop:Generator_ColumnPropNameInTable="summaryColumn" msprop:Generator_UserColumnName="summary" type="xs:string" />
-            <xs:attribute name="index" msprop:Generator_ColumnVarNameInTable="columnindex" msprop:Generator_ColumnPropNameInRow="index" msprop:Generator_ColumnPropNameInTable="indexColumn" msprop:Generator_UserColumnName="index" type="xs:string" />
-            <xs:attribute name="rating" msprop:Generator_ColumnVarNameInTable="columnrating" msprop:Generator_ColumnPropNameInRow="rating" msprop:Generator_ColumnPropNameInTable="ratingColumn" msprop:Generator_UserColumnName="rating" type="xs:string" />
-            <xs:attribute name="year" msprop:Generator_ColumnVarNameInTable="columnyear" msprop:Generator_ColumnPropNameInRow="year" msprop:Generator_ColumnPropNameInTable="yearColumn" msprop:Generator_UserColumnName="year" type="xs:string" />
-            <xs:attribute name="thumb" msprop:Generator_ColumnVarNameInTable="columnthumb" msprop:Generator_ColumnPropNameInRow="thumb" msprop:Generator_ColumnPropNameInTable="thumbColumn" msprop:Generator_UserColumnName="thumb" type="xs:string" />
-            <xs:attribute name="art" msprop:Generator_ColumnVarNameInTable="columnart" msprop:Generator_ColumnPropNameInRow="art" msprop:Generator_ColumnPropNameInTable="artColumn" msprop:Generator_UserColumnName="art" type="xs:string" />
-            <xs:attribute name="banner" msprop:Generator_ColumnVarNameInTable="columnbanner" msprop:Generator_ColumnPropNameInRow="banner" msprop:Generator_ColumnPropNameInTable="bannerColumn" msprop:Generator_UserColumnName="banner" type="xs:string" />
-            <xs:attribute name="duration" msprop:Generator_ColumnVarNameInTable="columnduration" msprop:Generator_ColumnPropNameInRow="duration" msprop:Generator_ColumnPropNameInTable="durationColumn" msprop:Generator_UserColumnName="duration" type="xs:string" />
-            <xs:attribute name="originallyAvailableAt" msprop:Generator_ColumnVarNameInTable="columnoriginallyAvailableAt" msprop:Generator_ColumnPropNameInRow="originallyAvailableAt" msprop:Generator_ColumnPropNameInTable="originallyAvailableAtColumn" msprop:Generator_UserColumnName="originallyAvailableAt" type="xs:string" />
-            <xs:attribute name="leafCount" msprop:Generator_ColumnVarNameInTable="columnleafCount" msprop:Generator_ColumnPropNameInRow="leafCount" msprop:Generator_ColumnPropNameInTable="leafCountColumn" msprop:Generator_UserColumnName="leafCount" type="xs:string" />
-            <xs:attribute name="viewedLeafCount" msprop:Generator_ColumnVarNameInTable="columnviewedLeafCount" msprop:Generator_ColumnPropNameInRow="viewedLeafCount" msprop:Generator_ColumnPropNameInTable="viewedLeafCountColumn" msprop:Generator_UserColumnName="viewedLeafCount" type="xs:string" />
-            <xs:attribute name="updatedAt" msprop:Generator_ColumnVarNameInTable="columnupdatedAt" msprop:Generator_ColumnPropNameInRow="updatedAt" msprop:Generator_ColumnPropNameInTable="updatedAtColumn" msprop:Generator_UserColumnName="updatedAt" type="xs:string" />
-            <xs:attribute name="prompt" msprop:Generator_ColumnVarNameInTable="columnprompt" msprop:Generator_ColumnPropNameInRow="prompt" msprop:Generator_ColumnPropNameInTable="promptColumn" msprop:Generator_UserColumnName="prompt" type="xs:string" />
-            <xs:attribute name="search" msprop:Generator_ColumnVarNameInTable="columnsearch" msprop:Generator_ColumnPropNameInRow="search" msprop:Generator_ColumnPropNameInTable="searchColumn" msprop:Generator_UserColumnName="search" type="xs:string" />
-            <xs:attribute name="refreshing" msprop:Generator_ColumnVarNameInTable="columnrefreshing" msprop:Generator_ColumnPropNameInRow="refreshing" msprop:Generator_ColumnPropNameInTable="refreshingColumn" msprop:Generator_UserColumnName="refreshing" type="xs:string" />
-            <xs:attribute name="agent" msprop:Generator_ColumnVarNameInTable="columnagent" msprop:Generator_ColumnPropNameInRow="agent" msprop:Generator_ColumnPropNameInTable="agentColumn" msprop:Generator_UserColumnName="agent" type="xs:string" />
-            <xs:attribute name="scanner" msprop:Generator_ColumnVarNameInTable="columnscanner" msprop:Generator_ColumnPropNameInRow="scanner" msprop:Generator_ColumnPropNameInTable="scannerColumn" msprop:Generator_UserColumnName="scanner" type="xs:string" />
-            <xs:attribute name="language" msprop:Generator_ColumnVarNameInTable="columnlanguage" msprop:Generator_ColumnPropNameInRow="language" msprop:Generator_ColumnPropNameInTable="languageColumn" msprop:Generator_UserColumnName="language" type="xs:string" />
-            <xs:attribute name="parentTitle" msprop:Generator_ColumnVarNameInTable="columnparentTitle" msprop:Generator_ColumnPropNameInRow="parentTitle" msprop:Generator_ColumnPropNameInTable="parentTitleColumn" msprop:Generator_UserColumnName="parentTitle" type="xs:string" />
-            <xs:attribute name="Directory_Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnDirectory_Id" msprop:Generator_ColumnPropNameInRow="Directory_Id" msprop:Generator_ColumnPropNameInTable="Directory_IdColumn" msprop:Generator_UserColumnName="Directory_Id" type="xs:int" msdata:AllowDBNull="false" use="prohibited" />
-            <xs:attribute name="MediaContainer_Id" msprop:Generator_ColumnVarNameInTable="columnMediaContainer_Id" msprop:Generator_ColumnPropNameInRow="MediaContainer_Id" msprop:Generator_ColumnPropNameInTable="MediaContainer_IdColumn" msprop:Generator_UserColumnName="MediaContainer_Id" type="xs:int" use="prohibited" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Video" msprop:Generator_TableClassName="VideoDataTable" msprop:Generator_TableVarName="tableVideo" msprop:Generator_TablePropName="Video" msprop:Generator_RowDeletingName="VideoRowDeleting" msprop:Generator_UserTableName="Video" msprop:Generator_RowChangingName="VideoRowChanging" msprop:Generator_RowEvHandlerName="VideoRowChangeEventHandler" msprop:Generator_RowDeletedName="VideoRowDeleted" msprop:Generator_RowEvArgName="VideoRowChangeEvent" msprop:Generator_RowChangedName="VideoRowChanged" msprop:Generator_RowClassName="VideoRow" minOccurs="0" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element name="viewCount" msprop:Generator_ColumnVarNameInTable="columnviewCount" msprop:Generator_ColumnPropNameInRow="viewCount" msprop:Generator_ColumnPropNameInTable="viewCountColumn" msprop:Generator_UserColumnName="viewCount" type="xs:string" minOccurs="0" msdata:Ordinal="24" />
-              <xs:element ref="Media" minOccurs="0" maxOccurs="unbounded" />
-              <xs:element ref="Genre" minOccurs="0" maxOccurs="unbounded" />
-              <xs:element name="Director" msprop:Generator_TableClassName="DirectorDataTable" msprop:Generator_TableVarName="tableDirector" msprop:Generator_TablePropName="Director" msprop:Generator_RowDeletingName="DirectorRowDeleting" msprop:Generator_UserTableName="Director" msprop:Generator_RowChangingName="DirectorRowChanging" msprop:Generator_RowEvHandlerName="DirectorRowChangeEventHandler" msprop:Generator_RowDeletedName="DirectorRowDeleted" msprop:Generator_RowEvArgName="DirectorRowChangeEvent" msprop:Generator_RowChangedName="DirectorRowChanged" msprop:Generator_RowClassName="DirectorRow" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:attribute name="id" msprop:Generator_ColumnVarNameInTable="columnid" msprop:Generator_ColumnPropNameInRow="id" msprop:Generator_ColumnPropNameInTable="idColumn" msprop:Generator_UserColumnName="id" type="xs:string" />
-                  <xs:attribute name="tag" msprop:Generator_ColumnVarNameInTable="columntag" msprop:Generator_ColumnPropNameInRow="tag" msprop:Generator_ColumnPropNameInTable="tagColumn" msprop:Generator_UserColumnName="tag" type="xs:string" />
-                  <xs:attribute name="Video_Id" msprop:Generator_ColumnVarNameInTable="columnVideo_Id" msprop:Generator_ColumnPropNameInRow="Video_Id" msprop:Generator_ColumnPropNameInTable="Video_IdColumn" msprop:Generator_UserColumnName="Video_Id" type="xs:int" use="prohibited" />
-                </xs:complexType>
-              </xs:element>
-              <xs:element name="Field" msprop:Generator_TableClassName="FieldDataTable" msprop:Generator_TableVarName="tableField" msprop:Generator_TablePropName="Field" msprop:Generator_RowDeletingName="FieldRowDeleting" msprop:Generator_UserTableName="Field" msprop:Generator_RowChangingName="FieldRowChanging" msprop:Generator_RowEvHandlerName="FieldRowChangeEventHandler" msprop:Generator_RowDeletedName="FieldRowDeleted" msprop:Generator_RowEvArgName="FieldRowChangeEvent" msprop:Generator_RowChangedName="FieldRowChanged" msprop:Generator_RowClassName="FieldRow" minOccurs="0" maxOccurs="unbounded">
-                <xs:complexType>
-                  <xs:attribute name="name" msprop:Generator_ColumnVarNameInTable="columnname" msprop:Generator_ColumnPropNameInRow="name" msprop:Generator_ColumnPropNameInTable="nameColumn" msprop:Generator_UserColumnName="name" type="xs:string" />
-                  <xs:attribute name="locked" msprop:Generator_ColumnVarNameInTable="columnlocked" msprop:Generator_ColumnPropNameInRow="locked" msprop:Generator_ColumnPropNameInTable="lockedColumn" msprop:Generator_UserColumnName="locked" type="xs:string" />
-                  <xs:attribute name="Video_Id" msprop:Generator_ColumnVarNameInTable="columnVideo_Id" msprop:Generator_ColumnPropNameInRow="Video_Id" msprop:Generator_ColumnPropNameInTable="Video_IdColumn" msprop:Generator_UserColumnName="Video_Id" type="xs:int" use="prohibited" />
-                </xs:complexType>
-              </xs:element>
-            </xs:sequence>
-            <xs:attribute name="ratingKey" msprop:Generator_ColumnVarNameInTable="columnratingKey" msprop:Generator_ColumnPropNameInRow="ratingKey" msprop:Generator_ColumnPropNameInTable="ratingKeyColumn" msprop:Generator_UserColumnName="ratingKey" type="xs:string" />
-            <xs:attribute name="key" msprop:Generator_ColumnVarNameInTable="columnkey" msprop:Generator_ColumnPropNameInRow="key" msprop:Generator_ColumnPropNameInTable="keyColumn" msprop:Generator_UserColumnName="key" type="xs:string" />
-            <xs:attribute name="guid" msprop:Generator_ColumnVarNameInTable="columnguid" msprop:Generator_ColumnPropNameInRow="guid" msprop:Generator_ColumnPropNameInTable="guidColumn" msprop:Generator_UserColumnName="guid" type="xs:string" />
-            <xs:attribute name="studio" msprop:Generator_ColumnVarNameInTable="columnstudio" msprop:Generator_ColumnPropNameInRow="studio" msprop:Generator_ColumnPropNameInTable="studioColumn" msprop:Generator_UserColumnName="studio" type="xs:string" />
-            <xs:attribute name="type" msprop:Generator_ColumnVarNameInTable="columntype" msprop:Generator_ColumnPropNameInRow="type" msprop:Generator_ColumnPropNameInTable="typeColumn" msprop:Generator_UserColumnName="type" type="xs:string" />
-            <xs:attribute name="title" msprop:Generator_ColumnVarNameInTable="columntitle" msprop:Generator_ColumnPropNameInRow="title" msprop:Generator_ColumnPropNameInTable="titleColumn" msprop:Generator_UserColumnName="title" type="xs:string" />
-            <xs:attribute name="contentRating" msprop:Generator_ColumnVarNameInTable="columncontentRating" msprop:Generator_ColumnPropNameInRow="contentRating" msprop:Generator_ColumnPropNameInTable="contentRatingColumn" msprop:Generator_UserColumnName="contentRating" type="xs:string" />
-            <xs:attribute name="summary" msprop:Generator_ColumnVarNameInTable="columnsummary" msprop:Generator_ColumnPropNameInRow="summary" msprop:Generator_ColumnPropNameInTable="summaryColumn" msprop:Generator_UserColumnName="summary" type="xs:string" />
-            <xs:attribute name="rating" msprop:Generator_ColumnVarNameInTable="columnrating" msprop:Generator_ColumnPropNameInRow="rating" msprop:Generator_ColumnPropNameInTable="ratingColumn" msprop:Generator_UserColumnName="rating" type="xs:string" />
-            <xs:attribute name="year" msprop:Generator_ColumnVarNameInTable="columnyear" msprop:Generator_ColumnPropNameInRow="year" msprop:Generator_ColumnPropNameInTable="yearColumn" msprop:Generator_UserColumnName="year" type="xs:string" />
-            <xs:attribute name="tagline" msprop:Generator_ColumnVarNameInTable="columntagline" msprop:Generator_ColumnPropNameInRow="tagline" msprop:Generator_ColumnPropNameInTable="taglineColumn" msprop:Generator_UserColumnName="tagline" type="xs:string" />
-            <xs:attribute name="thumb" msprop:Generator_ColumnVarNameInTable="columnthumb" msprop:Generator_ColumnPropNameInRow="thumb" msprop:Generator_ColumnPropNameInTable="thumbColumn" msprop:Generator_UserColumnName="thumb" type="xs:string" />
-            <xs:attribute name="art" msprop:Generator_ColumnVarNameInTable="columnart" msprop:Generator_ColumnPropNameInRow="art" msprop:Generator_ColumnPropNameInTable="artColumn" msprop:Generator_UserColumnName="art" type="xs:string" />
-            <xs:attribute name="duration" msprop:Generator_ColumnVarNameInTable="columnduration" msprop:Generator_ColumnPropNameInRow="duration" msprop:Generator_ColumnPropNameInTable="durationColumn" msprop:Generator_UserColumnName="duration" type="xs:string" />
-            <xs:attribute name="originallyAvailableAt" msprop:Generator_ColumnVarNameInTable="columnoriginallyAvailableAt" msprop:Generator_ColumnPropNameInRow="originallyAvailableAt" msprop:Generator_ColumnPropNameInTable="originallyAvailableAtColumn" msprop:Generator_UserColumnName="originallyAvailableAt" type="xs:string" />
-            <xs:attribute name="addedAt" msprop:Generator_ColumnVarNameInTable="columnaddedAt" msprop:Generator_ColumnPropNameInRow="addedAt" msprop:Generator_ColumnPropNameInTable="addedAtColumn" msprop:Generator_UserColumnName="addedAt" type="xs:string" />
-            <xs:attribute name="updatedAt" msprop:Generator_ColumnVarNameInTable="columnupdatedAt" msprop:Generator_ColumnPropNameInRow="updatedAt" msprop:Generator_ColumnPropNameInTable="updatedAtColumn" msprop:Generator_UserColumnName="updatedAt" type="xs:string" />
-            <xs:attribute name="grandparentKey" msprop:Generator_ColumnVarNameInTable="columngrandparentKey" msprop:Generator_ColumnPropNameInRow="grandparentKey" msprop:Generator_ColumnPropNameInTable="grandparentKeyColumn" msprop:Generator_UserColumnName="grandparentKey" type="xs:string" />
-            <xs:attribute name="grandparentTitle" msprop:Generator_ColumnVarNameInTable="columngrandparentTitle" msprop:Generator_ColumnPropNameInRow="grandparentTitle" msprop:Generator_ColumnPropNameInTable="grandparentTitleColumn" msprop:Generator_UserColumnName="grandparentTitle" type="xs:string" />
-            <xs:attribute name="index" msprop:Generator_ColumnVarNameInTable="columnindex" msprop:Generator_ColumnPropNameInRow="index" msprop:Generator_ColumnPropNameInTable="indexColumn" msprop:Generator_UserColumnName="index" type="xs:string" />
-            <xs:attribute name="parentIndex" msprop:Generator_ColumnVarNameInTable="columnparentIndex" msprop:Generator_ColumnPropNameInRow="parentIndex" msprop:Generator_ColumnPropNameInTable="parentIndexColumn" msprop:Generator_UserColumnName="parentIndex" type="xs:string" />
-            <xs:attribute name="viewOffset" msprop:Generator_ColumnVarNameInTable="columnviewOffset" msprop:Generator_ColumnPropNameInRow="viewOffset" msprop:Generator_ColumnPropNameInTable="viewOffsetColumn" msprop:Generator_UserColumnName="viewOffset" type="xs:string" />
-            <xs:attribute name="Video_Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnVideo_Id" msprop:Generator_ColumnPropNameInRow="Video_Id" msprop:Generator_ColumnPropNameInTable="Video_IdColumn" msprop:Generator_UserColumnName="Video_Id" type="xs:int" msdata:AllowDBNull="false" use="prohibited" />
-            <xs:attribute name="MediaContainer_Id" msprop:Generator_ColumnVarNameInTable="columnMediaContainer_Id" msprop:Generator_ColumnPropNameInRow="MediaContainer_Id" msprop:Generator_ColumnPropNameInTable="MediaContainer_IdColumn" msprop:Generator_UserColumnName="MediaContainer_Id" type="xs:int" use="prohibited" />
-          </xs:complexType>
-        </xs:element>
-        <xs:element name="Track" msprop:Generator_TableClassName="TrackDataTable" msprop:Generator_TableVarName="tableTrack" msprop:Generator_TablePropName="Track" msprop:Generator_RowDeletingName="TrackRowDeleting" msprop:Generator_UserTableName="Track" msprop:Generator_RowChangingName="TrackRowChanging" msprop:Generator_RowEvHandlerName="TrackRowChangeEventHandler" msprop:Generator_RowDeletedName="TrackRowDeleted" msprop:Generator_RowEvArgName="TrackRowChangeEvent" msprop:Generator_RowChangedName="TrackRowChanged" msprop:Generator_RowClassName="TrackRow" minOccurs="0" maxOccurs="unbounded">
-          <xs:complexType>
-            <xs:sequence>
-              <xs:element ref="Media" minOccurs="0" maxOccurs="unbounded" />
-            </xs:sequence>
-            <xs:attribute name="ratingKey" msprop:Generator_ColumnVarNameInTable="columnratingKey" msprop:Generator_ColumnPropNameInRow="ratingKey" msprop:Generator_ColumnPropNameInTable="ratingKeyColumn" msprop:Generator_UserColumnName="ratingKey" type="xs:string" />
-            <xs:attribute name="key" msprop:Generator_ColumnVarNameInTable="columnkey" msprop:Generator_ColumnPropNameInRow="key" msprop:Generator_ColumnPropNameInTable="keyColumn" msprop:Generator_UserColumnName="key" type="xs:string" />
-            <xs:attribute name="type" msprop:Generator_ColumnVarNameInTable="columntype" msprop:Generator_ColumnPropNameInRow="type" msprop:Generator_ColumnPropNameInTable="typeColumn" msprop:Generator_UserColumnName="type" type="xs:string" />
-            <xs:attribute name="title" msprop:Generator_ColumnVarNameInTable="columntitle" msprop:Generator_ColumnPropNameInRow="title" msprop:Generator_ColumnPropNameInTable="titleColumn" msprop:Generator_UserColumnName="title" type="xs:string" />
-            <xs:attribute name="summary" msprop:Generator_ColumnVarNameInTable="columnsummary" msprop:Generator_ColumnPropNameInRow="summary" msprop:Generator_ColumnPropNameInTable="summaryColumn" msprop:Generator_UserColumnName="summary" type="xs:string" />
-            <xs:attribute name="index" msprop:Generator_ColumnVarNameInTable="columnindex" msprop:Generator_ColumnPropNameInRow="index" msprop:Generator_ColumnPropNameInTable="indexColumn" msprop:Generator_UserColumnName="index" type="xs:string" />
-            <xs:attribute name="duration" msprop:Generator_ColumnVarNameInTable="columnduration" msprop:Generator_ColumnPropNameInRow="duration" msprop:Generator_ColumnPropNameInTable="durationColumn" msprop:Generator_UserColumnName="duration" type="xs:string" />
-            <xs:attribute name="updatedAt" msprop:Generator_ColumnVarNameInTable="columnupdatedAt" msprop:Generator_ColumnPropNameInRow="updatedAt" msprop:Generator_ColumnPropNameInTable="updatedAtColumn" msprop:Generator_UserColumnName="updatedAt" type="xs:string" />
-            <xs:attribute name="guid" msprop:Generator_ColumnVarNameInTable="columnguid" msprop:Generator_ColumnPropNameInRow="guid" msprop:Generator_ColumnPropNameInTable="guidColumn" msprop:Generator_UserColumnName="guid" type="xs:string" />
-            <xs:attribute name="addedAt" msprop:Generator_ColumnVarNameInTable="columnaddedAt" msprop:Generator_ColumnPropNameInRow="addedAt" msprop:Generator_ColumnPropNameInTable="addedAtColumn" msprop:Generator_UserColumnName="addedAt" type="xs:string" />
-            <xs:attribute name="MediaContainer_Id" msprop:Generator_ColumnVarNameInTable="columnMediaContainer_Id" msprop:Generator_ColumnPropNameInRow="MediaContainer_Id" msprop:Generator_ColumnPropNameInTable="MediaContainer_IdColumn" msprop:Generator_UserColumnName="MediaContainer_Id" type="xs:int" use="prohibited" />
-          </xs:complexType>
-        </xs:element>
-      </xs:sequence>
-      <xs:attribute name="size" msprop:Generator_ColumnVarNameInTable="columnsize" msprop:Generator_ColumnPropNameInRow="size" msprop:Generator_ColumnPropNameInTable="sizeColumn" msprop:Generator_UserColumnName="size" type="xs:string" />
-      <xs:attribute name="grandparentTitle" msprop:Generator_ColumnVarNameInTable="columngrandparentTitle" msprop:Generator_ColumnPropNameInRow="grandparentTitle" msprop:Generator_ColumnPropNameInTable="grandparentTitleColumn" msprop:Generator_UserColumnName="grandparentTitle" type="xs:string" />
-      <xs:attribute name="mediaTagPrefix" msprop:Generator_ColumnVarNameInTable="columnmediaTagPrefix" msprop:Generator_ColumnPropNameInRow="mediaTagPrefix" msprop:Generator_ColumnPropNameInTable="mediaTagPrefixColumn" msprop:Generator_UserColumnName="mediaTagPrefix" type="xs:string" />
-      <xs:attribute name="mediaTagVersion" msprop:Generator_ColumnVarNameInTable="columnmediaTagVersion" msprop:Generator_ColumnPropNameInRow="mediaTagVersion" msprop:Generator_ColumnPropNameInTable="mediaTagVersionColumn" msprop:Generator_UserColumnName="mediaTagVersion" type="xs:string" />
-      <xs:attribute name="nocache" msprop:Generator_ColumnVarNameInTable="columnnocache" msprop:Generator_ColumnPropNameInRow="nocache" msprop:Generator_ColumnPropNameInTable="nocacheColumn" msprop:Generator_UserColumnName="nocache" type="xs:string" />
-      <xs:attribute name="banner" msprop:Generator_ColumnVarNameInTable="columnbanner" msprop:Generator_ColumnPropNameInRow="banner" msprop:Generator_ColumnPropNameInTable="bannerColumn" msprop:Generator_UserColumnName="banner" type="xs:string" />
-      <xs:attribute name="parentIndex" msprop:Generator_ColumnVarNameInTable="columnparentIndex" msprop:Generator_ColumnPropNameInRow="parentIndex" msprop:Generator_ColumnPropNameInTable="parentIndexColumn" msprop:Generator_UserColumnName="parentIndex" type="xs:string" />
-      <xs:attribute name="parentTitle" msprop:Generator_ColumnVarNameInTable="columnparentTitle" msprop:Generator_ColumnPropNameInRow="parentTitle" msprop:Generator_ColumnPropNameInTable="parentTitleColumn" msprop:Generator_UserColumnName="parentTitle" type="xs:string" />
-      <xs:attribute name="parentYear" msprop:Generator_ColumnVarNameInTable="columnparentYear" msprop:Generator_ColumnPropNameInRow="parentYear" msprop:Generator_ColumnPropNameInTable="parentYearColumn" msprop:Generator_UserColumnName="parentYear" type="xs:string" />
-      <xs:attribute name="thumb" msprop:Generator_ColumnVarNameInTable="columnthumb" msprop:Generator_ColumnPropNameInRow="thumb" msprop:Generator_ColumnPropNameInTable="thumbColumn" msprop:Generator_UserColumnName="thumb" type="xs:string" />
-      <xs:attribute name="viewGroup" msprop:Generator_ColumnVarNameInTable="columnviewGroup" msprop:Generator_ColumnPropNameInRow="viewGroup" msprop:Generator_ColumnPropNameInTable="viewGroupColumn" msprop:Generator_UserColumnName="viewGroup" type="xs:string" />
-      <xs:attribute name="viewMode" msprop:Generator_ColumnVarNameInTable="columnviewMode" msprop:Generator_ColumnPropNameInRow="viewMode" msprop:Generator_ColumnPropNameInTable="viewModeColumn" msprop:Generator_UserColumnName="viewMode" type="xs:string" />
-      <xs:attribute name="key" msprop:Generator_ColumnVarNameInTable="columnkey" msprop:Generator_ColumnPropNameInRow="key" msprop:Generator_ColumnPropNameInTable="keyColumn" msprop:Generator_UserColumnName="key" type="xs:string" />
-      <xs:attribute name="art" msprop:Generator_ColumnVarNameInTable="columnart" msprop:Generator_ColumnPropNameInRow="art" msprop:Generator_ColumnPropNameInTable="artColumn" msprop:Generator_UserColumnName="art" type="xs:string" />
-      <xs:attribute name="title1" msprop:Generator_ColumnVarNameInTable="columntitle1" msprop:Generator_ColumnPropNameInRow="title1" msprop:Generator_ColumnPropNameInTable="title1Column" msprop:Generator_UserColumnName="title1" type="xs:string" />
-      <xs:attribute name="title2" msprop:Generator_ColumnVarNameInTable="columntitle2" msprop:Generator_ColumnPropNameInRow="title2" msprop:Generator_ColumnPropNameInTable="title2Column" msprop:Generator_UserColumnName="title2" type="xs:string" />
-      <xs:attribute name="identifier" msprop:Generator_ColumnVarNameInTable="columnidentifier" msprop:Generator_ColumnPropNameInRow="identifier" msprop:Generator_ColumnPropNameInTable="identifierColumn" msprop:Generator_UserColumnName="identifier" type="xs:string" />
-      <xs:attribute name="friendlyName" msprop:Generator_ColumnVarNameInTable="columnfriendlyName" msprop:Generator_ColumnPropNameInRow="friendlyName" msprop:Generator_ColumnPropNameInTable="friendlyNameColumn" msprop:Generator_UserColumnName="friendlyName" type="xs:string" />
-      <xs:attribute name="machineIdentifier" msprop:Generator_ColumnVarNameInTable="columnmachineIdentifier" msprop:Generator_ColumnPropNameInRow="machineIdentifier" msprop:Generator_ColumnPropNameInTable="machineIdentifierColumn" msprop:Generator_UserColumnName="machineIdentifier" type="xs:string" />
-      <xs:attribute name="transcoderActiveVideoSessions" msprop:Generator_ColumnVarNameInTable="columntranscoderActiveVideoSessions" msprop:Generator_ColumnPropNameInRow="transcoderActiveVideoSessions" msprop:Generator_ColumnPropNameInTable="transcoderActiveVideoSessionsColumn" msprop:Generator_UserColumnName="transcoderActiveVideoSessions" type="xs:string" />
-      <xs:attribute name="transcoderVideoBitrates" msprop:Generator_ColumnVarNameInTable="columntranscoderVideoBitrates" msprop:Generator_ColumnPropNameInRow="transcoderVideoBitrates" msprop:Generator_ColumnPropNameInTable="transcoderVideoBitratesColumn" msprop:Generator_UserColumnName="transcoderVideoBitrates" type="xs:string" />
-      <xs:attribute name="transcoderVideoQualities" msprop:Generator_ColumnVarNameInTable="columntranscoderVideoQualities" msprop:Generator_ColumnPropNameInRow="transcoderVideoQualities" msprop:Generator_ColumnPropNameInTable="transcoderVideoQualitiesColumn" msprop:Generator_UserColumnName="transcoderVideoQualities" type="xs:string" />
-      <xs:attribute name="transcoderVideoResolutions" msprop:Generator_ColumnVarNameInTable="columntranscoderVideoResolutions" msprop:Generator_ColumnPropNameInRow="transcoderVideoResolutions" msprop:Generator_ColumnPropNameInTable="transcoderVideoResolutionsColumn" msprop:Generator_UserColumnName="transcoderVideoResolutions" type="xs:string" />
-      <xs:attribute name="version" msprop:Generator_ColumnVarNameInTable="columnversion" msprop:Generator_ColumnPropNameInRow="version" msprop:Generator_ColumnPropNameInTable="versionColumn" msprop:Generator_UserColumnName="version" type="xs:string" />
-      <xs:attribute name="MediaContainer_Id" msdata:AutoIncrement="true" msprop:Generator_ColumnVarNameInTable="columnMediaContainer_Id" msprop:Generator_ColumnPropNameInRow="MediaContainer_Id" msprop:Generator_ColumnPropNameInTable="MediaContainer_IdColumn" msprop:Generator_UserColumnName="MediaContainer_Id" type="xs:int" msdata:AllowDBNull="false" use="prohibited" />
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="NewDataSet" msdata:IsDataSet="true" msdata:UseCurrentLocale="true" msprop:Generator_DataSetName="NewDataSet" msprop:Generator_UserDSName="NewDataSet">
-    <xs:complexType>
-      <xs:choice minOccurs="0" maxOccurs="unbounded">
-        <xs:element ref="Genre" />
-        <xs:element ref="Media" />
-        <xs:element ref="user" />
-        <xs:element ref="MediaContainer" />
-      </xs:choice>
-    </xs:complexType>
-    <xs:unique name="Part_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
-      <xs:selector xpath=".//Part" />
-      <xs:field xpath="@Part_Id" />
-    </xs:unique>
-    <xs:unique name="Media_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
-      <xs:selector xpath=".//Media" />
-      <xs:field xpath="@Media_Id" />
-    </xs:unique>
-    <xs:unique name="Constraint1" msdata:PrimaryKey="true">
-      <xs:selector xpath=".//user" />
-      <xs:field xpath="@user_Id" />
-    </xs:unique>
-    <xs:unique name="Directory_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
-      <xs:selector xpath=".//Directory" />
-      <xs:field xpath="@Directory_Id" />
-    </xs:unique>
-    <xs:unique name="Video_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
-      <xs:selector xpath=".//Video" />
-      <xs:field xpath="@Video_Id" />
-    </xs:unique>
-    <xs:unique name="MediaContainer_Constraint1" msdata:ConstraintName="Constraint1" msdata:PrimaryKey="true">
-      <xs:selector xpath=".//MediaContainer" />
-      <xs:field xpath="@MediaContainer_Id" />
-    </xs:unique>
-    <xs:keyref name="MediaContainer_Track" refer="MediaContainer_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Track" msprop:rel_Generator_ChildPropName="GetTrackRows" msprop:rel_Generator_ParentPropName="MediaContainerRow" msprop:rel_Generator_UserRelationName="MediaContainer_Track" msprop:rel_Generator_RelationVarName="relationMediaContainer_Track" msprop:rel_Generator_UserParentTable="MediaContainer">
-      <xs:selector xpath=".//Track" />
-      <xs:field xpath="@MediaContainer_Id" />
-    </xs:keyref>
-    <xs:keyref name="MediaContainer_Video" refer="MediaContainer_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Video" msprop:rel_Generator_ChildPropName="GetVideoRows" msprop:rel_Generator_ParentPropName="MediaContainerRow" msprop:rel_Generator_UserRelationName="MediaContainer_Video" msprop:rel_Generator_RelationVarName="relationMediaContainer_Video" msprop:rel_Generator_UserParentTable="MediaContainer">
-      <xs:selector xpath=".//Video" />
-      <xs:field xpath="@MediaContainer_Id" />
-    </xs:keyref>
-    <xs:keyref name="Video_Field" refer="Video_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Field" msprop:rel_Generator_ChildPropName="GetFieldRows" msprop:rel_Generator_ParentPropName="VideoRow" msprop:rel_Generator_UserRelationName="Video_Field" msprop:rel_Generator_RelationVarName="relationVideo_Field" msprop:rel_Generator_UserParentTable="Video">
-      <xs:selector xpath=".//Field" />
-      <xs:field xpath="@Video_Id" />
-    </xs:keyref>
-    <xs:keyref name="Video_Director" refer="Video_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Director" msprop:rel_Generator_ChildPropName="GetDirectorRows" msprop:rel_Generator_ParentPropName="VideoRow" msprop:rel_Generator_UserRelationName="Video_Director" msprop:rel_Generator_RelationVarName="relationVideo_Director" msprop:rel_Generator_UserParentTable="Video">
-      <xs:selector xpath=".//Director" />
-      <xs:field xpath="@Video_Id" />
-    </xs:keyref>
-    <xs:keyref name="MediaContainer_Directory" refer="MediaContainer_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Directory" msprop:rel_Generator_ChildPropName="GetDirectoryRows" msprop:rel_Generator_ParentPropName="MediaContainerRow" msprop:rel_Generator_UserRelationName="MediaContainer_Directory" msprop:rel_Generator_RelationVarName="relationMediaContainer_Directory" msprop:rel_Generator_UserParentTable="MediaContainer">
-      <xs:selector xpath=".//Directory" />
-      <xs:field xpath="@MediaContainer_Id" />
-    </xs:keyref>
-    <xs:keyref name="Directory_Location" refer="Directory_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Location" msprop:rel_Generator_ChildPropName="GetLocationRows" msprop:rel_Generator_ParentPropName="DirectoryRow" msprop:rel_Generator_UserRelationName="Directory_Location" msprop:rel_Generator_RelationVarName="relationDirectory_Location" msprop:rel_Generator_UserParentTable="Directory">
-      <xs:selector xpath=".//Location" />
-      <xs:field xpath="@Directory_Id" />
-    </xs:keyref>
-    <xs:keyref name="MediaContainer_Server" refer="MediaContainer_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Server" msprop:rel_Generator_ChildPropName="GetServerRows" msprop:rel_Generator_ParentPropName="MediaContainerRow" msprop:rel_Generator_UserRelationName="MediaContainer_Server" msprop:rel_Generator_RelationVarName="relationMediaContainer_Server" msprop:rel_Generator_UserParentTable="MediaContainer">
-      <xs:selector xpath=".//Server" />
-      <xs:field xpath="@MediaContainer_Id" />
-    </xs:keyref>
-    <xs:keyref name="user_joined-at" refer="Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="joined-at" msprop:rel_Generator_ChildPropName="_Getjoined_atRows" msprop:rel_Generator_ParentPropName="userRow" msprop:rel_Generator_UserRelationName="user_joined-at" msprop:rel_Generator_RelationVarName="_relationuser_joined_at" msprop:rel_Generator_UserParentTable="user">
-      <xs:selector xpath=".//joined-at" />
-      <xs:field xpath="@user_Id" />
-    </xs:keyref>
-    <xs:keyref name="Track_Media" refer="Track_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Media" msprop:rel_Generator_ChildPropName="GetMediaRows" msprop:rel_Generator_ParentPropName="TrackRow" msprop:rel_Generator_UserRelationName="Track_Media" msprop:rel_Generator_RelationVarName="relationTrack_Media" msprop:rel_Generator_UserParentTable="Track">
-      <xs:selector xpath=".//Media" />
-      <xs:field xpath="@Track_Id" />
-    </xs:keyref>
-    <xs:keyref name="Video_Media" refer="Video_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Media" msprop:rel_Generator_ChildPropName="GetMediaRows" msprop:rel_Generator_ParentPropName="VideoRow" msprop:rel_Generator_UserRelationName="Video_Media" msprop:rel_Generator_RelationVarName="relationVideo_Media" msprop:rel_Generator_UserParentTable="Video">
-      <xs:selector xpath=".//Media" />
-      <xs:field xpath="@Video_Id" />
-    </xs:keyref>
-    <xs:keyref name="Media_Part" refer="Media_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Part" msprop:rel_Generator_ChildPropName="GetPartRows" msprop:rel_Generator_ParentPropName="MediaRow" msprop:rel_Generator_UserRelationName="Media_Part" msprop:rel_Generator_RelationVarName="relationMedia_Part" msprop:rel_Generator_UserParentTable="Media">
-      <xs:selector xpath=".//Part" />
-      <xs:field xpath="@Media_Id" />
-    </xs:keyref>
-    <xs:keyref name="Part_Stream" refer="Part_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Stream" msprop:rel_Generator_ChildPropName="GetStreamRows" msprop:rel_Generator_ParentPropName="PartRow" msprop:rel_Generator_UserRelationName="Part_Stream" msprop:rel_Generator_RelationVarName="relationPart_Stream" msprop:rel_Generator_UserParentTable="Part">
-      <xs:selector xpath=".//Stream" />
-      <xs:field xpath="@Part_Id" />
-    </xs:keyref>
-    <xs:keyref name="Video_Genre" refer="Video_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Genre" msprop:rel_Generator_ChildPropName="GetGenreRows" msprop:rel_Generator_ParentPropName="VideoRow" msprop:rel_Generator_UserRelationName="Video_Genre" msprop:rel_Generator_RelationVarName="relationVideo_Genre" msprop:rel_Generator_UserParentTable="Video">
-      <xs:selector xpath=".//Genre" />
-      <xs:field xpath="@Video_Id" />
-    </xs:keyref>
-    <xs:keyref name="Directory_Genre" refer="Directory_Constraint1" msdata:IsNested="true" msprop:rel_Generator_UserChildTable="Genre" msprop:rel_Generator_ChildPropName="GetGenreRows" msprop:rel_Generator_ParentPropName="DirectoryRow" msprop:rel_Generator_UserRelationName="Directory_Genre" msprop:rel_Generator_RelationVarName="relationDirectory_Genre" msprop:rel_Generator_UserParentTable="Directory">
-      <xs:selector xpath=".//Genre" />
-      <xs:field xpath="@Directory_Id" />
-    </xs:keyref>
-  </xs:element>
+	<xs:element name="Genre">
+		<xs:complexType>
+			<xs:attribute name="tag" type="xs:string" />
+			<xs:attribute name="id" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="Media">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Part" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Stream" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="id" type="xs:string" />
+									<xs:attribute name="streamType" type="xs:string" />
+									<xs:attribute name="codec" type="xs:string" />
+									<xs:attribute name="index" type="xs:string" />
+									<xs:attribute name="selected" type="xs:string" />
+									<xs:attribute name="key" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="id" type="xs:string" />
+						<xs:attribute name="key" type="xs:string" />
+						<xs:attribute name="duration" type="xs:string" />
+						<xs:attribute name="file" type="xs:string" />
+						<xs:attribute name="size" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="id" type="xs:string" />
+			<xs:attribute name="duration" type="xs:string" />
+			<xs:attribute name="bitrate" type="xs:string" />
+			<xs:attribute name="aspectRatio" type="xs:string" />
+			<xs:attribute name="audioChannels" type="xs:string" />
+			<xs:attribute name="audioCodec" type="xs:string" />
+			<xs:attribute name="videoCodec" type="xs:string" />
+			<xs:attribute name="videoResolution" type="xs:string" />
+			<xs:attribute name="container" type="xs:string" />
+			<xs:attribute name="videoFrameRate" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	<xs:element name="MediaContainer">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="Server" minOccurs="0" maxOccurs="unbounded">
+					 <xs:complexType>
+						<xs:attribute name="name" type="xs:string" />
+						<xs:attribute name="address" type="xs:string" />
+						<xs:attribute name="port" type="xs:string" />
+						<xs:attribute name="host" type="xs:string" />
+						<xs:attribute name="machineIdentifier" type="xs:string" />
+						<xs:attribute name="createdAt" type="xs:string" />
+						<xs:attribute name="updatedAt" type="xs:string" />
+						<xs:attribute name="owned" type="xs:string" />
+					 </xs:complexType>
+				</xs:element>
+				<xs:element name="Directory" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="Location" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="path" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element ref="Genre" minOccurs="0" maxOccurs="unbounded" />
+						</xs:sequence>
+						<xs:attribute name="ratingKey" type="xs:string" />
+						<xs:attribute name="key" type="xs:string" />
+						<xs:attribute name="studio" type="xs:string" />
+						<xs:attribute name="type" type="xs:string" />
+						<xs:attribute name="title" type="xs:string" />
+						<xs:attribute name="contentRating" type="xs:string" />
+						<xs:attribute name="summary" type="xs:string" />
+						<xs:attribute name="index" type="xs:string" />
+						<xs:attribute name="rating" type="xs:string" />
+						<xs:attribute name="year" type="xs:string" />
+						<xs:attribute name="thumb" type="xs:string" />
+						<xs:attribute name="art" type="xs:string" />
+						<xs:attribute name="banner" type="xs:string" />
+						<xs:attribute name="duration" type="xs:string" />
+						<xs:attribute name="originallyAvailableAt" type="xs:string" />
+						<xs:attribute name="leafCount" type="xs:string" />
+						<xs:attribute name="viewedLeafCount" type="xs:string" />
+						<xs:attribute name="updatedAt" type="xs:string" />
+						<xs:attribute name="prompt" type="xs:string" />
+						<xs:attribute name="search" type="xs:string" />
+						<xs:attribute name="refreshing" type="xs:string" />
+						<xs:attribute name="agent" type="xs:string" />
+						<xs:attribute name="scanner" type="xs:string" />
+						<xs:attribute name="language" type="xs:string" />
+						<xs:attribute name="parentTitle" type="xs:string" />			
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Video" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="Media" minOccurs="0" maxOccurs="unbounded" />
+							<xs:element ref="Genre" minOccurs="0" maxOccurs="unbounded" />
+							<xs:element name="Director" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="id" type="xs:string" />
+									<xs:attribute name="tag" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="Field" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="name" type="xs:string" />
+									<xs:attribute name="locked" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="ratingKey" type="xs:string" />
+						<xs:attribute name="key" type="xs:string" />
+						<xs:attribute name="guid" type="xs:string" />
+						<xs:attribute name="studio" type="xs:string" />
+						<xs:attribute name="type" type="xs:string" />
+						<xs:attribute name="title" type="xs:string" />
+						<xs:attribute name="contentRating" type="xs:string" />
+						<xs:attribute name="summary" type="xs:string" />
+						<xs:attribute name="rating" type="xs:string" />
+						<xs:attribute name="year" type="xs:string" />
+						<xs:attribute name="tagline" type="xs:string" />
+						<xs:attribute name="thumb" type="xs:string" />
+						<xs:attribute name="art" type="xs:string" />
+						<xs:attribute name="duration" type="xs:string" />
+						<xs:attribute name="originallyAvailableAt" type="xs:string" />
+						<xs:attribute name="addedAt" type="xs:string" />
+						<xs:attribute name="updatedAt" type="xs:string" />
+						<xs:attribute name="grandparentKey" type="xs:string" />
+						<xs:attribute name="grandparentTitle" type="xs:string" />
+						<xs:attribute name="index" type="xs:string" />
+						<xs:attribute name="parentIndex" type="xs:string" />
+						<xs:attribute name="viewOffset" type="xs:string" />
+						<xs:attribute name="viewCount" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Photo" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="Media" minOccurs="0" maxOccurs="unbounded" />
+							<xs:element name="Field" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="name" type="xs:string" />
+									<xs:attribute name="locked" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="ratingKey" type="xs:string" />
+						<xs:attribute name="key" type="xs:string" />
+						<xs:attribute name="type" type="xs:string" />
+						<xs:attribute name="title" type="xs:string" />
+						<xs:attribute name="contentRating" type="xs:string" />
+						<xs:attribute name="summary" type="xs:string" />
+						<xs:attribute name="rating" type="xs:string" />
+						<xs:attribute name="year" type="xs:string" />
+						<xs:attribute name="thumb" type="xs:string" />
+						<xs:attribute name="art" type="xs:string" />
+						<xs:attribute name="originallyAvailableAt" type="xs:string" />
+						<xs:attribute name="addedAt" type="xs:string" />
+						<xs:attribute name="updatedAt" type="xs:string" />
+						<xs:attribute name="grandparentKey" type="xs:string" />
+						<xs:attribute name="grandparentTitle" type="xs:string" />
+						<xs:attribute name="index" type="xs:string" />
+						<xs:attribute name="parentIndex" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="Track" minOccurs="0" maxOccurs="unbounded">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element ref="Media" minOccurs="0" maxOccurs="unbounded" />
+							<xs:element name="Field" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:attribute name="name" type="xs:string" />
+									<xs:attribute name="locked" type="xs:string" />
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+						<xs:attribute name="ratingKey" type="xs:string" />
+						<xs:attribute name="key" type="xs:string" />
+						<xs:attribute name="type" type="xs:string" />
+						<xs:attribute name="title" type="xs:string" />
+						<xs:attribute name="summary" type="xs:string" />
+						<xs:attribute name="index" type="xs:string" />
+						<xs:attribute name="duration" type="xs:string" />
+						<xs:attribute name="updatedAt" type="xs:string" />
+						<xs:attribute name="guid" type="xs:string" />
+						<xs:attribute name="addedAt" type="xs:string" />
+					</xs:complexType>
+				</xs:element>
+			</xs:sequence>
+			<xs:attribute name="size" type="xs:string" />
+			<xs:attribute name="grandparentTitle" type="xs:string" />
+			<xs:attribute name="mediaTagPrefix" type="xs:string" />
+			<xs:attribute name="mediaTagVersion" type="xs:string" />
+			<xs:attribute name="nocache" type="xs:string" />
+			<xs:attribute name="banner" type="xs:string" />
+			<xs:attribute name="parentIndex" type="xs:string" />
+			<xs:attribute name="parentTitle" type="xs:string" />
+			<xs:attribute name="parentYear" type="xs:string" />
+			<xs:attribute name="thumb" type="xs:string" />
+			<xs:attribute name="viewGroup" type="xs:string" />
+			<xs:attribute name="viewMode" type="xs:string" />
+			<xs:attribute name="key" type="xs:string" />
+			<xs:attribute name="art" type="xs:string" />
+			<xs:attribute name="title1" type="xs:string" />
+			<xs:attribute name="title2" type="xs:string" />
+			<xs:attribute name="identifier" type="xs:string" />
+			<xs:attribute name="friendlyName" type="xs:string" />
+			<xs:attribute name="machineIdentifier" type="xs:string" />
+			<xs:attribute name="transcoderActiveVideoSessions" type="xs:string" />
+			<xs:attribute name="transcoderVideoBitrates" type="xs:string" />
+			<xs:attribute name="transcoderVideoQualities" type="xs:string" />
+			<xs:attribute name="transcoderVideoResolutions" type="xs:string" />
+			<xs:attribute name="version" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
 </xs:schema>

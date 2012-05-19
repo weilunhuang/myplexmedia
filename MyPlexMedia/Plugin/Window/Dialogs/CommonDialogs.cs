@@ -38,9 +38,6 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
 
         #endregion
 
-        private static GUIDialogProgress DialogProgress;
-        //static GuiDialogBufferingProgress dialogBufferingProgress = new GuiDialogBufferingProgress();
-
         public static string GetKeyBoardInput(string defaultText, string labelText) {
             VirtualKeyboard keyboard =
                 (VirtualKeyboard)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_VIRTUAL_KEYBOARD);
@@ -71,8 +68,8 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             dlgSelect.DoModal(GUIWindowManager.ActiveWindow);
             try {
                 return Enum<T>.Parse(dlgSelect.SelectedLabelText);
-            } catch { 
-            return default (T);
+            } catch {
+                return default(T);
             }
         }
 
@@ -175,56 +172,56 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                                                new object[] { progressPercentage, headerText, line1, line2, line3, doModal });
                 return;
             }
-            DialogProgress = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
-            if (progressPercentage <= 100) {
-                if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled) {
-                    DialogProgress.Reset();
-                    DialogProgress.IsVisible = true;
-                    if (!String.IsNullOrEmpty(headerText)) {
-                        DialogProgress.SetHeading(headerText);
-                    }
-                    DialogProgress.DisplayProgressBar = true;
-                    DialogProgress.ShowWaitCursor = true;
-                    if (doModal) {
-                        DialogProgress.DisableCancel(false);
-                        DialogProgress.Percentage = progressPercentage;
-                        DialogProgress.SetLine(1, line1);
-                        DialogProgress.SetLine(2, line2);
-                        DialogProgress.SetLine(3, line3);
-                        DialogProgress.DoModal(GUIWindowManager.ActiveWindow);                        
-                        if (DialogProgress.IsCanceled) {
-                            HideProgressDialog();
-                            OnProgressCancelled();
-                        }
-                    } else {
-                        DialogProgress.DisableCancel(true);
-                        DialogProgress.StartModal(GUIWindowManager.ActiveWindow);
-                    }
+            GUIDialogProgress DialogProgress = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
+            if (!DialogProgress.IsVisible && !DialogProgress.IsCanceled) {
+                DialogProgress.Reset();
+                DialogProgress.IsVisible = true;
+                if (!String.IsNullOrEmpty(headerText)) {
+                    DialogProgress.SetHeading(headerText);
                 }
-                DialogProgress.Percentage = progressPercentage;
-                DialogProgress.SetLine(1, line1);
-                DialogProgress.SetLine(2, line2);
-                DialogProgress.SetLine(3, line3);
+                DialogProgress.DisplayProgressBar = true;
+                if (doModal) {
+                    DialogProgress.DisableCancel(false);
+                    DialogProgress.Percentage = progressPercentage;
+                    DialogProgress.SetLine(1, line1);
+                    DialogProgress.SetLine(2, line2);
+                    DialogProgress.SetLine(3, line3);
+                    DialogProgress.DoModal(GUIWindowManager.ActiveWindow);
+                    if (DialogProgress.IsCanceled) {
+                        HideProgressDialog();
+                        OnProgressCancelled();
+                    }
+                } else {
+                    DialogProgress.DisableCancel(true);
+                    DialogProgress.StartModal(GUIWindowManager.ActiveWindow);
+                }
             }
+            DialogProgress.Percentage = progressPercentage;
+            //DialogProgress.SetLine(1, line1);
+            DialogProgress.SetLine(2, line2);
+            DialogProgress.SetLine(3, line3);
         }
 
         public static void HideProgressDialog() {
-            DialogProgress =
-                (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
+            if (GUIGraphicsContext.form.InvokeRequired) {
+                GUIGraphicsContext.form.Invoke(new Action(HideProgressDialog));
+                return;
+            }
+           
+            GUIDialogProgress DialogProgress = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
             DialogProgress.IsVisible = false;
             DialogProgress.Close();
-            HideWaitCursor();
-            GUIWindowManager.Process();
+           // GUIWindowManager.ReplaceWindow(Settings.PLUGIN_WINDOW_ID);
         }
 
         public static void ShowWaitCursor() {
             if (GUIGraphicsContext.form.InvokeRequired) {
-                ShowWaitCursorCallback callback = ShowWaitCursor;
-                GUIGraphicsContext.form.Invoke(callback);
+                GUIGraphicsContext.form.Invoke(new Action(ShowWaitCursor));
                 return;
             }
             GUIWaitCursor.Init();
             GUIWaitCursor.Show();
+
         }
 
         public static void HideWaitCursor() {
@@ -235,16 +232,6 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
             GUIWaitCursor.Hide();
         }
 
-
-
-        #region Nested type: ShowWaitCursorCallback
-
-        private delegate void ShowWaitCursorCallback();
-
         #endregion
-
-        #endregion
-
-        
     }
 }
