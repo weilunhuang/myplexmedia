@@ -66,7 +66,7 @@ namespace MyPlexMedia.Plugin.Config {
             comboBoxQualityWAN.DataSource = Enum.GetValues(typeof(PlexQualities));
             comboBoxQualityWAN.SelectedItem = Settings.DefaultQualityWAN;
             checkBoxSelectQualityPriorToPlayback.Checked = Settings.SelectQualityPriorToPlayback;
-            PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
+            ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
             textBoxMyPlexPass.Text = Settings.MyPlexPass;
             textBoxMyPlexUser.Text = Settings.MyPlexUser;
             checkBoxDownloadArtwork.Checked = Settings.DownloadArtwork;

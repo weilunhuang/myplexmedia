@@ -14,7 +14,7 @@ namespace PlexMediaCenter.Plex.Connection {
 
         private NetworkCredential MyPlexCredentials { get; set; }
 
-        public MyPlexUser MyPlexAccount { get; private set; }
+        public user MyPlexAccount { get; private set; }
         public List<MyPlexConnectionInfo> MyPlexServers { get; private set; }
 
         public MyPlex(NetworkCredential myPlexCredentials) {
@@ -31,7 +31,8 @@ namespace PlexMediaCenter.Plex.Connection {
             try {
                 webClient.Credentials = MyPlexCredentials;
                 byte[] byteResult = webClient.UploadData(LoginUrl, "POST", new byte[0]);
-                MyPlexAccount = Serialization.DeSerializeXML<MyPlexUser>(Encoding.ASCII.GetString(byteResult));
+                string s = Encoding.ASCII.GetString(byteResult);
+                MyPlexAccount = Serialization.DeSerializeXML<user>(Encoding.ASCII.GetString(byteResult));
                 webClient.Headers["X-Plex-Token"] = MyPlexAccount.authenticationtoken;
                 string serversRes = webClient.DownloadString(ServersUrl);
                 List<MediaContainerServer> servers = Serialization.DeSerializeXML<MediaContainer>(serversRes).Server;

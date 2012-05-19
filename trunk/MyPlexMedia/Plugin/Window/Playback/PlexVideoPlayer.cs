@@ -70,15 +70,15 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 } else { return; }
             }
             long offset = 0;
-            if (long.TryParse(video.viewOffset, out offset) && offset > 0) {
-                if (!CommonDialogs.ShowCustomYesNo("Resume playback...", String.Format("Would you like to resume playback at {0}h or play from the beginning?", new DateTime(offset * TimeSpan.TicksPerMillisecond).ToString("HH:mm:ss")), "Resume", "Restart", true)) {
-                    //No was selected therefore reset to 0
-                    offset = 0;
-                }
-            }
+            //if (long.TryParse(video.viewOffset, out offset) && offset > 0) {
+            //    if (!CommonDialogs.ShowCustomYesNo("Resume playback...", String.Format("Would you like to resume playback at\\n{0}h or play from the beginning?", new DateTime(offset * TimeSpan.TicksPerMillisecond).ToString("HH:mm:ss")), "Resume", "Restart", true)) {
+            //        //No was selected therefore reset to 0
+            //        offset = 0;
+            //    }
+            //}
             if (PlexInterface.ServerManager.TryFindPlexServer(itemPath).IsBonjour) {
                 //We're on the local network, therefore we use the LAN quality
-                Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityLAN);
+                Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityLAN, offset);
             } else if (Settings.SelectQualityPriorToPlayback) {
                 Buffering.BufferMedia(itemPath, video, CommonDialogs.ShowSelectionDialog<PlexQualities>(), offset);
             } else {

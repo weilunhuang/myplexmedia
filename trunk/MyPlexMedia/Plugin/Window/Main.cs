@@ -32,6 +32,8 @@ using PlexMediaCenter.Plex;
 using WindowPlugins;
 using System;
 using System.Xml;
+using PlexMediaCenter.Plex.Connection;
+using MediaPortal.Dialogs;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main : WindowPluginBase {
@@ -77,20 +79,24 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         protected override void OnPageLoad() {
+            GUIWaitCursor.Init();
+            logger.Info("Init()");
             GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME);
             GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", string.Empty);
-            if (!PlexInterface.Initialized) {
-                PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.CacheFolder, Settings.DownloadArtwork);
-                if (!String.IsNullOrEmpty(Settings.MyPlexUser) && !String.IsNullOrEmpty(Settings.MyPlexPass)) {
-                    PlexInterface.MyPlexLogin(Settings.MyPlexUser, Settings.MyPlexPass);
-                }
-                //FacadeVideo = facadeLayout;
-                //TryLoadFacades();
-            }
             RegisterEventHandlers();
             SetBackgroundImage(Settings.PLEX_BACKGROUND_DEFAULT);
             Navigation.ShowCurrentMenu(Navigation.CurrentItem, 0);
-            logger.Info("Init()");
+            if (!PlexInterface.Initialized) {
+                System.Threading.Thread t1 = new System.Threading.Thread(delegate() {
+                    CommonDialogs.ShowWaitCursor();
+                    PlexInterface.Init(Settings.PLEX_SERVER_LIST_XML, Settings.CacheFolder, Settings.DownloadArtwork);
+                    if (!String.IsNullOrEmpty(Settings.MyPlexUser) && !String.IsNullOrEmpty(Settings.MyPlexPass)) {
+                        PlexInterface.MyPlexLogin(Settings.MyPlexUser, Settings.MyPlexPass);
+                    }
+                    PlexInterface.ServerManager.RefreshBonjourServers();
+                    CommonDialogs.HideWaitCursor();
+                }); t1.Start();
+            }
         }
 
         protected override void OnPageDestroy(int new_windowId) {
@@ -105,42 +111,7 @@ namespace MyPlexMedia.Plugin.Window {
                 Layout = CurrentLayout,
                 Section = Navigation.CurrentItem.PreferredLayout.Section
             };
-            //if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin,"common.facade.music.xml"), out FacadeAudio)) {
-
-            //}
-            //if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.video.Title.xml"), out FacadeVideo)) {
-
-            //}
-            //if (TryLoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.pictures.xml"), out FacadePictures)) {
-
-            //}
-
-            switch (Navigation.CurrentItem.PreferredLayout.Section) {
-                case Settings.SectionType.Music:
-                    LoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.music.xml"));
-                    break;
-                case Settings.SectionType.Photo:
-                    LoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.pictures.xml"));
-                    break;
-                default:
-                case Settings.SectionType.Video:
-                    LoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.video.Title.xml"));
-                    break;
-            }
             base.SwitchLayout();
-        }
-
-        protected override bool AllowLayout(GUIFacadeControl.Layout layout) {
-            switch (layout) {
-                case GUIFacadeControl.Layout.CoverFlow:
-                case GUIFacadeControl.Layout.Filmstrip:
-                case GUIFacadeControl.Layout.LargeIcons:
-                case GUIFacadeControl.Layout.List:
-                case GUIFacadeControl.Layout.SmallIcons:
-                    return true;
-                default:
-                    return false;
-            }
         }
 
         protected override void OnInfo(int item) {
@@ -191,6 +162,7 @@ namespace MyPlexMedia.Plugin.Window {
             XmlNode node = doc.SelectSingleNode("//*[type='group']");
             try {
                 lock (GUIGraphicsContext.RenderLock) {
+
                     facadeLayout.Clear();
                     GUIGroup group = (GUIGroup)GUIControlFactory.Create(GetID, node, new Dictionary<string, string>(), Path.Combine(GUIGraphicsContext.Skin, xmlFile));
                     group.WindowId = GetID;
@@ -211,33 +183,17 @@ namespace MyPlexMedia.Plugin.Window {
         }
 
         private static void PlexInterface_OnResponseProgress(object userToken, int progress) {
-            if (progress < 1 || progress > 99) {
+            if (progress < 2 || progress > 100) {
                 return;
             }
             CommonDialogs.ShowProgressDialog(progress, Settings.PLUGIN_NAME, "Fetching Plex Items...",
-                                             ((IMenuItem)userToken).Parent.Name + " > " + ((IMenuItem)userToken).Name,
-                                             String.Format("Current Progress: {0,3}%", progress.ToString()));
+                                            ((IMenuItem)userToken).Parent.Name + " > " + ((IMenuItem)userToken).Name,
+                                            String.Format("Current Progress: {0,3}%", progress.ToString()));
         }
 
-        private void SetBackgroundImage(string imagePath) {
-            if (ctrlBackgroundImage == null || ctrlBackgroundImage.FileName.Equals(imagePath)) {
-                return;
-            }
-            if (!String.IsNullOrEmpty(imagePath) && File.Exists(imagePath)) {
-                //GUITextureManager.ReleaseTexture(ctrlBackgroundImage.FileName);
-                //ctrlBackgroundImage.RemoveMemoryImageTexture();
-                if (GUITextureManager.Load(imagePath, 0, 0, 0, true) > 0) {
-                    ctrlBackgroundImage.SetFileName(imagePath);
-                }
-            }
-            //ctrlBackgroundImage.RemoveMemoryImageTexture();
-            //ctrlBackgroundImage.BringIntoView();
-            //ctrlBackgroundImage.DoUpdate();
-            //ctrlBackgroundImage.Refresh();
-            //GUIWindowManager.Process();
-        }
 
-        private static void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
+
+        private void Navigation_OnMenuItemsFetchStarted(IMenuItem itemToFetch) {
             CommonDialogs.ShowWaitCursor();
         }
 
@@ -245,20 +201,52 @@ namespace MyPlexMedia.Plugin.Window {
             if (parentItem.ChildItems == null || parentItem.ChildItems.Count < 1) {
                 return;
             }
-            GUIPropertyManager.SetProperty("#currentmodule", GetHistory(parentItem));
+            SwitchFacades(parentItem.PreferredLayout.Section);
             CurrentLayout = parentItem.PreferredLayout.Layout;
             SwitchLayout();
             facadeLayout.Clear();
+            facadeLayout.CoverFlowLayout.BackgroundHeight = 0;
+            facadeLayout.CoverFlowLayout.BackgroundFileName = string.Empty;
             parentItem.ChildItems.ForEach(item => facadeLayout.Add(item as MenuItem));
             facadeLayout.SelectedListItemIndex = selectedFacadeIndex;
             facadeLayout.CoverFlowLayout.SelectCard(selectedFacadeIndex);
-            CommonDialogs.HideWaitCursor();
-            CommonDialogs.HideProgressDialog();
-            SetBackgroundImage(parentItem.ChildItems[selectedFacadeIndex].BackgroundImage);
+            GUIPropertyManager.SetProperty("#currentmodule", string.Empty);
+            GUIPropertyManager.SetProperty("#currentmodule", GetHistory(parentItem));
+            UpdateButtonStates();
+        }
+
+
+        private void SwitchFacades(Settings.SectionType sectionType) {
+            switch (Navigation.CurrentItem.PreferredLayout.Section) {
+                case Settings.SectionType.Music:
+                    LoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.music.xml"));
+                    break;
+                case Settings.SectionType.Photo:
+                    LoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.pictures.xml"));
+                    break;
+                default:
+                case Settings.SectionType.Video:
+                    LoadFacade(Path.Combine(GUIGraphicsContext.Skin, "common.facade.video.Title.xml"));
+                    break;
+            }
         }
 
         private void MenuItem_OnMenuItemSelected(IMenuItem selectedItem) {
-            SetBackgroundImage(selectedItem.BackgroundImage);
+            if (ctrlBackgroundImage.FileName != selectedItem.BackgroundImage && selectedItem.BackgroundImage != Settings.PLEX_BACKGROUND_DEFAULT) {
+                SetBackgroundImage(selectedItem.BackgroundImage);
+            }
+        }
+
+        private void SetBackgroundImage(string imagePath) {
+
+            if (ctrlBackgroundImage == null || ctrlBackgroundImage.FileName.Equals(imagePath)) {
+                return;
+            }
+            if (!String.IsNullOrEmpty(imagePath) && File.Exists(imagePath)) {
+                if (GUITextureManager.Load(imagePath, 0, 0, 0, true) > 0) {
+                    ctrlBackgroundImage.SetFileName(imagePath);
+                }
+            }
         }
 
         private string GetHistory(IMenuItem current, string concat = "", int level = 0) {

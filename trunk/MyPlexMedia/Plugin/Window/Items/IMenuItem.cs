@@ -23,6 +23,7 @@
 using System;
 using System.Collections.Generic;
 using MyPlexMedia.Plugin.Config;
+using PlexMediaCenter.Plex.Data.Types;
 
 namespace MyPlexMedia.Plugin.Window.Items {
     public interface IMenuItem {

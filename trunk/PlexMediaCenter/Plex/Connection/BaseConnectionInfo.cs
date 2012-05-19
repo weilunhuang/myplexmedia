@@ -62,8 +62,7 @@ namespace PlexMediaCenter.Plex.Connection {
         public bool TryConnect(ref WebClient webClient) {
             if (CheckSocketConnection()) {
                 AddAuthHeaders(webClient);
-                try {
-                    string serverXmlResponse = webClient.DownloadString(UriPlexBase);
+                try {                   string serverXmlResponse = webClient.DownloadString(UriPlexBase);
                     Capabilities = GetServerCapabilities(Serialization.DeSerializeXML<MediaContainer>(serverXmlResponse));
                     MachineIdentifier = Capabilities.MachineIdentifier;
                     IsOnline = true;
@@ -83,12 +82,13 @@ namespace PlexMediaCenter.Plex.Connection {
             using (Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp)) {
                 try {
                     IAsyncResult result = socket.BeginConnect(HostAdress, PlexPort, null, null);
-                    return result.AsyncWaitHandle.WaitOne(2000, true);
+                    return result.AsyncWaitHandle.WaitOne(5000, true);
                 } catch {
                     socket.Close();
                     return false;
                 }
             }
+            return true;
         }
 
 

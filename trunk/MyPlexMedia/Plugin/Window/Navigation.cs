@@ -44,7 +44,7 @@ namespace MyPlexMedia.Plugin.Window {
         #endregion
 
         static Navigation() {
-            PlexInterface.ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
+            ServerManager.OnPlexServersChanged += ServerManager_OnPlexServersChanged;
             PlexInterface.OnResponseReceived += PlexInterface_OnResponseReceived;
             CommonDialogs.OnProgressCancelled += CommonDialogs_OnProgressCancelled;
             RootItem = new PlexItemBase(null, "MyPlexMedia", null);
@@ -60,9 +60,9 @@ namespace MyPlexMedia.Plugin.Window {
         private static MenuItem ServerItem { get; set; }
         private static List<IMenuItem> ServerMenu { get; set; }
         public static IMenuItem CurrentItem { get; set; }
-        public static event OnErrorOccuredEventHandler OnErrorOccured;
-        public static event OnMenuItemsFetchStartedEventHandler OnMenuItemsFetchStarted;
-        public static event OnMenuItemsFetchCompletedEventHandler OnMenuItemsFetchCompleted;
+        public static event OnErrorOccuredEventHandler OnErrorOccured = delegate(PlexException e) { };
+        public static event OnMenuItemsFetchStartedEventHandler OnMenuItemsFetchStarted = delegate(IMenuItem itemToFetch) { };
+        public static event OnMenuItemsFetchCompletedEventHandler OnMenuItemsFetchCompleted = delegate(IMenuItem parentItem, int selectedFacadeIndex) { };
 
         private static void CommonDialogs_OnProgressCancelled() {
             PlexInterface.RequestPlexItemsCancel();
@@ -134,6 +134,9 @@ namespace MyPlexMedia.Plugin.Window {
                     parentItem.ViewItems = tmpList;
                 }
                 tmpList.AddRange(
+                   plexResponseConatiner.Photo.ConvertAll<IMenuItem>(
+                       pic => new PlexItemPhoto(parentItem, pic.title, new Uri(parentItem.UriPath, pic.key), pic)));
+                tmpList.AddRange(
                     plexResponseConatiner.Video.ConvertAll<IMenuItem>(
                         vid => new PlexItemVideo(parentItem, vid.title, new Uri(parentItem.UriPath, vid.key), vid)));
                 tmpList.AddRange(
@@ -165,6 +168,8 @@ namespace MyPlexMedia.Plugin.Window {
                 OnErrorOccured(new PlexException(typeof(Navigation), "Unexpected item type in received response!",
                                                  new InvalidCastException()));
             }
+            CommonDialogs.HideWaitCursor();
+            CommonDialogs.HideProgressDialog();
         }
 
         private static void ServerManager_OnPlexServersChanged(List<PlexServer> updatedServerList) {
@@ -174,7 +179,7 @@ namespace MyPlexMedia.Plugin.Window {
             ServerMenu.Add(new ActionItem(null, "Add Plex Server...", Settings.PLEX_ICON_DEFAULT_ONLINE,
                                           AddNewPlexServer));
             ServerItem.SetChildItems(ServerMenu);
-            if (CurrentItem == RootItem) {
+            if (CurrentItem == RootItem || CurrentItem == ServerItem) {
                 ShowCurrentMenu(ServerItem, 0);
             }
         }

@@ -63,6 +63,7 @@ namespace PlexMediaCenter.Plex {
 
             ServerManager = new ServerManager(ref PlexWebClient,serverListXmlPath);
             ServerManager.OnServerManangerError += ServerManager_OnServerManangerError;
+            ServerManager.RefreshBonjourServers();
 
             ArtworkRetriever = new ArtworkRetriever(defaultBasePath, downloadArtwork);
             ArtworkRetriever.OnArtworkRetrievalError += MediaRetrieval_OnArtWorkRetrievalError;
@@ -144,6 +145,7 @@ namespace PlexMediaCenter.Plex {
         }
 
         private static void _webClient_DownloadDataCompleted(object sender, DownloadDataCompletedEventArgs e) {
+            OnResponseProgress(e.UserState, 100);
             if (e.Error != null) {
                 OnPlexError(new PlexException(typeof(PlexInterface), e.Error.Message, null));
             } else {
