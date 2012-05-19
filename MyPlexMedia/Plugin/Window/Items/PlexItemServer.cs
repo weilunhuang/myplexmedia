@@ -27,7 +27,7 @@ using PlexMediaCenter.Plex.Connection;
 namespace MyPlexMedia.Plugin.Window.Items {
     internal class PlexItemServer : PlexItemBase {
         public PlexItemServer(IMenuItem parentItem, PlexServer plexServer)
-            : base(parentItem,  (String.IsNullOrEmpty(plexServer.FriendlyName) ? plexServer.CurrentConnection.HostName : plexServer.FriendlyName), plexServer.UriPlexSections) {
+            : base(parentItem, (String.IsNullOrEmpty(plexServer.FriendlyName) ? plexServer.CurrentConnection.HostName : plexServer.FriendlyName), plexServer.UriPlexSections) {
             IsFolder = true;
 
             PlexServer = plexServer;
