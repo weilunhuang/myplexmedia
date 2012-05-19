@@ -232,10 +232,12 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <Version>
       <Major>1</Major>
       <Minor>5</Minor>
-      <Build>0</Build>
+      <Build>1</Build>
       <Revision>0</Revision>
     </Version>
     <ExtensionDescription>A MediaPortal plugin to browse your Plex Media Server(s).
+
+
 
 check out Plex: http://www.plexapp.com/</ExtensionDescription>
     <VersionDescription>Another milestone reached...</VersionDescription>
@@ -243,7 +245,7 @@ check out Plex: http://www.plexapp.com/</ExtensionDescription>
     <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_1.5.0.mpe1</OnlineLocation>
     <ReleaseDate>2012-05-19T12:49:07</ReleaseDate>
     <Tags>mediaportal, plex, plex media server, pms, plex server, media, browser</Tags>
-    <Location>C:\Users\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_1.0.0.mpe1</Location>
+    <Location>D:\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_1.5.1.mpe1</Location>
     <Params>
       <Items>
         <SectionParam Name="Icon">
@@ -371,7 +373,7 @@ check out Plex: http://www.plexapp.com/</ExtensionDescription>
       </FolderGroup>
     </FolderGroups>
     <ProjectFilename>MyPlexMedia.xmp2</ProjectFilename>
-    <UpdatePath1>C:\Users\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\update.xml</UpdatePath1>
+    <UpdatePath1>D:\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\update.xml</UpdatePath1>
     <UpdatePath2 />
     <UpdatePath3 />
   </ProjectSettings>
