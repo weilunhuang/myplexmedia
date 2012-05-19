@@ -13,21 +13,21 @@
             <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
               <Param1 />
               <UpdateOption>AlwaysOverwrite</UpdateOption>
-              <LocalFileName>..\..\bin\Debug\MyPlexMedia.dll</LocalFileName>
+              <LocalFileName>..\..\bin\Release\MyPlexMedia.dll</LocalFileName>
               <ZipFileName>Installer{CopyFile}\{db8dc9c3-b874-4fa0-a8b4-a163b7ce4baa}-MyPlexMedia.dll</ZipFileName>
               <DestinationFilename>%Base%\plugins\Windows\MyPlexMedia.dll</DestinationFilename>
             </FileItem>
             <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
               <Param1 />
               <UpdateOption>AlwaysOverwrite</UpdateOption>
-              <LocalFileName>..\..\bin\Debug\PlexMediaCenter.dll</LocalFileName>
+              <LocalFileName>..\..\..\PlexMediaCenter\bin\Release\PlexMediaCenter.dll</LocalFileName>
               <ZipFileName>Installer{CopyFile}\{253c1b89-9d2b-4727-9abd-416c3bd229a9}-PlexMediaCenter.dll</ZipFileName>
-              <DestinationFilename>%Base%\plugins\Windows\PlexMediaCenter.dll</DestinationFilename>
+              <DestinationFilename>%Base%\PlexMediaCenter.dll</DestinationFilename>
             </FileItem>
             <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
               <Param1 />
               <UpdateOption>AlwaysOverwrite</UpdateOption>
-              <LocalFileName>..\..\bin\Debug\ZeroconfService.dll</LocalFileName>
+              <LocalFileName>..\..\..\PlexMediaCenter\bin\Release\ZeroconfService.dll</LocalFileName>
               <ZipFileName>Installer{CopyFile}\{4ea23da8-b580-4139-93f6-f262fb6aef47}-ZeroconfService.dll</ZipFileName>
               <DestinationFilename>%Base%\plugins\Windows\ZeroconfService.dll</DestinationFilename>
             </FileItem>
@@ -197,8 +197,31 @@ Click Next to continue or Cancel to exit Setup.</Value>
     </Items>
   </Sections>
   <Dependencies>
-    <Items />
+    <Items>
+      <DependencyItem>
+        <Type>MediaPortal</Type>
+        <Id />
+        <MinVersion>
+          <Major>1</Major>
+          <Minor>1</Minor>
+          <Build>6</Build>
+          <Revision>27644</Revision>
+        </MinVersion>
+        <MaxVersion>
+          <Major>1</Major>
+          <Minor>1</Minor>
+          <Build>6</Build>
+          <Revision>27644</Revision>
+        </MaxVersion>
+        <WarnOnly>false</WarnOnly>
+        <Message>requires MediaPortal version 1.1.6.27644 to 1.1.6.27644.</Message>
+        <Name>MediaPortal</Name>
+      </DependencyItem>
+    </Items>
   </Dependencies>
+  <PluginDependencies>
+    <Items />
+  </PluginDependencies>
   <GeneralInfo>
     <Name>MyPlexMedia</Name>
     <Id>59cc585f-cc36-4316-b5a2-477200b95d8b</Id>
@@ -208,17 +231,17 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <UpdateUrl>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/update.xml</UpdateUrl>
     <Version>
       <Major>1</Major>
-      <Minor>0</Minor>
+      <Minor>5</Minor>
       <Build>0</Build>
       <Revision>0</Revision>
     </Version>
     <ExtensionDescription>A MediaPortal plugin to browse your Plex Media Server(s).
 
 check out Plex: http://www.plexapp.com/</ExtensionDescription>
-    <VersionDescription>The first initial release of the MyPlexMedia plugin...</VersionDescription>
+    <VersionDescription>Another milestone reached...</VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
-    <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_1.0.0.mpe1</OnlineLocation>
-    <ReleaseDate>2011-06-19T12:49:07</ReleaseDate>
+    <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_1.5.0.mpe1</OnlineLocation>
+    <ReleaseDate>2012-05-19T12:49:07</ReleaseDate>
     <Tags>mediaportal, plex, plex media server, pms, plex server, media, browser</Tags>
     <Location>C:\Users\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_1.0.0.mpe1</Location>
     <Params>
@@ -258,21 +281,21 @@ check out Plex: http://www.plexapp.com/</ExtensionDescription>
       <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
         <Param1 />
         <UpdateOption>AlwaysOverwrite</UpdateOption>
-        <LocalFileName>..\..\bin\Debug\MyPlexMedia.dll</LocalFileName>
+        <LocalFileName>..\..\bin\Release\MyPlexMedia.dll</LocalFileName>
         <ZipFileName>Installer{CopyFile}\{db8dc9c3-b874-4fa0-a8b4-a163b7ce4baa}-MyPlexMedia.dll</ZipFileName>
         <DestinationFilename>%Base%\plugins\Windows\MyPlexMedia.dll</DestinationFilename>
       </FileItem>
       <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
         <Param1 />
         <UpdateOption>AlwaysOverwrite</UpdateOption>
-        <LocalFileName>..\..\bin\Debug\PlexMediaCenter.dll</LocalFileName>
+        <LocalFileName>..\..\..\PlexMediaCenter\bin\Release\PlexMediaCenter.dll</LocalFileName>
         <ZipFileName>Installer{CopyFile}\{253c1b89-9d2b-4727-9abd-416c3bd229a9}-PlexMediaCenter.dll</ZipFileName>
-        <DestinationFilename>%Base%\plugins\Windows\PlexMediaCenter.dll</DestinationFilename>
+        <DestinationFilename>%Base%\PlexMediaCenter.dll</DestinationFilename>
       </FileItem>
       <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
         <Param1 />
         <UpdateOption>AlwaysOverwrite</UpdateOption>
-        <LocalFileName>..\..\bin\Debug\ZeroconfService.dll</LocalFileName>
+        <LocalFileName>..\..\..\PlexMediaCenter\bin\Release\ZeroconfService.dll</LocalFileName>
         <ZipFileName>Installer{CopyFile}\{4ea23da8-b580-4139-93f6-f262fb6aef47}-ZeroconfService.dll</ZipFileName>
         <DestinationFilename>%Base%\plugins\Windows\ZeroconfService.dll</DestinationFilename>
       </FileItem>
@@ -347,9 +370,10 @@ check out Plex: http://www.plexapp.com/</ExtensionDescription>
         <Recursive>true</Recursive>
       </FolderGroup>
     </FolderGroups>
-    <ProjectFilename>C:\Users\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia.xmp2</ProjectFilename>
+    <ProjectFilename>MyPlexMedia.xmp2</ProjectFilename>
     <UpdatePath1>C:\Users\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\update.xml</UpdatePath1>
     <UpdatePath2 />
     <UpdatePath3 />
   </ProjectSettings>
+  <IsSkin>false</IsSkin>
 </PackageClass>

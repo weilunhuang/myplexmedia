@@ -46,7 +46,7 @@ namespace MyPlexMedia.Plugin.Config {
 
         public const string PLUGIN_NAME = "MyPlexMedia";
         public const string PLUGIN_AUTHOR = "Anthrax";
-        public const string PLUGIN_VERSION = "1.0.0";
+        public const string PLUGIN_VERSION = "1.5.0";
         public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin to browse your Plex Media Server(s).";
 
         public static string PLUGIN_LOG_FILE = Path.Combine(MpConf.GetFolder(MpConf.Dir.Log), PLUGIN_NAME + ".txt");
