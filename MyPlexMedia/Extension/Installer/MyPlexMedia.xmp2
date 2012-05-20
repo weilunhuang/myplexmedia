@@ -22,7 +22,7 @@
               <UpdateOption>AlwaysOverwrite</UpdateOption>
               <LocalFileName>..\..\..\PlexMediaCenter\bin\Release\PlexMediaCenter.dll</LocalFileName>
               <ZipFileName>Installer{CopyFile}\{253c1b89-9d2b-4727-9abd-416c3bd229a9}-PlexMediaCenter.dll</ZipFileName>
-              <DestinationFilename>%Base%\PlexMediaCenter.dll</DestinationFilename>
+              <DestinationFilename>%Base%\plugins\Windows\PlexMediaCenter.dll</DestinationFilename>
             </FileItem>
             <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
               <Param1 />
@@ -239,17 +239,21 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <Version>
       <Major>1</Major>
       <Minor>5</Minor>
-      <Build>2</Build>
+      <Build>3</Build>
       <Revision>0</Revision>
     </Version>
-    <ExtensionDescription>A MediaPortal plugin to browse your Plex Media Server(s).
-
-
-
+    <ExtensionDescription>A MediaPortal plugin to browse your Plex Media Server(s).
+
+
+
+
+
+
+
 check out Plex: http://www.plexapp.com/</ExtensionDescription>
     <VersionDescription>Another milestone reached...</VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
-    <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_1.5.2.mpe1</OnlineLocation>
+    <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_1.5.3.mpe1</OnlineLocation>
     <ReleaseDate>2012-05-19T12:49:07</ReleaseDate>
     <Tags>mediaportal, plex, plex media server, pms, plex server, media, browser</Tags>
     <Location>D:\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_1.5.2.mpe1</Location>
@@ -299,7 +303,7 @@ check out Plex: http://www.plexapp.com/</ExtensionDescription>
         <UpdateOption>AlwaysOverwrite</UpdateOption>
         <LocalFileName>..\..\..\PlexMediaCenter\bin\Release\PlexMediaCenter.dll</LocalFileName>
         <ZipFileName>Installer{CopyFile}\{253c1b89-9d2b-4727-9abd-416c3bd229a9}-PlexMediaCenter.dll</ZipFileName>
-        <DestinationFilename>%Base%\PlexMediaCenter.dll</DestinationFilename>
+        <DestinationFilename>%Base%\plugins\Windows\PlexMediaCenter.dll</DestinationFilename>
       </FileItem>
       <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
         <Param1 />
