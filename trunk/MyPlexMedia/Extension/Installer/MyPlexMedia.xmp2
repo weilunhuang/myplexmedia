@@ -242,17 +242,17 @@ Click Next to continue or Cancel to exit Setup.</Value>
       <Build>2</Build>
       <Revision>0</Revision>
     </Version>
-    <ExtensionDescription>A MediaPortal plugin to browse your Plex Media Server(s).
-
-
-
+    <ExtensionDescription>A MediaPortal plugin to browse your Plex Media Server(s).
+
+
+
 check out Plex: http://www.plexapp.com/</ExtensionDescription>
     <VersionDescription>Another milestone reached...</VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
-    <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_1.5.0.mpe1</OnlineLocation>
+    <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_1.5.2.mpe1</OnlineLocation>
     <ReleaseDate>2012-05-19T12:49:07</ReleaseDate>
     <Tags>mediaportal, plex, plex media server, pms, plex server, media, browser</Tags>
-    <Location>D:\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_1.5.1.mpe1</Location>
+    <Location>D:\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_1.5.2.mpe1</Location>
     <Params>
       <Items>
         <SectionParam Name="Icon">
