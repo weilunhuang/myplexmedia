@@ -87,13 +87,6 @@
               <ZipFileName>Installer{GenericSkinFile}\{0e5d09fd-35d9-4c29-bfd3-7ce8ee6b3024}-default_background.jpg</ZipFileName>
               <DestinationFilename>%Skin%\[DEFAULT]\Media\MyPlexMedia\default_background.jpg</DestinationFilename>
             </FileItem>
-            <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
-              <Param1 />
-              <UpdateOption>AlwaysOverwrite</UpdateOption>
-              <LocalFileName>..\..\bin\Release\NLog.dll</LocalFileName>
-              <ZipFileName>Installer{CopyFile}\{f5a65739-bc61-40a0-99cf-d79a13e9aeea}-NLog.dll</ZipFileName>
-              <DestinationFilename>%Base%\plugins\Windows\NLog.dll</DestinationFilename>
-            </FileItem>
           </Items>
         </Files>
       </GroupItem>
@@ -239,7 +232,7 @@ Click Next to continue or Cancel to exit Setup.</Value>
     <Version>
       <Major>1</Major>
       <Minor>5</Minor>
-      <Build>3</Build>
+      <Build>4</Build>
       <Revision>0</Revision>
     </Version>
     <ExtensionDescription>A MediaPortal plugin to browse your Plex Media Server(s).
@@ -253,10 +246,10 @@ Click Next to continue or Cancel to exit Setup.</Value>
 check out Plex: http://www.plexapp.com/</ExtensionDescription>
     <VersionDescription>Another milestone reached...</VersionDescription>
     <DevelopmentStatus>Stable</DevelopmentStatus>
-    <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_1.5.3.mpe1</OnlineLocation>
+    <OnlineLocation>http://myplexmedia.googlecode.com/svn/trunk/MyPlexMedia/Extension/Installer/MyPlexMedia_1.5.4.mpe1</OnlineLocation>
     <ReleaseDate>2012-05-19T12:49:07</ReleaseDate>
     <Tags>mediaportal, plex, plex media server, pms, plex server, media, browser</Tags>
-    <Location>D:\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_1.5.2.mpe1</Location>
+    <Location>D:\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\MyPlexMedia_1.5.4.mpe1</Location>
     <Params>
       <Items>
         <SectionParam Name="Icon">
@@ -368,28 +361,10 @@ check out Plex: http://www.plexapp.com/</ExtensionDescription>
         <ZipFileName>Installer{GenericSkinFile}\{0e5d09fd-35d9-4c29-bfd3-7ce8ee6b3024}-default_background.jpg</ZipFileName>
         <DestinationFilename>%Skin%\[DEFAULT]\Media\MyPlexMedia\default_background.jpg</DestinationFilename>
       </FileItem>
-      <FileItem InstallType="CopyFile" SystemFile="false" Modified="true">
-        <Param1 />
-        <UpdateOption>AlwaysOverwrite</UpdateOption>
-        <LocalFileName>..\..\bin\Release\NLog.dll</LocalFileName>
-        <ZipFileName>Installer{CopyFile}\{f5a65739-bc61-40a0-99cf-d79a13e9aeea}-NLog.dll</ZipFileName>
-        <DestinationFilename>%Base%\plugins\Windows\NLog.dll</DestinationFilename>
-      </FileItem>
     </Items>
   </UniqueFileList>
   <ProjectSettings>
-    <FolderGroups>
-      <FolderGroup InstallType="GenericSkinFile" SystemFile="false" Modified="true">
-        <Param1 />
-        <UpdateOption>AlwaysOverwrite</UpdateOption>
-        <LocalFileName />
-        <ZipFileName>Installer{GenericSkinFile}\{a33e30a0-1c05-44d3-9cd8-0171d6472e5b}-</ZipFileName>
-        <DestinationFilename>%Skin%\[DEFAULT]\</DestinationFilename>
-        <Folder>..\..\Skin</Folder>
-        <Group>Default</Group>
-        <Recursive>true</Recursive>
-      </FolderGroup>
-    </FolderGroups>
+    <FolderGroups />
     <ProjectFilename>MyPlexMedia.xmp2</ProjectFilename>
     <UpdatePath1>D:\Anthrax-Leprosy-Pi\Documents\Development\Projekte\MyPlexMedia\MyPlexMedia\Extension\Installer\update.xml</UpdatePath1>
     <UpdatePath2 />
