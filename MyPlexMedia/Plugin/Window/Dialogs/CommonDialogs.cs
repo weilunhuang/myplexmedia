@@ -182,10 +182,10 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                 DialogProgress.DisplayProgressBar = true;
                 if (doModal) {
                     DialogProgress.DisableCancel(false);
-                    DialogProgress.Percentage = progressPercentage;
                     DialogProgress.SetLine(1, line1);
                     DialogProgress.SetLine(2, line2);
                     DialogProgress.SetLine(3, line3);
+                    DialogProgress.Percentage = progressPercentage;
                     DialogProgress.DoModal(GUIWindowManager.ActiveWindow);
                     if (DialogProgress.IsCanceled) {
                         HideProgressDialog();
@@ -196,10 +196,10 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                     DialogProgress.StartModal(GUIWindowManager.ActiveWindow);
                 }
             }
-            DialogProgress.Percentage = progressPercentage;
-            //DialogProgress.SetLine(1, line1);
+            DialogProgress.SetLine(1, line1);
             DialogProgress.SetLine(2, line2);
             DialogProgress.SetLine(3, line3);
+            DialogProgress.Percentage = progressPercentage;
         }
 
         public static void HideProgressDialog() {
@@ -207,11 +207,11 @@ namespace MyPlexMedia.Plugin.Window.Dialogs {
                 GUIGraphicsContext.form.Invoke(new Action(HideProgressDialog));
                 return;
             }
-           
+
             GUIDialogProgress DialogProgress = (GUIDialogProgress)GUIWindowManager.GetWindow((int)GUIWindow.Window.WINDOW_DIALOG_PROGRESS);
             DialogProgress.IsVisible = false;
             DialogProgress.Close();
-           // GUIWindowManager.ReplaceWindow(Settings.PLUGIN_WINDOW_ID);
+            //GUIWindowManager.ReplaceWindow(Settings.PLUGIN_WINDOW_ID);
         }
 
         public static void ShowWaitCursor() {

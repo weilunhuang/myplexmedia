@@ -56,7 +56,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
         }
 
         static void g_Player_PlayBackStarted(g_Player.MediaType type, string filename) {
-            CommonDialogs.HideProgressDialog();
+
         }
 
         private static bool BufferingPause { get; set; }
@@ -84,12 +84,7 @@ namespace MyPlexMedia.Plugin.Window.Playback {
             } else {
                 Buffering.BufferMedia(itemPath, video, Settings.DefaultQualityWAN, offset);
             }
-            CommonDialogs.ShowWaitCursor();
             BufferCheckTimer.Start();
-            while (Buffering.IsBuffering && Buffering.IsPreBuffering) {
-                GUIWindowManager.Process();
-            }
-            CommonDialogs.HideWaitCursor();
         }
 
         private static void Buffering_OnPlayBufferedMedia(string localBufferPath, BufferJob bufferJob) {
@@ -207,7 +202,8 @@ namespace MyPlexMedia.Plugin.Window.Playback {
                 PlayPlayerMainThreadDelegate d = new PlayPlayerMainThreadDelegate(PlayPlayerMainThread);
                 GUIGraphicsContext.form.Invoke(d, new object[] { file, title });
                 return;
-            }
+            } 
+            CommonDialogs.HideProgressDialog();
             if (!g_Player.PlayVideoStream(file, title)) {
                 Buffering.StopBuffering();
             }
