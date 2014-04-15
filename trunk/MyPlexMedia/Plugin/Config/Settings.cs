@@ -28,10 +28,9 @@ using MyPlexMedia.Plugin.Window.Playback;
 using MyPlexMedia.Plugin.Window.Dialogs;
 using PlexMediaCenter.Plex.Connection;
 using MediaPortal.Services;
-using NLog;
+
 using MpConf = MediaPortal.Configuration.Config;
-using NLog.Targets;
-using NLog.Config;
+
 namespace MyPlexMedia.Plugin.Config {
     public static class Settings {
         #region SectionType enum
@@ -46,7 +45,7 @@ namespace MyPlexMedia.Plugin.Config {
 
         public const string PLUGIN_NAME = "MyPlexMedia";
         public const string PLUGIN_AUTHOR = "Anthrax";
-        public const string PLUGIN_VERSION = "1.5.0";
+        public const string PLUGIN_VERSION = "1.5.4";
         public const string PLUGIN_DESCRIPTION = "A MediaPortal plugin to browse your Plex Media Server(s).";
 
         public static string PLUGIN_LOG_FILE = Path.Combine(MpConf.GetFolder(MpConf.Dir.Log), PLUGIN_NAME + ".txt");
@@ -77,7 +76,7 @@ namespace MyPlexMedia.Plugin.Config {
         public static string PLEX_ICON_DEFAULT_SEARCH = Path.Combine(SKIN_FOLDER_MEDIA, "icon_online.png");
 
         static Settings() {
-            InitLogger();
+            //InitLogger();
             DefaultLayout = CreatePreferredLayouts();
             //Set defaults           
             MyPlexUser = String.Empty;
@@ -97,47 +96,47 @@ namespace MyPlexMedia.Plugin.Config {
             }
         }
 
-        private static void InitLogger() {
-            // if no configuration exists go ahead and create one
-            if (LogManager.Configuration == null) LogManager.Configuration = new LoggingConfiguration();
+        //private static void InitLogger() {
+        //    // if no configuration exists go ahead and create one
+        //    if (LogManager.Configuration == null) LogManager.Configuration = new LoggingConfiguration();
 
-            // build the logging target for moving pics logging
-            FileTarget pluginLogTarget = new FileTarget();
-            pluginLogTarget.Name = "moving-pictures";
-            pluginLogTarget.FileName = PLUGIN_LOG_FILE;
-            pluginLogTarget.Layout = "${date:format=dd-MMM-yyyy HH\\:mm\\:ss} " +
-                                "${level:fixedLength=true:padding=5} " +
-                                "[${logger:fixedLength=true:padding=20:shortName=true}]: ${message} " +
-                                "${exception:format=tostring}";
+        //    // build the logging target for moving pics logging
+        //    FileTarget pluginLogTarget = new FileTarget();
+        //    pluginLogTarget.Name = "moving-pictures";
+        //    pluginLogTarget.FileName = PLUGIN_LOG_FILE;
+        //    pluginLogTarget.Layout = "${date:format=dd-MMM-yyyy HH\\:mm\\:ss} " +
+        //                        "${level:fixedLength=true:padding=5} " +
+        //                        "[${logger:fixedLength=true:padding=20:shortName=true}]: ${message} " +
+        //                        "${exception:format=tostring}";
 
-            LogManager.Configuration.AddTarget("moving-pictures", pluginLogTarget);
-            // Get current Log Level from MediaPortal
-            LogLevel logLevel = LogLevel.Debug;
-            switch ((Level)MediaPortalSettings.GetValueAsInt("general", "loglevel", 0)) {
-                case Level.Error:
-                    logLevel = LogLevel.Error;
-                    break;
-                case Level.Warning:
-                    logLevel = LogLevel.Warn;
-                    break;
-                case Level.Information:
-                    logLevel = LogLevel.Info;
-                    break;
-                case Level.Debug:
-                default:
-                    logLevel = LogLevel.Debug;
-                    break;
-            }
+        //    LogManager.Configuration.AddTarget("moving-pictures", pluginLogTarget);
+        //    // Get current Log Level from MediaPortal
+        //    LogLevel logLevel = LogLevel.Debug;
+        //    switch ((Level)MediaPortalSettings.GetValueAsInt("general", "loglevel", 0)) {
+        //        case Level.Error:
+        //            logLevel = LogLevel.Error;
+        //            break;
+        //        case Level.Warning:
+        //            logLevel = LogLevel.Warn;
+        //            break;
+        //        case Level.Information:
+        //            logLevel = LogLevel.Info;
+        //            break;
+        //        case Level.Debug:
+        //        default:
+        //            logLevel = LogLevel.Debug;
+        //            break;
+        //    }
 
-            // set the logging rules for moving pics logging
-            LoggingRule pluginRule = new LoggingRule("MyPlexMedia.*", logLevel, pluginLogTarget);
-            LoggingRule plexRule = new LoggingRule("PlexMediaCenter.*", logLevel, pluginLogTarget);
-            LogManager.Configuration.LoggingRules.Add(pluginRule);
-            LogManager.Configuration.LoggingRules.Add(plexRule);
+        //    // set the logging rules for moving pics logging
+        //    LoggingRule pluginRule = new LoggingRule("MyPlexMedia.*", logLevel, pluginLogTarget);
+        //    LoggingRule plexRule = new LoggingRule("PlexMediaCenter.*", logLevel, pluginLogTarget);
+        //    LogManager.Configuration.LoggingRules.Add(pluginRule);
+        //    LogManager.Configuration.LoggingRules.Add(plexRule);
 
-            // force NLog to reload the configuration data
-            LogManager.Configuration = LogManager.Configuration;
-        }
+        //    // force NLog to reload the configuration data
+        //    LogManager.Configuration = LogManager.Configuration;
+        //}
 
         public static Window.Playback.PlexQualities DefaultQualityLAN { get; set; }
 

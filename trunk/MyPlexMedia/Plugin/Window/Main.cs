@@ -37,11 +37,11 @@ using MediaPortal.Dialogs;
 
 namespace MyPlexMedia.Plugin.Window {
     public partial class Main : WindowPluginBase {
-        private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
+        //private static NLog.Logger logger = NLog.LogManager.GetCurrentClassLogger();
 
         public Main() {
             GetID = Settings.PLUGIN_WINDOW_ID;
-            logger.Debug("Main()");
+            //logger.Debug("Main()");
         }
 
         #region Enums
@@ -67,7 +67,7 @@ namespace MyPlexMedia.Plugin.Window {
 
         public override bool Init() {
             Settings.Load();
-            logger.Debug("Init()");
+            //logger.Debug("Init()");
 
             return Load(Settings.SKINFILE_MAIN_WINDOW);
         }
@@ -75,12 +75,12 @@ namespace MyPlexMedia.Plugin.Window {
         public override void DeInit() {
             base.DeInit();
             PlexInterface.DeInit();
-            logger.Debug("DeInit()");
+            //logger.Debug("DeInit()");
         }
 
         protected override void OnPageLoad() {
             GUIWaitCursor.Init();
-            logger.Info("Init()");
+            //logger.Info("Init()");
             GUIPropertyManager.SetProperty("#currentmodule", Settings.PLUGIN_NAME);
             GUIPropertyManager.SetProperty("#MyPlexMedia.Buffering.State", string.Empty);
             RegisterEventHandlers();
@@ -103,7 +103,7 @@ namespace MyPlexMedia.Plugin.Window {
             Settings.Save();
             UnRegisterEventHandlers();
             base.OnPageDestroy(new_windowId);
-            logger.Info("OnPageDestroy({0})", new_windowId);
+            //logger.Info("OnPageDestroy({0})", new_windowId);
         }
 
         protected override void SwitchLayout() {
